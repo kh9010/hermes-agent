@@ -4,10 +4,11 @@ Provides ``resolve_display_setting()`` — the single entry-point for reading
 display settings with platform-specific overrides and sensible defaults.
 
 Resolution order (first non-None wins):
-    1. ``display.platforms.<platform>.<key>``  — explicit per-platform user override
-    2. ``display.<key>``                       — global user setting
-    3. ``_PLATFORM_DEFAULTS[<platform>][<key>]``  — built-in sensible default
-    4. ``_GLOBAL_DEFAULTS[<key>]``              — built-in global default
+    1. ``display.chats.<chat-id>.<key>``       — explicit per-conversation user override
+    2. ``display.platforms.<platform>.<key>``  — explicit per-platform user override
+    3. ``display.<key>``                       — global user setting
+    4. ``_PLATFORM_DEFAULTS[<platform>][<key>]``  — built-in sensible default
+    5. ``_GLOBAL_DEFAULTS[<key>]``              — built-in global default
 
 Exception: ``display.streaming`` is CLI-only.  Gateway streaming follows the
 top-level ``streaming`` config unless ``display.platforms.<platform>.streaming``
@@ -194,8 +195,10 @@ def resolve_display_setting(
     platform_key: str,
     setting: str,
     fallback: Any = None,
+    *,
+    chat_id: str | None = None,
 ) -> Any:
-    """Resolve a display setting with per-platform override support.
+    """Resolve a display setting with conversation and platform overrides.
 
     Parameters
     ----------
@@ -208,6 +211,9 @@ def resolve_display_setting(
         Display setting name (e.g. ``"tool_progress"``, ``"show_reasoning"``).
     fallback : Any
         Fallback value when the setting isn't found anywhere.
+    chat_id : str | None
+        Exact conversation identifier. When supplied, an explicit
+        ``display.chats.<chat-id>.<key>`` value takes highest priority.
 
     Returns
     -------
@@ -215,7 +221,15 @@ def resolve_display_setting(
     """
     display_cfg = user_config.get("display") or {}
 
-    # 1. Explicit per-platform override (display.platforms.<platform>.<key>)
+    # 1. Explicit per-conversation override (display.chats.<chat-id>.<key>)
+    chats = display_cfg.get("chats") or {}
+    chat_overrides = chats.get(str(chat_id)) if chat_id is not None else None
+    if isinstance(chat_overrides, dict):
+        val = chat_overrides.get(setting)
+        if val is not None:
+            return _normalise(setting, val)
+
+    # 2. Explicit per-platform override (display.platforms.<platform>.<key>)
     platforms = display_cfg.get("platforms") or {}
     plat_overrides = platforms.get(platform_key)
     if isinstance(plat_overrides, dict):

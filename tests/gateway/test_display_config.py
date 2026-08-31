@@ -50,6 +50,38 @@ class TestResolveDisplaySetting:
         assert resolve_display_setting(config, "slack", "tool_progress") == "off"
         assert resolve_display_setting(config, "telegram", "tool_progress") == "all"
 
+    def test_explicit_chat_override_wins_over_platform_and_global(self):
+        """display.chats.<chat-id> overrides only that conversation."""
+        from gateway.display_config import resolve_display_setting
+
+        family_group = "1234567890-987654321@g.us"
+        config = {
+            "display": {
+                "tool_progress": "all",
+                "platforms": {"whatsapp": {"tool_progress": "new"}},
+                "chats": {family_group: {"tool_progress": "off"}},
+            }
+        }
+
+        assert (
+            resolve_display_setting(
+                config,
+                "whatsapp",
+                "tool_progress",
+                chat_id=family_group,
+            )
+            == "off"
+        )
+        assert (
+            resolve_display_setting(
+                config,
+                "whatsapp",
+                "tool_progress",
+                chat_id="112450984751212@lid",
+            )
+            == "new"
+        )
+
 
 # ---------------------------------------------------------------------------
 # Backward compatibility: tool_progress_overrides

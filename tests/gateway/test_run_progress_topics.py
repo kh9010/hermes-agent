@@ -1058,6 +1058,112 @@ async def _run_with_agent(
 
 
 @pytest.mark.asyncio
+async def test_chat_override_suppresses_interim_commentary_only_in_target_chat(
+    monkeypatch, tmp_path
+):
+    family_group = "1234567890-987654321@g.us"
+    config = {
+        "display": {
+            "interim_assistant_messages": True,
+            "chats": {family_group: {"interim_assistant_messages": False}},
+        }
+    }
+
+    family_adapter, family_result = await _run_with_agent(
+        monkeypatch,
+        tmp_path,
+        CommentaryAgent,
+        session_id="sess-family-quiet",
+        config_data=config,
+        platform=Platform.WHATSAPP,
+        chat_id=family_group,
+    )
+
+    assert family_result["final_response"] == "done"
+    assert family_adapter.sent == []
+
+
+@pytest.mark.asyncio
+async def test_chat_override_leaves_other_chat_interim_commentary_enabled(
+    monkeypatch, tmp_path
+):
+    family_group = "1234567890-987654321@g.us"
+    config = {
+        "display": {
+            "interim_assistant_messages": True,
+            "chats": {family_group: {"interim_assistant_messages": False}},
+        }
+    }
+
+    dm_adapter, dm_result = await _run_with_agent(
+        monkeypatch,
+        tmp_path,
+        CommentaryAgent,
+        session_id="sess-dm-still-chatty",
+        config_data=config,
+        platform=Platform.WHATSAPP,
+        chat_id="112450984751212@lid",
+        chat_type="direct",
+    )
+
+    assert dm_result["final_response"] == "done"
+    assert [call["content"] for call in dm_adapter.sent] == ["I'll inspect the repo first."]
+
+
+@pytest.mark.asyncio
+async def test_chat_override_suppresses_tool_progress_only_in_target_chat(
+    monkeypatch, tmp_path
+):
+    family_group = "1234567890-987654321@g.us"
+    config = {
+        "display": {
+            "tool_progress": "all",
+            "chats": {family_group: {"tool_progress": "off"}},
+        }
+    }
+
+    family_adapter, family_result = await _run_with_agent(
+        monkeypatch,
+        tmp_path,
+        FakeAgent,
+        session_id="sess-family-no-tools",
+        config_data=config,
+        platform=Platform.WHATSAPP,
+        chat_id=family_group,
+    )
+
+    assert family_result["final_response"] == "done"
+    assert family_adapter.sent == []
+
+
+@pytest.mark.asyncio
+async def test_chat_override_leaves_other_chat_tool_progress_enabled(
+    monkeypatch, tmp_path
+):
+    family_group = "1234567890-987654321@g.us"
+    config = {
+        "display": {
+            "tool_progress": "all",
+            "chats": {family_group: {"tool_progress": "off"}},
+        }
+    }
+
+    dm_adapter, dm_result = await _run_with_agent(
+        monkeypatch,
+        tmp_path,
+        FakeAgent,
+        session_id="sess-dm-tools-visible",
+        config_data=config,
+        platform=Platform.WHATSAPP,
+        chat_id="112450984751212@lid",
+        chat_type="direct",
+    )
+
+    assert dm_result["final_response"] == "done"
+    assert dm_adapter.sent or dm_adapter.edits
+
+
+@pytest.mark.asyncio
 async def test_slack_native_progress_correlates_concurrent_duplicate_tools_by_id(
     monkeypatch, tmp_path
 ):
