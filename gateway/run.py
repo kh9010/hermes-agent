@@ -29286,7 +29286,18 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         platform_key = _platform_config_key(source.platform)
         user_config = _load_gateway_config()
         from gateway.display_config import resolve_display_setting
-        _plat_streaming = resolve_display_setting(
+
+        def resolve_turn_display_setting(config, platform, setting, fallback=None):
+            """Resolve display config for this exact conversation."""
+            return resolve_display_setting(
+                config,
+                platform,
+                setting,
+                fallback,
+                chat_id=source.chat_id,
+            )
+
+        _plat_streaming = resolve_turn_display_setting(
             user_config, platform_key, "streaming"
         )
         _streaming_enabled = (
@@ -29706,15 +29717,23 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         if not isinstance(display_config, dict):
             display_config = {}
 
-        # Per-platform display settings — resolve via display_config module
-        # which checks display.platforms.<platform>.<key> first, then
-        # display.<key> global, then built-in platform defaults.
+        # Per-conversation display settings resolve before platform/global defaults.
         from gateway.display_config import resolve_display_setting
+
+        def resolve_turn_display_setting(config, platform, setting, fallback=None):
+            """Resolve display config for this exact conversation."""
+            return resolve_display_setting(
+                config,
+                platform,
+                setting,
+                fallback,
+                chat_id=source.chat_id,
+            )
 
         # Apply tool preview length config (0 = no limit)
         try:
             from agent.display import set_tool_preview_max_len
-            _tpl = resolve_display_setting(user_config, platform_key, "tool_preview_length", 0)
+            _tpl = resolve_turn_display_setting(user_config, platform_key, "tool_preview_length", 0)
             set_tool_preview_max_len(int(_tpl) if _tpl else 0)
         except Exception:
             pass
@@ -29722,20 +29741,26 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         # Apply friendly tool labels config (default on) — per-platform aware
         try:
             from agent.display import set_friendly_tool_labels
-            _ftl = resolve_display_setting(user_config, platform_key, "friendly_tool_labels", True)
+            _ftl = resolve_turn_display_setting(user_config, platform_key, "friendly_tool_labels", True)
             set_friendly_tool_labels(bool(_ftl))
         except Exception:
             pass
 
         # Tool progress mode — resolved per-platform with env var fallback
-        _resolved_tp = resolve_display_setting(user_config, platform_key, "tool_progress")
+        _resolved_tp = resolve_turn_display_setting(user_config, platform_key, "tool_progress")
         _env_tp = os.getenv("HERMES_TOOL_PROGRESS_MODE")
         _display_cfg = display_config if isinstance(display_config, dict) else {}
+        _chats_cfg = _display_cfg.get("chats") or {}
+        _chat_cfg = _chats_cfg.get(str(source.chat_id)) or {}
         _platforms_cfg = _display_cfg.get("platforms") or {}
         _platform_cfg = _platforms_cfg.get(platform_key) or {}
         _legacy_tp_overrides = _display_cfg.get("tool_progress_overrides") or {}
         _tool_progress_configured = (
             "tool_progress" in _display_cfg
+            or (
+                isinstance(_chat_cfg, dict)
+                and "tool_progress" in _chat_cfg
+            )
             or (
                 isinstance(_platform_cfg, dict)
                 and "tool_progress" in _platform_cfg
@@ -29751,7 +29776,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             else (_resolved_tp or _env_tp or "all")
         )
         # Tool progress grouping: "accumulate" (edit one bubble) or "separate" (one msg per tool)
-        progress_grouping = resolve_display_setting(user_config, platform_key, "tool_progress_grouping") or "accumulate"
+        progress_grouping = resolve_turn_display_setting(user_config, platform_key, "tool_progress_grouping") or "accumulate"
         from gateway.status_phrases import choose_status_phrase, resolve_status_phrase_catalog
         _generic_status_recent: List[str] = []
         _generic_status_catalog = resolve_status_phrase_catalog(user_config, platform_key)
@@ -29775,7 +29800,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
                     and not _has_platform_display_override(user_config, platform_key, setting)
                 ):
                     return "off"
-            value = resolve_display_setting(user_config, platform_key, setting, default)
+            value = resolve_turn_display_setting(user_config, platform_key, setting, default)
             if isinstance(value, str) and value.strip().lower() == "generic":
                 return "generic" if allow_generic else "off"
             return "raw" if bool(value) else "off"
@@ -29804,7 +29829,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         # there. Rendering rides the existing _keep_typing refresh: the
         # callback only stores a phrase on the adapter, costing zero extra
         # platform API calls.
-        _live_status_mode = resolve_display_setting(
+        _live_status_mode = resolve_turn_display_setting(
             user_config, platform_key, "live_status", "full"
         )
         _live_status_adapter = self._adapter_for_source(source)
@@ -29902,7 +29927,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
         # are collected here and deleted after the final response lands.
         # Failed runs skip cleanup so the bubbles remain as breadcrumbs.
         _cleanup_progress = bool(
-            resolve_display_setting(user_config, platform_key, "cleanup_progress")
+            resolve_turn_display_setting(user_config, platform_key, "cleanup_progress")
         )
         _cleanup_adapter = self._adapter_for_source(source) if _cleanup_progress else None
         # getattr, not attribute access — same duck-typed-adapter guard as the
@@ -29943,7 +29968,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
             _cleanup_msg_ids=_cleanup_msg_ids,
             message=message,
             AIAgent=AIAgent,
-            resolve_display_setting=resolve_display_setting,
+            resolve_display_setting=resolve_turn_display_setting,
             user_config=user_config,
             enabled_toolsets=enabled_toolsets,
             disabled_toolsets=disabled_toolsets,
@@ -30450,7 +30475,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
                 _agent_ref = agent_holder[0]
                 _status_detail = ""
                 _want_iteration_detail = bool(
-                    resolve_display_setting(
+                    resolve_turn_display_setting(
                         user_config,
                         platform_key,
                         "busy_ack_detail",
