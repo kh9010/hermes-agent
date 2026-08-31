@@ -346,7 +346,15 @@ class WhatsAppBehaviorMixin:
         quoted_participant = self._normalize_whatsapp_id(data.get("quotedParticipant"))
         if not quoted_participant:
             return False
-        return quoted_participant in self._bot_ids_from_message(data)
+        bot_ids = self._bot_ids_from_message(data)
+        if quoted_participant in bot_ids:
+            return True
+        # LID device-suffix tolerance: a reply quotes "<num>@lid" while the
+        # bot id may carry a device index "<num>@1@lid" (same account).
+        quoted_num = quoted_participant.split("@", 1)[0]
+        return bool(quoted_num) and any(
+            bid.split("@", 1)[0] == quoted_num for bid in bot_ids
+        )
 
     def _message_mentions_bot(self, data: Dict[str, Any]) -> bool:
         bot_ids = self._bot_ids_from_message(data)
