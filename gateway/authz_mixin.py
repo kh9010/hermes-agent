@@ -615,6 +615,35 @@ class GatewayAuthorizationMixin:
             group_chat_allowlist = _auth_env(platform_group_chat_env_map.get(source.platform, ""))
         global_allowlist = _auth_env("GATEWAY_ALLOWED_USERS")
 
+        # WhatsApp's sender allowlist is DM-scoped; it must not override the
+        # independently configured group-chat allowlist. Re-check the live
+        # adapter here rather than treating group_policy="allowlist" alone as a
+        # grant: this preserves exact chat-ID matching and fails closed for
+        # unlisted groups or a missing adapter. Stored routes disable adapter
+        # delegation, so only messages arriving through the current adapter can
+        # use this intake authorization.
+        if (
+            allow_adapter_delegation
+            and source.platform == Platform.WHATSAPP
+            and source.chat_type in {"group", "forum", "channel"}
+            and source.chat_id
+            and self._adapter_enforces_own_access_policy(
+                source.platform,
+                profile=adapter_profile,
+            )
+            and self._adapter_group_policy(
+                source.platform,
+                profile=adapter_profile,
+            ) == "allowlist"
+        ):
+            adapter = self._authorization_adapter(
+                source.platform,
+                profile=adapter_profile,
+            )
+            group_check = getattr(adapter, "_is_group_allowed", None)
+            if callable(group_check):
+                return bool(group_check(source.chat_id))
+
         if not platform_allowlist and not group_user_allowlist and not group_chat_allowlist and not global_allowlist:
             # No env allowlist configured. Adapters that own their own
             # config-driven access policy (dm_policy / group_policy /
