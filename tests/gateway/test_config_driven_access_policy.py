@@ -227,6 +227,111 @@ def test_own_policy_allowlist_authorized_for_group_chat(monkeypatch, platform):
     assert runner._is_user_authorized(_source(platform, chat_type="group")) is True
 
 
+def test_whatsapp_allowed_group_is_authorized_with_separate_dm_allowlist(monkeypatch):
+    """A DM sender allowlist must not override an adapter-allowed group chat."""
+    _clear_auth_env(monkeypatch)
+    monkeypatch.setenv("WHATSAPP_ALLOWED_USERS", "15550001111")
+    allowed_group = "120363001234567890@g.us"
+    config = GatewayConfig(
+        platforms={
+            Platform.WHATSAPP: PlatformConfig(
+                enabled=True,
+                extra={
+                    "dm_policy": "allowlist",
+                    "group_policy": "allowlist",
+                    "group_allow_from": [allowed_group],
+                },
+            )
+        }
+    )
+    runner, _adapter = _make_runner(Platform.WHATSAPP, config, enforces=True)
+    from plugins.platforms.whatsapp.adapter import WhatsAppAdapter
+
+    runner.adapters[Platform.WHATSAPP] = WhatsAppAdapter(
+        config.platforms[Platform.WHATSAPP]
+    )
+
+    source = SessionSource(
+        platform=Platform.WHATSAPP,
+        user_id="arbitrary-family-member@s.whatsapp.net",
+        chat_id=allowed_group,
+        user_name="family member",
+        chat_type="group",
+    )
+    assert runner._is_user_authorized(source) is True
+
+
+def test_whatsapp_unlisted_group_stays_denied_with_separate_dm_allowlist(monkeypatch):
+    """The group exception must re-check the exact chat ID and fail closed."""
+    _clear_auth_env(monkeypatch)
+    monkeypatch.setenv("WHATSAPP_ALLOWED_USERS", "15550001111")
+    allowed_group = "120363001234567890@g.us"
+    config = GatewayConfig(
+        platforms={
+            Platform.WHATSAPP: PlatformConfig(
+                enabled=True,
+                extra={
+                    "dm_policy": "allowlist",
+                    "group_policy": "allowlist",
+                    "group_allow_from": [allowed_group],
+                },
+            )
+        }
+    )
+    from plugins.platforms.whatsapp.adapter import WhatsAppAdapter
+
+    runner, _adapter = _make_runner(Platform.WHATSAPP, config, enforces=True)
+    runner.adapters[Platform.WHATSAPP] = WhatsAppAdapter(
+        config.platforms[Platform.WHATSAPP]
+    )
+    source = SessionSource(
+        platform=Platform.WHATSAPP,
+        user_id="arbitrary-family-member@s.whatsapp.net",
+        chat_id="120363009999999999@g.us",
+        user_name="family member",
+        chat_type="group",
+    )
+
+    assert runner._is_user_authorized(source) is False
+
+
+def test_whatsapp_stored_route_cannot_reuse_allowed_group_with_dm_allowlist(monkeypatch):
+    """Stored replay disables the live-adapter group authorization shortcut."""
+    _clear_auth_env(monkeypatch)
+    monkeypatch.setenv("WHATSAPP_ALLOWED_USERS", "15550001111")
+    allowed_group = "120363001234567890@g.us"
+    config = GatewayConfig(
+        platforms={
+            Platform.WHATSAPP: PlatformConfig(
+                enabled=True,
+                extra={
+                    "dm_policy": "allowlist",
+                    "group_policy": "allowlist",
+                    "group_allow_from": [allowed_group],
+                },
+            )
+        }
+    )
+    from plugins.platforms.whatsapp.adapter import WhatsAppAdapter
+
+    runner, _adapter = _make_runner(Platform.WHATSAPP, config, enforces=True)
+    runner.adapters[Platform.WHATSAPP] = WhatsAppAdapter(
+        config.platforms[Platform.WHATSAPP]
+    )
+    source = SessionSource(
+        platform=Platform.WHATSAPP,
+        user_id="arbitrary-family-member@s.whatsapp.net",
+        chat_id=allowed_group,
+        user_name="family member",
+        chat_type="group",
+    )
+
+    assert runner._is_user_authorized(
+        source,
+        allow_adapter_delegation=False,
+    ) is False
+
+
 @pytest.mark.parametrize("platform", _OWN_POLICY_PLATFORMS)
 def test_own_policy_open_group_not_authorized_without_allowlist(monkeypatch, platform):
     """``group_policy: open`` is the same fail-open class as DM open → deny."""
