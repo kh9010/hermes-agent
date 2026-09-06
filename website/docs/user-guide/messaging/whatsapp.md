@@ -130,6 +130,35 @@ whatsapp:
 - `unauthorized_dm_behavior: pair` is the global default. Unknown DM senders get a pairing code.
 - `whatsapp.unauthorized_dm_behavior: ignore` makes WhatsApp stay silent for unauthorized DMs, which is usually the better choice for a private number.
 
+### Optional local group-address classifier
+
+For a private group where `require_mention` is enabled, Hermes can use a local Ollama model as a semantic fallback when a message is neither a reply nor an @mention:
+
+```yaml
+whatsapp:
+  group_policy: allowlist
+  group_allow_from:
+    - "120363001234567890@g.us"
+  require_mention: true
+  local_address_classifier:
+    enabled: true
+    group_jids:
+      - "120363001234567890@g.us"
+    base_url: "http://127.0.0.1:11434"
+    model: "qwen3.5:4b"
+    timeout_seconds: 8
+    assistant_description: "the group's archive helper, whose job is to find and share family photos"
+    routing_guidance: "Photo-archive retrieval requests default to addressed unless they target a person or everyone."
+    addressed_examples:
+      - "Could you find a photo from that trip?"
+    not_addressed_examples:
+      - "Does anyone remember that trip?"
+    uncertain_examples:
+      - "Did you send me those photos?"
+```
+
+The classifier runs only after normal group authorization and direct-address checks fail. Its group JID must appear in both `group_allow_from` and `local_address_classifier.group_jids`. Only the text body is sent to the literal loopback Ollama origin; sender identity, quoted text, group metadata, and media are excluded. Timeouts, malformed output, `not_addressed`, and `uncertain` all fail closed without invoking the responding agent.
+
 Then start the gateway:
 
 ```bash
