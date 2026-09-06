@@ -33,6 +33,13 @@ from hermes_constants import (
     get_hermes_dir,
     with_hermes_node_path,
 )
+from gateway.platforms.whatsapp_local_address import (
+    LocalAddressClassifierConfig,
+    classify_addressed,
+    group_selection_from_extra,
+    is_media_placeholder,
+    is_obvious_non_address,
+)
 
 def _wenv(name: str, default: str = "") -> str:
     """Read a WHATSAPP_* env var through the profile secret scope.
@@ -1345,17 +1352,7 @@ class WhatsAppAdapter(WhatsAppBehaviorMixin, BasePlatformAdapter):
                 ) as resp:
                     if resp.status == 200:
                         messages = await resp.json()
-                        for msg_data in messages:
-                            event = await self._build_message_event(msg_data)
-                            if event:
-                                # Fire-and-forget: a slow bridge /read must not
-                                # delay message dispatch (matches BlueBubbles
-                                # asyncio.create_task pattern for mark_read).
-                                asyncio.create_task(self._send_read_receipt(msg_data))
-                                if event.message_type == MessageType.TEXT:
-                                    self._enqueue_text_event(event)
-                                else:
-                                    await self.handle_message(event)
+                        await self._process_polled_messages(messages)
             except asyncio.CancelledError:
                 break
             except Exception as e:
@@ -1367,6 +1364,38 @@ class WhatsAppAdapter(WhatsAppBehaviorMixin, BasePlatformAdapter):
                 await asyncio.sleep(5)
             
             await asyncio.sleep(1)  # Poll interval
+
+    async def _process_polled_messages(self, messages: list[Dict[str, Any]]) -> None:
+        """Build a bridge batch concurrently, then dispatch in bridge order."""
+        built = await asyncio.gather(
+            *(self._build_message_event(data) for data in messages),
+            return_exceptions=True,
+        )
+        for msg_data, result in zip(messages, built):
+            if isinstance(result, BaseException):
+                if isinstance(result, asyncio.CancelledError):
+                    raise result
+                logger.warning(
+                    "[%s] WhatsApp message processing failed (%s)",
+                    self.name,
+                    type(result).__name__,
+                )
+                continue
+            if result:
+                await self._dispatch_polled_event(msg_data, result)
+
+    async def _dispatch_polled_event(
+        self,
+        msg_data: Dict[str, Any],
+        event: MessageEvent,
+    ) -> None:
+        """Dispatch one accepted bridge event."""
+        # Fire-and-forget: a slow bridge /read must not delay dispatch.
+        asyncio.create_task(self._send_read_receipt(msg_data))
+        if event.message_type == MessageType.TEXT:
+            self._enqueue_text_event(event)
+        else:
+            await self.handle_message(event)
 
     async def _send_read_receipt(self, data: Dict[str, Any]) -> None:
         """Mark a policy-accepted inbound message as read via the bridge."""
@@ -1453,10 +1482,92 @@ class WhatsAppAdapter(WhatsAppBehaviorMixin, BasePlatformAdapter):
             if self._pending_text_batch_tasks.get(key) is current_task:
                 self._pending_text_batch_tasks.pop(key, None)
 
+    async def _classify_local_address(
+        self,
+        text: str,
+        config: LocalAddressClassifierConfig,
+    ) -> bool:
+        """Classify message text locally without forwarding message metadata."""
+        return await classify_addressed(text, config)
+
+    async def _should_process_message_async(self, data: Dict[str, Any]) -> bool:
+        """Apply normal gates, with local classification for selected groups."""
+        if not data.get("isGroup", False):
+            return self._should_process_message(data)
+
+        chat_id = str(data.get("chatId") or "")
+        selection = group_selection_from_extra(self.config.extra, chat_id)
+        if selection is False:
+            return self._should_process_message(data)
+        if selection is None:
+            logger.warning(
+                "[%s] Invalid local address classifier group selection; failing closed",
+                self.name,
+            )
+            return False
+
+        try:
+            config = LocalAddressClassifierConfig.from_extra(self.config.extra)
+        except (TypeError, ValueError) as exc:
+            logger.warning(
+                "[%s] Invalid local address classifier config; failing closed (%s)",
+                self.name,
+                type(exc).__name__,
+            )
+            return False
+
+        # A selected classifier group always uses this gate, even if broader
+        # free-response settings are enabled. This prevents permissive settings
+        # from silently bypassing the local privacy boundary.
+        if (
+            self._is_broadcast_chat(chat_id)
+            or chat_id not in self._group_allow_from
+            or not self._is_group_allowed(chat_id)
+        ):
+            return False
+
+        body_value = data.get("body")
+        if not isinstance(body_value, str):
+            return False
+        if len(body_value) > config.max_text_chars:
+            return False
+        text = body_value.strip()
+        if not text:
+            return False
+        if is_media_placeholder(text):
+            return False
+
+        bot_ids = self._bot_ids_from_message(data)
+        mentioned_ids = {
+            normalized
+            for candidate in (data.get("mentionedIds") or [])
+            if (normalized := self._normalize_whatsapp_id(candidate))
+        }
+        explicitly_mentions_bot = bool(bot_ids & mentioned_ids)
+        if (
+            text.startswith("/")
+            or self._message_is_reply_to_bot(data)
+            or explicitly_mentions_bot
+        ):
+            return True
+
+        if is_obvious_non_address(text):
+            return False
+
+        try:
+            return await self._classify_local_address(text, config)
+        except Exception as exc:
+            logger.warning(
+                "[%s] Local address classifier failed closed (%s)",
+                self.name,
+                type(exc).__name__,
+            )
+            return False
+
     async def _build_message_event(self, data: Dict[str, Any]) -> Optional[MessageEvent]:
         """Build a MessageEvent from bridge message data, downloading images to cache."""
         try:
-            if not self._should_process_message(data):
+            if not await self._should_process_message_async(data):
                 return None
 
             # Determine message type

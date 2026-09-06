@@ -1731,6 +1731,10 @@ def load_gateway_config() -> GatewayConfig:
                     bridged["group_policy"] = platform_cfg["group_policy"]
                 if "group_allow_from" in platform_cfg:
                     bridged["group_allow_from"] = platform_cfg["group_allow_from"]
+                if plat == Platform.WHATSAPP and "local_address_classifier" in platform_cfg:
+                    bridged["local_address_classifier"] = platform_cfg[
+                        "local_address_classifier"
+                    ]
                 if "group_allow_admin_from" in platform_cfg:
                     bridged["group_allow_admin_from"] = platform_cfg["group_allow_admin_from"]
                 if "group_user_allowed_commands" in platform_cfg:
