@@ -1,0 +1,30 @@
+COMMAND: /Users/kahransingh/Dev/hermes-agent-oct07-upgrade/.venv/bin/python -m pytest -q --tb=short tests/agent/test_oct07_prompt_contracts.py
+ISOLATION: empty env; disposable HOME/HERMES_HOME; sandbox deny network and live Hermes reads/writes
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+______________ test_narrow_skills_keep_safety_and_rendered_index _______________
+tests/agent/test_oct07_prompt_contracts.py:20: in test_narrow_skills_keep_safety_and_rendered_index
+    assert obligation in rendered
+E   AssertionError: assert 'MUST load clearly applicable procedural skills' in '## Skills\nBefore replying, scan the skills below. If a skill matches or is even partially relevant to your task, you...list actions.\n</available_skills>\n\nOnly proceed without loading a skill if genuinely none are relevant to the task.'
+____ test_lean_guidance_keeps_execution_safety_and_is_shorter_than_release _____
+tests/agent/test_oct07_prompt_contracts.py:40: in test_lean_guidance_keeps_execution_safety_and_is_shorter_than_release
+    baseline = subprocess.check_output(['git', 'show', 'HEAD:agent/prompt_builder.py'],
+tests/conftest.py:1891: in _guarded
+    return real(cmd, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.11.15-macos-aarch64-none/lib/python3.11/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+tests/conftest.py:1891: in _guarded
+    return real(cmd, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../.local/share/uv/python/cpython-3.11.15-macos-aarch64-none/lib/python3.11/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['git', 'show', 'HEAD:agent/prompt_builder.py']' returned non-zero exit status 128.
+----------------------------- Captured stderr call -----------------------------
+fatal: not a git repository: /Users/kahransingh/.hermes/hermes-agent/.git/worktrees/hermes-agent-oct07-upgrade
+=========================== short test summary info ============================
+FAILED tests/agent/test_oct07_prompt_contracts.py::test_narrow_skills_keep_safety_and_rendered_index
+FAILED tests/agent/test_oct07_prompt_contracts.py::test_lean_guidance_keeps_execution_safety_and_is_shorter_than_release
+2 failed in 0.32s
+
+EXIT_CODE: 1

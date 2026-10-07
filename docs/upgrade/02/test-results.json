@@ -1,0 +1,52 @@
+{
+  "focused": {
+    "command": [
+      "/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "-rfs",
+      "-p",
+      "no:cacheprovider",
+      "tests/gateway/test_oct07_compatibility.py",
+      "tests/gateway/test_oct07_upgrade_contracts.py",
+      "tests/agent/test_oct07_prompt_contracts.py",
+      "tests/gateway/test_oct07_chat_scope_propagation.py",
+      "tests/gateway/test_display_config.py",
+      "tests/gateway/test_config_driven_access_policy.py",
+      "tests/gateway/test_whatsapp_group_gating.py"
+    ],
+    "exit_code": 0,
+    "summary": "111 passed in 1.59s"
+  },
+  "ruff": {
+    "command": [
+      "/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/.venv/bin/ruff",
+      "check",
+      "agent/prompt_builder.py",
+      "gateway/authz_mixin.py",
+      "gateway/display_config.py",
+      "gateway/platforms/whatsapp_common.py",
+      "gateway/run.py",
+      "gateway/run_busy.py",
+      "gateway/run_turn.py",
+      "gateway/run_turn_runner.py",
+      "gateway/warning_notifications.py",
+      "tests/gateway/test_oct07_compatibility.py",
+      "tests/gateway/test_oct07_upgrade_contracts.py",
+      "tests/agent/test_oct07_prompt_contracts.py",
+      "tests/gateway/test_oct07_chat_scope_propagation.py"
+    ],
+    "exit_code": 0,
+    "summary": "All checks passed!"
+  },
+  "plugins_compat": {
+    "command": [
+      "/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/.venv/bin/hermes",
+      "plugins",
+      "compat"
+    ],
+    "exit_code": 0,
+    "summary": "\u2713 No enabled plugin imports paths scheduled for removal on 2026-09-14."
+  }
+}

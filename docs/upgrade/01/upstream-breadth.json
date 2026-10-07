@@ -1,0 +1,566 @@
+{
+  ".dockerignore": {
+    "files": 1,
+    "added": 4,
+    "deleted": 5,
+    "binary": 0
+  },
+  ".env.example": {
+    "files": 1,
+    "added": 16,
+    "deleted": 13,
+    "binary": 0
+  },
+  ".github": {
+    "files": 25,
+    "added": 1762,
+    "deleted": 230,
+    "binary": 0
+  },
+  ".gitignore": {
+    "files": 1,
+    "added": 96,
+    "deleted": 5,
+    "binary": 0
+  },
+  "AGENTS.md": {
+    "files": 1,
+    "added": 397,
+    "deleted": 1716,
+    "binary": 0
+  },
+  "COMPAT_MANIFEST.md": {
+    "files": 1,
+    "added": 3858,
+    "deleted": 0,
+    "binary": 0
+  },
+  "CONTRIBUTING.es.md": {
+    "files": 1,
+    "added": 2,
+    "deleted": 2,
+    "binary": 0
+  },
+  "CONTRIBUTING.md": {
+    "files": 1,
+    "added": 26,
+    "deleted": 12,
+    "binary": 0
+  },
+  "Dockerfile": {
+    "files": 1,
+    "added": 56,
+    "deleted": 8,
+    "binary": 0
+  },
+  "acp_adapter": {
+    "files": 12,
+    "added": 3014,
+    "deleted": 4485,
+    "binary": 0
+  },
+  "agent": {
+    "files": 307,
+    "added": 86962,
+    "deleted": 118563,
+    "binary": 0
+  },
+  "apps": {
+    "files": 2205,
+    "added": 272797,
+    "deleted": 42321,
+    "binary": 3
+  },
+  "batch_runner.py": {
+    "files": 1,
+    "added": 450,
+    "deleted": 819,
+    "binary": 0
+  },
+  "cli-config.yaml.example": {
+    "files": 1,
+    "added": 340,
+    "deleted": 60,
+    "binary": 0
+  },
+  "cli.py": {
+    "files": 1,
+    "added": 1281,
+    "deleted": 21557,
+    "binary": 0
+  },
+  "compat_manifest.json": {
+    "files": 1,
+    "added": 12516,
+    "deleted": 0,
+    "binary": 0
+  },
+  "constraints-termux.txt": {
+    "files": 1,
+    "added": 7,
+    "deleted": 0,
+    "binary": 0
+  },
+  "contributors": {
+    "files": 685,
+    "added": 953,
+    "deleted": 2,
+    "binary": 0
+  },
+  "cron": {
+    "files": 33,
+    "added": 12344,
+    "deleted": 12291,
+    "binary": 0
+  },
+  "datagen-config-examples": {
+    "files": 4,
+    "added": 0,
+    "deleted": 217,
+    "binary": 0
+  },
+  "docker": {
+    "files": 2,
+    "added": 123,
+    "deleted": 11,
+    "binary": 0
+  },
+  "docs": {
+    "files": 20,
+    "added": 0,
+    "deleted": 5321,
+    "binary": 1
+  },
+  "eslint.config.shared.mjs": {
+    "files": 1,
+    "added": 3,
+    "deleted": 1,
+    "binary": 0
+  },
+  "evals": {
+    "files": 184,
+    "added": 22258,
+    "deleted": 26,
+    "binary": 0
+  },
+  "gateway": {
+    "files": 175,
+    "added": 72182,
+    "deleted": 95812,
+    "binary": 0
+  },
+  "hermes_bootstrap.py": {
+    "files": 1,
+    "added": 372,
+    "deleted": 158,
+    "binary": 0
+  },
+  "hermes_cli": {
+    "files": 561,
+    "added": 180442,
+    "deleted": 195670,
+    "binary": 0
+  },
+  "hermes_constants.py": {
+    "files": 1,
+    "added": 1001,
+    "deleted": 1206,
+    "binary": 0
+  },
+  "hermes_constants_scratch.py": {
+    "files": 1,
+    "added": 198,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_logging.py": {
+    "files": 1,
+    "added": 449,
+    "deleted": 474,
+    "binary": 0
+  },
+  "hermes_platform": {
+    "files": 12,
+    "added": 1205,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_startup_watchdog.py": {
+    "files": 1,
+    "added": 519,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state.py": {
+    "files": 1,
+    "added": 1474,
+    "deleted": 15055,
+    "binary": 0
+  },
+  "hermes_state_common.py": {
+    "files": 1,
+    "added": 723,
+    "deleted": 406,
+    "binary": 0
+  },
+  "hermes_state_compression.py": {
+    "files": 1,
+    "added": 719,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_dbfile.py": {
+    "files": 1,
+    "added": 820,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_errors.py": {
+    "files": 1,
+    "added": 296,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_fts.py": {
+    "files": 1,
+    "added": 453,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_gateway.py": {
+    "files": 1,
+    "added": 940,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_guard.py": {
+    "files": 1,
+    "added": 170,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_health.py": {
+    "files": 1,
+    "added": 114,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_holders.py": {
+    "files": 1,
+    "added": 554,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_ids.py": {
+    "files": 1,
+    "added": 28,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_lockguard.py": {
+    "files": 1,
+    "added": 188,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_lockowners.py": {
+    "files": 1,
+    "added": 119,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_maintenance.py": {
+    "files": 1,
+    "added": 479,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_messages.py": {
+    "files": 1,
+    "added": 1585,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_portability.py": {
+    "files": 1,
+    "added": 467,
+    "deleted": 692,
+    "binary": 0
+  },
+  "hermes_state_profile_repair.py": {
+    "files": 1,
+    "added": 350,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_readpool.py": {
+    "files": 1,
+    "added": 259,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_registry.py": {
+    "files": 1,
+    "added": 494,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_repair.py": {
+    "files": 1,
+    "added": 1160,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_rewind.py": {
+    "files": 1,
+    "added": 129,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_schema.py": {
+    "files": 1,
+    "added": 976,
+    "deleted": 1194,
+    "binary": 0
+  },
+  "hermes_state_search.py": {
+    "files": 1,
+    "added": 935,
+    "deleted": 2099,
+    "binary": 0
+  },
+  "hermes_state_sessions.py": {
+    "files": 1,
+    "added": 1716,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_telegram.py": {
+    "files": 1,
+    "added": 377,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_timeline.py": {
+    "files": 1,
+    "added": 167,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_titles.py": {
+    "files": 1,
+    "added": 198,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_usage.py": {
+    "files": 1,
+    "added": 435,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_user_copy.py": {
+    "files": 1,
+    "added": 108,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_state_wal.py": {
+    "files": 1,
+    "added": 647,
+    "deleted": 0,
+    "binary": 0
+  },
+  "hermes_time.py": {
+    "files": 1,
+    "added": 108,
+    "deleted": 94,
+    "binary": 0
+  },
+  "locales": {
+    "files": 17,
+    "added": 172,
+    "deleted": 53,
+    "binary": 0
+  },
+  "mcp-research-data": {
+    "files": 5,
+    "added": 0,
+    "deleted": 7118,
+    "binary": 0
+  },
+  "mcp_serve.py": {
+    "files": 1,
+    "added": 289,
+    "deleted": 621,
+    "binary": 0
+  },
+  "mini_swe_runner.py": {
+    "files": 1,
+    "added": 222,
+    "deleted": 548,
+    "binary": 0
+  },
+  "model_tools.py": {
+    "files": 1,
+    "added": 674,
+    "deleted": 1371,
+    "binary": 0
+  },
+  "nix": {
+    "files": 6,
+    "added": 98,
+    "deleted": 60,
+    "binary": 0
+  },
+  "optional-mcps": {
+    "files": 24,
+    "added": 98,
+    "deleted": 90,
+    "binary": 0
+  },
+  "optional-skills": {
+    "files": 160,
+    "added": 19086,
+    "deleted": 6807,
+    "binary": 0
+  },
+  "package-lock.json": {
+    "files": 1,
+    "added": 91,
+    "deleted": 35,
+    "binary": 0
+  },
+  "plugin-catalog": {
+    "files": 294,
+    "added": 5899,
+    "deleted": 0,
+    "binary": 0
+  },
+  "plugins": {
+    "files": 256,
+    "added": 50377,
+    "deleted": 100132,
+    "binary": 0
+  },
+  "providers": {
+    "files": 2,
+    "added": 470,
+    "deleted": 48,
+    "binary": 0
+  },
+  "pyproject.toml": {
+    "files": 1,
+    "added": 200,
+    "deleted": 50,
+    "binary": 0
+  },
+  "registration_lifecycle.py": {
+    "files": 1,
+    "added": 25,
+    "deleted": 58,
+    "binary": 0
+  },
+  "run_agent.py": {
+    "files": 1,
+    "added": 1066,
+    "deleted": 8799,
+    "binary": 0
+  },
+  "scripts": {
+    "files": 71,
+    "added": 5984,
+    "deleted": 4241,
+    "binary": 0
+  },
+  "setup-hermes.sh": {
+    "files": 1,
+    "added": 26,
+    "deleted": 13,
+    "binary": 0
+  },
+  "setup.py": {
+    "files": 1,
+    "added": 26,
+    "deleted": 1,
+    "binary": 0
+  },
+  "skills": {
+    "files": 29,
+    "added": 386,
+    "deleted": 114,
+    "binary": 0
+  },
+  "tests": {
+    "files": 5019,
+    "added": 491490,
+    "deleted": 253303,
+    "binary": 2
+  },
+  "tests-js": {
+    "files": 10,
+    "added": 1537,
+    "deleted": 229,
+    "binary": 0
+  },
+  "tools": {
+    "files": 341,
+    "added": 92346,
+    "deleted": 122187,
+    "binary": 1
+  },
+  "toolset_distributions.py": {
+    "files": 1,
+    "added": 66,
+    "deleted": 318,
+    "binary": 0
+  },
+  "toolsets.py": {
+    "files": 1,
+    "added": 365,
+    "deleted": 909,
+    "binary": 0
+  },
+  "trajectory_compressor.py": {
+    "files": 1,
+    "added": 521,
+    "deleted": 1251,
+    "binary": 0
+  },
+  "tui_gateway": {
+    "files": 97,
+    "added": 35099,
+    "deleted": 30406,
+    "binary": 0
+  },
+  "ui-tui": {
+    "files": 182,
+    "added": 7095,
+    "deleted": 4555,
+    "binary": 0
+  },
+  "utils.py": {
+    "files": 1,
+    "added": 489,
+    "deleted": 668,
+    "binary": 0
+  },
+  "uv.lock": {
+    "files": 1,
+    "added": 266,
+    "deleted": 86,
+    "binary": 0
+  },
+  "web": {
+    "files": 120,
+    "added": 5491,
+    "deleted": 2049,
+    "binary": 0
+  },
+  "website": {
+    "files": 594,
+    "added": 25469,
+    "deleted": 22032,
+    "binary": 0
+  }
+}

@@ -1,0 +1,162 @@
+COMMAND: /Users/kahransingh/Dev/hermes-agent-oct07-upgrade/.venv/bin/python docs/upgrade/01/broad_runner.py tests/gateway/test_allowlist_warning_platform_gate.py tests/gateway/test_base_warning_owner_scope.py tests/gateway/test_hygiene_warning_lifecycle.py tests/gateway/test_interim_only_consumer_warning.py tests/gateway/test_native_stream_warning_composition.py tests/gateway/test_native_warning_coverage.py tests/gateway/test_session_db_warning_recheck.py tests/gateway/test_telegram_inbound_warning_owner.py tests/gateway/test_warning_delivery_real_producers.py tests/gateway/test_warning_emission_boundary.py tests/gateway/test_warning_notification_contracts.py tests/gateway/test_warning_notifications.py tests/gateway/test_warning_notifications_transport.py tests/gateway/test_warning_render_boundary.py tests/gateway/test_warning_wiring_conservation.py tests/gateway/test_weixin_voice_warning_policy.py tests/gateway/test_api_server_reasoning_nonstream.py tests/gateway/test_api_server_reasoning_stream.py tests/gateway/test_api_server_status_stream.py tests/gateway/test_gateway_streaming_nested_config.py tests/gateway/test_native_stream_warning_composition.py tests/gateway/test_post_stream_media_delivery.py tests/gateway/test_relay_upstream_authz.py tests/gateway/test_slack_native_streaming.py tests/gateway/test_stream_abandon_on_turn_death.py tests/gateway/test_stream_consumer.py tests/gateway/test_stream_consumer_continuation_cut.py tests/gateway/test_stream_consumer_draft.py tests/gateway/test_stream_consumer_fresh_final.py tests/gateway/test_stream_consumer_oversized_leftover.py tests/gateway/test_stream_consumer_silence.py tests/gateway/test_stream_consumer_thread_routing.py tests/gateway/test_stream_consumer_tool_progress.py tests/gateway/test_stream_consumer_wecom_native.py tests/gateway/test_stream_edit_flood_retry_after.py tests/gateway/test_stream_events.py tests/gateway/test_stream_final_contract.py tests/gateway/test_streaming_tts_consumer.py tests/gateway/test_streaming_tts_gateway_regression.py tests/gateway/test_update_streaming.py tests/gateway/test_wecom_stream_dup_fix.py tests/gateway/test_busy_command.py tests/gateway/test_busy_redirect_anchor.py tests/gateway/test_busy_session_ack.py tests/gateway/test_busy_session_auth_bypass.py tests/gateway/test_busy_session_profile_scope.py tests/gateway/test_busy_steer_origin.py tests/gateway/test_busy_steer_subagent_fanout.py tests/gateway/test_busy_wake_admission.py tests/gateway/test_internal_event_never_interrupts_busy_session.py tests/gateway/test_multiplex_busy_input_mode.py -q --tb=short
+ISOLATION: empty env; disposable HOME/HERMES_HOME; sandbox deny network and live Hermes reads/writes
+Discovered 50 test files (~275 tests) under ['tests/gateway/test_allowlist_warning_platform_gate.py', 'tests/gateway/test_base_warning_owner_scope.py', 'tests/gateway/test_hygiene_warning_lifecycle.py', 'tests/gateway/test_interim_only_consumer_warning.py', 'tests/gateway/test_native_stream_warning_composition.py', 'tests/gateway/test_native_warning_coverage.py', 'tests/gateway/test_session_db_warning_recheck.py', 'tests/gateway/test_telegram_inbound_warning_owner.py', 'tests/gateway/test_warning_delivery_real_producers.py', 'tests/gateway/test_warning_emission_boundary.py', 'tests/gateway/test_warning_notification_contracts.py', 'tests/gateway/test_warning_notifications.py', 'tests/gateway/test_warning_notifications_transport.py', 'tests/gateway/test_warning_render_boundary.py', 'tests/gateway/test_warning_wiring_conservation.py', 'tests/gateway/test_weixin_voice_warning_policy.py', 'tests/gateway/test_api_server_reasoning_nonstream.py', 'tests/gateway/test_api_server_reasoning_stream.py', 'tests/gateway/test_api_server_status_stream.py', 'tests/gateway/test_gateway_streaming_nested_config.py', 'tests/gateway/test_native_stream_warning_composition.py', 'tests/gateway/test_post_stream_media_delivery.py', 'tests/gateway/test_relay_upstream_authz.py', 'tests/gateway/test_slack_native_streaming.py', 'tests/gateway/test_stream_abandon_on_turn_death.py', 'tests/gateway/test_stream_consumer.py', 'tests/gateway/test_stream_consumer_continuation_cut.py', 'tests/gateway/test_stream_consumer_draft.py', 'tests/gateway/test_stream_consumer_fresh_final.py', 'tests/gateway/test_stream_consumer_oversized_leftover.py', 'tests/gateway/test_stream_consumer_silence.py', 'tests/gateway/test_stream_consumer_thread_routing.py', 'tests/gateway/test_stream_consumer_tool_progress.py', 'tests/gateway/test_stream_consumer_wecom_native.py', 'tests/gateway/test_stream_edit_flood_retry_after.py', 'tests/gateway/test_stream_events.py', 'tests/gateway/test_stream_final_contract.py', 'tests/gateway/test_streaming_tts_consumer.py', 'tests/gateway/test_streaming_tts_gateway_regression.py', 'tests/gateway/test_update_streaming.py', 'tests/gateway/test_wecom_stream_dup_fix.py', 'tests/gateway/test_busy_command.py', 'tests/gateway/test_busy_redirect_anchor.py', 'tests/gateway/test_busy_session_ack.py', 'tests/gateway/test_busy_session_auth_bypass.py', 'tests/gateway/test_busy_session_profile_scope.py', 'tests/gateway/test_busy_steer_origin.py', 'tests/gateway/test_busy_steer_subagent_fanout.py', 'tests/gateway/test_busy_wake_admission.py', 'tests/gateway/test_internal_event_never_interrupts_busy_session.py', 'tests/gateway/test_multiplex_busy_input_mode.py']; running with -j 4
+[  0.4% |     1/~275 | ✓3 | ✗0] ✓ tests/gateway/test_allowlist_warning_platform_gate.py (3✓, 0.6s)
+[  1.1% |     3/~275 | ✓3 | ✗2] ✗ tests/gateway/test_api_server_reasoning_nonstream.py (2✗, 0.7s)
+
+  ╔╍ Failed: tests/gateway/test_api_server_reasoning_nonstream.py ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+  ║ .venv/lib/python3.11/site-packages/aiohttp/test_utils.py:85: in get_port_socket
+  ║     s.bind((host, port))
+  ║ E   PermissionError: [Errno 1] Operation not permitted
+  ║ _____________ test_responses_input_ignores_echoed_reasoning_items ______________
+  ║ tests/gateway/test_api_server_reasoning_nonstream.py:71: in test_responses_input_ignores_echoed_reasoning_items
+  ║     async with client:
+  ║ .venv/lib/python3.11/site-packages/aiohttp/test_utils.py:533: in __aenter__
+  ║     await self.start_server()
+  ║ .venv/lib/python3.11/site-packages/aiohttp/test_utils.py:312: in start_server
+  ║     await self._server.start_server(loop=self._loop)
+  ║ .venv/lib/python3.11/site-packages/aiohttp/test_utils.py:141: in start_server
+  ║     _sock = self.socket_factory(self.host, self.port, family)
+  ║             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ║ .venv/lib/python3.11/site-packages/aiohttp/test_utils.py:85: in get_port_socket
+  ║     s.bind((host, port))
+  ║ E   PermissionError: [Errno 1] Operation not permitted
+  ║ =============================== warnings summary ===============================
+  ║ tests/gateway/test_api_server_reasoning_nonstream.py::test_non_streaming_routes_carry_reasoning_once
+  ║ tests/gateway/test_api_server_reasoning_nonstream.py::test_responses_input_ignores_echoed_reasoning_items
+  ║   /Users/kahransingh/Dev/hermes-agent-oct07-upgrade/tests/gateway/test_api_server_reasoning_nonstream.py:31: NotAppKeyWarning: It is recommended to use web.AppKey instances for keys.
+  ║   https://docs.aiohttp.org/en/stable/web_advanced.html#application-s-config
+  ║     app["api_server_adapter"] = adapter
+  ║ 
+  ║ -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+  ║ =========================== short test summary info ============================
+  ║ FAILED tests/gateway/test_api_server_reasoning_nonstream.py::test_non_streaming_routes_carry_reasoning_once
+  ║ FAILED tests/gateway/test_api_server_reasoning_nonstream.py::test_responses_input_ignores_echoed_reasoning_items
+  ║ 2 failed, 2 warnings in 0.41s
+  ║ Unclosed client session
+  ║ client_session: <aiohttp.client.ClientSession object at 0x10cc86a90>
+  ║
+  ║  Repro: python -m pytest tests/gateway/test_api_server_reasoning_nonstream.py -q --tb=short
+  ╚╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+[  1.8% |     5/~275 | ✓5 | ✗2] ✓ tests/gateway/test_api_server_reasoning_stream.py (2✓, 1.3s)
+[  2.5% |     7/~275 | ✓7 | ✗2] ✓ tests/gateway/test_api_server_status_stream.py (2✓, 1.3s)
+[  3.6% |    10/~275 | ✓13 | ✗ 2] ✓ tests/gateway/test_busy_command.py (6✓, 0.8s)
+[  4.7% |    13/~275 | ✓16 | ✗ 2] ✓ tests/gateway/test_busy_session_auth_bypass.py (3✓, 0.5s)
+[  5.5% |    15/~275 | ✓19 | ✗ 2] ✓ tests/gateway/test_busy_redirect_anchor.py (3✓, 0.7s)
+[  9.8% |    27/~275 | ✓32 | ✗ 2] ✓ tests/gateway/test_busy_session_ack.py (13✓, 0.8s)
+[ 10.2% |    28/~275 | ✓33 | ✗ 2] ✓ tests/gateway/test_busy_session_profile_scope.py (1✓, 0.5s)
+[ 10.5% |    29/~275 | ✓36 | ✗ 2] ✓ tests/gateway/test_busy_steer_subagent_fanout.py (3✓, 0.7s)
+[ 11.3% |    31/~275 | ✓46 | ✗ 2] ✓ tests/gateway/test_base_warning_owner_scope.py (10✓, 2.3s)
+[ 14.2% |    39/~275 | ✓54 | ✗ 2] ✓ tests/gateway/test_gateway_streaming_nested_config.py (8✓, 0.5s)
+[ 14.9% |    41/~275 | ✓57 | ✗ 2] ✓ tests/gateway/test_busy_wake_admission.py (3✓, 0.8s)
+[ 15.6% |    43/~275 | ✓59 | ✗ 2] ✓ tests/gateway/test_interim_only_consumer_warning.py (2✓, 0.4s)
+[ 16.0% |    44/~275 | ✓60 | ✗ 2] ✓ tests/gateway/test_internal_event_never_interrupts_busy_session.py (1✓, 0.5s)
+[ 16.7% |    46/~275 | ✓81 | ✗ 2] ✓ tests/gateway/test_busy_steer_origin.py (21✓, 2.1s)
+[ 17.1% |    47/~275 | ✓84 | ✗ 2] ✓ tests/gateway/test_hygiene_warning_lifecycle.py (3✓, 1.5s)
+[ 17.5% |    48/~275 | ✓87 | ✗ 2] ✓ tests/gateway/test_native_stream_warning_composition.py (3✓, 0.7s)
+[ 18.2% |    50/~275 | ✓89 | ✗ 2] ✓ tests/gateway/test_post_stream_media_delivery.py (2✓, 0.5s)
+[ 19.6% |    54/~275 | ✓93 | ✗ 2] ✓ tests/gateway/test_relay_upstream_authz.py (4✓, 0.6s)
+[ 23.6% |    65/~275 | ✓169 | ✗  2] ✓ tests/gateway/test_native_warning_coverage.py (76✓, 1.2s)
+[ 24.4% |    67/~275 | ✓172 | ✗  2] ✓ tests/gateway/test_session_db_warning_recheck.py (3✓, 0.5s)
+[ 30.9% |    85/~275 | ✓193 | ✗  2] ✓ tests/gateway/test_slack_native_streaming.py (21✓, 0.7s)
+[ 32.4% |    89/~275 | ✓197 | ✗  2] ✓ tests/gateway/test_stream_abandon_on_turn_death.py (4✓, 0.7s)
+[ 33.1% |    91/~275 | ✓199 | ✗  2] ✓ tests/gateway/test_stream_consumer_continuation_cut.py (2✓, 0.4s)
+[ 36.0% |    99/~275 | ✓207 | ✗  2] ✓ tests/gateway/test_stream_consumer_fresh_final.py (8✓, 0.8s)
+[ 40.0% |   110/~275 | ✓218 | ✗  2] ✓ tests/gateway/test_stream_consumer_draft.py (11✓, 1.1s)
+[ 41.1% |   113/~275 | ✓221 | ✗  2] ✓ tests/gateway/test_stream_consumer_silence.py (3✓, 0.4s)
+[ 42.5% |   117/~275 | ✓225 | ✗  2] ✓ tests/gateway/test_stream_consumer_thread_routing.py (4✓, 0.4s)
+[ 42.9% |   118/~275 | ✓229 | ✗  2] ✓ tests/gateway/test_stream_consumer_oversized_leftover.py (4✓, 1.2s)
+[ 48.7% |   134/~275 | ✓253 | ✗  2] ✓ tests/gateway/test_multiplex_busy_input_mode.py (24✓, 5.0s)
+[ 49.5% |   136/~275 | ✓255 | ✗  2] ✓ tests/gateway/test_stream_edit_flood_retry_after.py (2✓, 1.1s)
+[ 50.5% |   139/~275 | ✓258 | ✗  2] ✓ tests/gateway/test_stream_consumer_tool_progress.py (3✓, 2.1s)
+[ 52.4% |   144/~275 | ✓263 | ✗  2] ✓ tests/gateway/test_stream_events.py (5✓, 0.3s)
+[ 55.3% |   152/~275 | ✓271 | ✗  2] ✓ tests/gateway/test_stream_final_contract.py (8✓, 0.7s)
+[ 55.6% |   153/~275 | ✓272 | ✗  2] ✓ tests/gateway/test_streaming_tts_gateway_regression.py (1✓, 0.5s)
+[ 74.2% |   204/~275 | ✓344 | ✗  2] ✓ tests/gateway/test_stream_consumer.py (72✓, 6.3s)
+[ 83.3% |   229/~275 | ✓369 | ✗  2] ✓ tests/gateway/test_stream_consumer_wecom_native.py (25✓, 4.2s)
+[ 83.6% |   230/~275 | ✓381 | ✗  2] ✓ tests/gateway/test_telegram_inbound_warning_owner.py (12✓, 1.6s)
+[ 84.4% |   232/~275 | ✓385 | ✗  2] ✓ tests/gateway/test_warning_emission_boundary.py (4✓, 0.3s)
+[ 85.1% |   234/~275 | ✓391 | ✗  2] ✓ tests/gateway/test_warning_notification_contracts.py (6✓, 0.5s)
+[ 86.2% |   237/~275 | ✓406 | ✗  2] ✓ tests/gateway/test_warning_delivery_real_producers.py (15✓, 1.3s)
+[ 86.9% |   239/~275 | ✓415 | ✗  2] ✓ tests/gateway/test_warning_notifications_transport.py (9✓, 0.6s)
+[ 87.6% |   241/~275 | ✓450 | ✗  2] ✓ tests/gateway/test_warning_notifications.py (35✓, 0.8s)
+[ 90.2% |   248/~275 | ✓457 | ✗  2] ✓ tests/gateway/test_update_streaming.py (7✓, 2.6s)
+[ 90.9% |   250/~275 | ✓464 | ✗  2] ✓ tests/gateway/test_warning_render_boundary.py (7✓, 0.4s)
+[ 93.5% |   257/~275 | ✓471 | ✗  2] ✓ tests/gateway/test_wecom_stream_dup_fix.py (7✓, 0.4s)
+[ 93.8% |   258/~275 | ✓472 | ✗  2] ✓ tests/gateway/test_warning_wiring_conservation.py (1✓, 0.5s)
+[ 94.2% |   259/~275 | ✓478 | ✗  2] ✓ tests/gateway/test_weixin_voice_warning_policy.py (6✓, 0.4s)
+[100.0% |   275/~275 | ✓494 | ✗  2] ✓ tests/gateway/test_streaming_tts_consumer.py (16✓, 5.8s)
+
+=== Summary: 50 files, 494 tests passed, 2 failed (100% complete) in 16.0s (4 workers) ===
+  Durations cached to test_durations.json (49 files)
+
+=== Per-file subprocess time distribution ===
+  Files:   50
+  Total subprocess CPU-wall: 60.7s  (runner wall: 16.0s, parallelism: 4x)
+  P50: 0.72s  P90: 2.56s  P95: 5.04s  P99: 6.35s  Max: 6.35s
+  <1s: 33 files (66%)  <2s: 42 files (84%)
+  Top 10 slowest:
+      6.35s  tests/gateway/test_stream_consumer.py
+      5.78s  tests/gateway/test_streaming_tts_consumer.py
+      5.04s  tests/gateway/test_multiplex_busy_input_mode.py
+      4.22s  tests/gateway/test_stream_consumer_wecom_native.py
+      2.56s  tests/gateway/test_update_streaming.py
+      2.27s  tests/gateway/test_base_warning_owner_scope.py
+      2.07s  tests/gateway/test_stream_consumer_tool_progress.py
+      2.06s  tests/gateway/test_busy_steer_origin.py
+      1.58s  tests/gateway/test_telegram_inbound_warning_owner.py
+      1.54s  tests/gateway/test_hygiene_warning_lifecycle.py
+
+=== Failure output ===
+
+--- tests/gateway/test_api_server_reasoning_nonstream.py ---
+FF                                                                       [100%]Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x10cccb0d0>
+
+=================================== FAILURES ===================================
+________________ test_non_streaming_routes_carry_reasoning_once ________________
+tests/gateway/test_api_server_reasoning_nonstream.py:44: in test_non_streaming_routes_carry_reasoning_once
+    async with client:
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:533: in __aenter__
+    await self.start_server()
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:312: in start_server
+    await self._server.start_server(loop=self._loop)
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:141: in start_server
+    _sock = self.socket_factory(self.host, self.port, family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:85: in get_port_socket
+    s.bind((host, port))
+E   PermissionError: [Errno 1] Operation not permitted
+_____________ test_responses_input_ignores_echoed_reasoning_items ______________
+tests/gateway/test_api_server_reasoning_nonstream.py:71: in test_responses_input_ignores_echoed_reasoning_items
+    async with client:
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:533: in __aenter__
+    await self.start_server()
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:312: in start_server
+    await self._server.start_server(loop=self._loop)
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:141: in start_server
+    _sock = self.socket_factory(self.host, self.port, family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:85: in get_port_socket
+    s.bind((host, port))
+E   PermissionError: [Errno 1] Operation not permitted
+=============================== warnings summary ===============================
+tests/gateway/test_api_server_reasoning_nonstream.py::test_non_streaming_routes_carry_reasoning_once
+tests/gateway/test_api_server_reasoning_nonstream.py::test_responses_input_ignores_echoed_reasoning_items
+  /Users/kahransingh/Dev/hermes-agent-oct07-upgrade/tests/gateway/test_api_server_reasoning_nonstream.py:31: NotAppKeyWarning: It is recommended to use web.AppKey instances for keys.
+  https://docs.aiohttp.org/en/stable/web_advanced.html#application-s-config
+    app["api_server_adapter"] = adapter
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/gateway/test_api_server_reasoning_nonstream.py::test_non_streaming_routes_carry_reasoning_once
+FAILED tests/gateway/test_api_server_reasoning_nonstream.py::test_responses_input_ignores_echoed_reasoning_items
+2 failed, 2 warnings in 0.41s
+Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x10cc86a90>
+
+=== 1 file with test failures (2 tests failed) ===
+  tests/gateway/test_api_server_reasoning_nonstream.py  (2 tests failed)
+
+EXIT_CODE: 1

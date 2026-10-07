@@ -1,0 +1,211 @@
+COMMAND: /Users/kahransingh/Dev/hermes-agent-oct07-upgrade/.venv/bin/python docs/upgrade/01/broad_runner.py tests/agent/test_project_skills.py tests/agent/test_prompt_builder.py tests/agent/test_system_prompt.py tests/gateway/test_whatsapp_bridge_pidfile.py -q --tb=short
+ISOLATION: empty env; disposable HOME/HERMES_HOME; sandbox deny network and live Hermes reads/writes
+Discovered 4 test files (~129 tests) under ['tests/agent/test_project_skills.py', 'tests/agent/test_prompt_builder.py', 'tests/agent/test_system_prompt.py', 'tests/gateway/test_whatsapp_bridge_pidfile.py']; running with -j 4
+[ 17.1% |    22/~129 | ✓21 | ✗ 1] ✗ tests/agent/test_project_skills.py (21✓ 1✗, 0.6s)
+
+  ╔╍ Failed: tests/agent/test_project_skills.py ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+  ║ ..F...................                                                   [100%]
+  ║ =================================== FAILURES ===================================
+  ║ _________________ TestFindProjectRoot.test_no_git_returns_none _________________
+  ║ /Users/kahransingh/Dev/hermes-agent-oct07-upgrade/tests/agent/test_project_skills.py:62: in test_no_git_returns_none
+  ║     assert su.find_project_root(start=d) is None
+  ║ E   AssertionError: assert PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') is None
+  ║ E    +  where PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') = <function find_project_root at 0x1093e2700>(start=PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/upgrade-test-g7c7s5bm/per-file/r-dze0yiju/pytest-of-kahransingh/pytest-0/test_no_git_returns_none0/plain'))
+  ║ E    +    where <function find_project_root at 0x1093e2700> = su.find_project_root
+  ║ =========================== short test summary info ============================
+  ║ FAILED tests/agent/test_project_skills.py::TestFindProjectRoot::test_no_git_returns_none
+  ║ 1 failed, 21 passed in 0.39s
+  ║
+  ║  Repro: python -m pytest tests/agent/test_project_skills.py -q --tb=short
+  ╚╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+[ 58.9% |    76/~129 | ✓70 | ✗ 5] ✗ tests/agent/test_prompt_builder.py (49✓ 4✗ 1s, 1.0s)
+
+  ╔╍ Failed: tests/agent/test_prompt_builder.py ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+  ║     assert result == ""
+  ║ E   AssertionError: assert '# Project Co...ll, not here.' == ''
+  ║ E     
+  ║ E     + # Project Context
+  ║ E     + 
+  ║ E     + The following project context files have been loaded and should be followed:
+  ║ E     + 
+  ║ E     + ## ../../../../../../AGENTS.md
+  ║ E     + ...
+  ║ E     
+  ║ E     ...Full output truncated (260 lines hidden), use '-vv' to show
+  ║ ------------------------------ Captured log call -------------------------------
+  ║ WARNING  agent.prompt_builder:prompt_builder.py:1514 ⚠️  Context file ../../../../../../AGENTS.md TRUNCATED: 33158 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+  ║ _______________ TestBuildContextFilesPrompt.test_loads_claude_md _______________
+  ║ tests/agent/test_prompt_builder.py:494: in test_loads_claude_md
+  ║     assert "type hints" in result
+  ║ E   AssertionError: assert 'type hints' in '# Project Context\n\nThe following project context files have been loaded and should be followed:\n\n## ../../../../....er said it. Depth is earned — give it when the user asks for detail, teaches, or the stakes demand it, not by default.'
+  ║ ------------------------------ Captured log call -------------------------------
+  ║ WARNING  agent.prompt_builder:prompt_builder.py:1514 ⚠️  Context file ../../../../../../AGENTS.md TRUNCATED: 33158 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+  ║ ______ TestFindHermesMd.test_unreadable_parent_is_treated_as_no_git_root _______
+  ║ tests/agent/test_prompt_builder.py:542: in test_unreadable_parent_is_treated_as_no_git_root
+  ║     assert _find_git_root(project) is None
+  ║ E   AssertionError: assert PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') is None
+  ║ E    +  where PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') = _find_git_root(PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/upgrade-test-g7c7s5bm/per-file/r-3q6qvxpv/pytest-of-kahransingh/pytest-0/test_unreadable_parent_is_trea0/locked/proj'))
+  ║ =========================== short test summary info ============================
+  ║ FAILED tests/agent/test_prompt_builder.py::TestBuildContextFilesPrompt::test_agents_md_no_git_root_stays_cwd_only
+  ║ FAILED tests/agent/test_prompt_builder.py::TestBuildContextFilesPrompt::test_empty_soul_md_adds_nothing
+  ║ FAILED tests/agent/test_prompt_builder.py::TestBuildContextFilesPrompt::test_loads_claude_md
+  ║ FAILED tests/agent/test_prompt_builder.py::TestFindHermesMd::test_unreadable_parent_is_treated_as_no_git_root
+  ║ 4 failed, 49 passed, 1 skipped in 0.81s
+  ║
+  ║  Repro: python -m pytest tests/agent/test_prompt_builder.py -q --tb=short
+  ╚╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+[ 61.2% |    79/~129 | ✓72 | ✗ 6] ✗ tests/gateway/test_whatsapp_bridge_pidfile.py (2✓ 1✗, 1.3s)
+
+  ╔╍ Failed: tests/gateway/test_whatsapp_bridge_pidfile.py ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+  ║ ..F                                                                      [100%]
+  ║ =================================== FAILURES ===================================
+  ║ _______ TestKillPortProcess.test_listener_lookup_excludes_client_process _______
+  ║ tests/gateway/test_whatsapp_bridge_pidfile.py:100: in test_listener_lookup_excludes_client_process
+  ║     srv.bind(("127.0.0.1", 0))
+  ║ E   PermissionError: [Errno 1] Operation not permitted
+  ║ =========================== short test summary info ============================
+  ║ FAILED tests/gateway/test_whatsapp_bridge_pidfile.py::TestKillPortProcess::test_listener_lookup_excludes_client_process
+  ║ 1 failed, 2 passed in 1.09s
+  ║
+  ║  Repro: python -m pytest tests/gateway/test_whatsapp_bridge_pidfile.py -q --tb=short
+  ╚╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+[100.0% |   129/~129 | ✓139 | ✗  7] ✗ tests/agent/test_system_prompt.py (67✓ 1✗, 8.2s)
+
+  ╔╍ Failed: tests/agent/test_system_prompt.py ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+  ║ ..............................F.....................................     [100%]
+  ║ =================================== FAILURES ===================================
+  ║ ________ test_stored_prompt_stamped_for_another_session_is_not_restored ________
+  ║ tests/agent/test_system_prompt.py:291: in test_stored_prompt_stamped_for_another_session_is_not_restored
+  ║     parent_prompt = build_system_prompt(_make_agent(session_id="parent-sid", **fields))
+  ║                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ║ agent/system_prompt.py:798: in build_system_prompt
+  ║     agent._emit_diagnostic_status(warning)
+  ║     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ║ E   AttributeError: 'types.SimpleNamespace' object has no attribute '_emit_diagnostic_status'
+  ║ ------------------------------ Captured log call -------------------------------
+  ║ WARNING  agent.prompt_builder:prompt_builder.py:1514 ⚠️  Context file ../../../../../../AGENTS.md TRUNCATED: 33158 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+  ║ =========================== short test summary info ============================
+  ║ FAILED tests/agent/test_system_prompt.py::test_stored_prompt_stamped_for_another_session_is_not_restored
+  ║ 1 failed, 67 passed in 7.90s
+  ║
+  ║  Repro: python -m pytest tests/agent/test_system_prompt.py -q --tb=short
+  ╚╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+
+=== Summary: 4 files, 139 tests passed, 7 failed, 1 skipped (100% complete) in 8.2s (4 workers) ===
+
+=== Per-file subprocess time distribution ===
+  Files:   4
+  Total subprocess CPU-wall: 11.1s  (runner wall: 8.2s, parallelism: 4x)
+  P50: 1.28s  P90: 8.23s  P95: 8.23s  P99: 8.23s  Max: 8.23s
+  <1s: 1 files (25%)  <2s: 3 files (75%)
+  Top 10 slowest:
+      8.23s  tests/agent/test_system_prompt.py
+      1.28s  tests/gateway/test_whatsapp_bridge_pidfile.py
+      1.03s  tests/agent/test_prompt_builder.py
+      0.59s  tests/agent/test_project_skills.py
+
+=== Failure output ===
+
+--- tests/agent/test_project_skills.py ---
+..F...................                                                   [100%]
+=================================== FAILURES ===================================
+_________________ TestFindProjectRoot.test_no_git_returns_none _________________
+/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/tests/agent/test_project_skills.py:62: in test_no_git_returns_none
+    assert su.find_project_root(start=d) is None
+E   AssertionError: assert PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') is None
+E    +  where PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') = <function find_project_root at 0x1093e2700>(start=PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/upgrade-test-g7c7s5bm/per-file/r-dze0yiju/pytest-of-kahransingh/pytest-0/test_no_git_returns_none0/plain'))
+E    +    where <function find_project_root at 0x1093e2700> = su.find_project_root
+=========================== short test summary info ============================
+FAILED tests/agent/test_project_skills.py::TestFindProjectRoot::test_no_git_returns_none
+1 failed, 21 passed in 0.39s
+
+--- tests/agent/test_prompt_builder.py ---
+....................F....FFs.F........................                   [100%]
+=================================== FAILURES ===================================
+____ TestBuildContextFilesPrompt.test_agents_md_no_git_root_stays_cwd_only _____
+tests/agent/test_prompt_builder.py:424: in test_agents_md_no_git_root_stays_cwd_only
+    assert _load_agents_md(sub) == ""
+E   AssertionError: assert '## ../../../...ed in parent.' == ''
+E     
+E     + ## ../../../../../../../AGENTS.md
+E     + 
+E     + # Hermes Agent - Development Guide
+E     + 
+E     + Instructions for AI coding assistants and developers working on the hermes-agent codebase.
+E     + This root file holds only what applies everywhere. Each area has its own `AGENTS.md` (aim for...
+E     
+E     ...Full output truncated (260 lines hidden), use '-vv' to show
+------------------------------ Captured log call -------------------------------
+WARNING  agent.prompt_builder:prompt_builder.py:1514 ⚠️  Context file ../../../../../../../AGENTS.md TRUNCATED: 33161 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+_________ TestBuildContextFilesPrompt.test_empty_soul_md_adds_nothing __________
+tests/agent/test_prompt_builder.py:474: in test_empty_soul_md_adds_nothing
+    assert result == ""
+E   AssertionError: assert '# Project Co...ll, not here.' == ''
+E     
+E     + # Project Context
+E     + 
+E     + The following project context files have been loaded and should be followed:
+E     + 
+E     + ## ../../../../../../AGENTS.md
+E     + ...
+E     
+E     ...Full output truncated (260 lines hidden), use '-vv' to show
+------------------------------ Captured log call -------------------------------
+WARNING  agent.prompt_builder:prompt_builder.py:1514 ⚠️  Context file ../../../../../../AGENTS.md TRUNCATED: 33158 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+_______________ TestBuildContextFilesPrompt.test_loads_claude_md _______________
+tests/agent/test_prompt_builder.py:494: in test_loads_claude_md
+    assert "type hints" in result
+E   AssertionError: assert 'type hints' in '# Project Context\n\nThe following project context files have been loaded and should be followed:\n\n## ../../../../....er said it. Depth is earned — give it when the user asks for detail, teaches, or the stakes demand it, not by default.'
+------------------------------ Captured log call -------------------------------
+WARNING  agent.prompt_builder:prompt_builder.py:1514 ⚠️  Context file ../../../../../../AGENTS.md TRUNCATED: 33158 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+______ TestFindHermesMd.test_unreadable_parent_is_treated_as_no_git_root _______
+tests/agent/test_prompt_builder.py:542: in test_unreadable_parent_is_treated_as_no_git_root
+    assert _find_git_root(project) is None
+E   AssertionError: assert PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') is None
+E    +  where PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') = _find_git_root(PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/upgrade-test-g7c7s5bm/per-file/r-3q6qvxpv/pytest-of-kahransingh/pytest-0/test_unreadable_parent_is_trea0/locked/proj'))
+=========================== short test summary info ============================
+FAILED tests/agent/test_prompt_builder.py::TestBuildContextFilesPrompt::test_agents_md_no_git_root_stays_cwd_only
+FAILED tests/agent/test_prompt_builder.py::TestBuildContextFilesPrompt::test_empty_soul_md_adds_nothing
+FAILED tests/agent/test_prompt_builder.py::TestBuildContextFilesPrompt::test_loads_claude_md
+FAILED tests/agent/test_prompt_builder.py::TestFindHermesMd::test_unreadable_parent_is_treated_as_no_git_root
+4 failed, 49 passed, 1 skipped in 0.81s
+
+--- tests/gateway/test_whatsapp_bridge_pidfile.py ---
+..F                                                                      [100%]
+=================================== FAILURES ===================================
+_______ TestKillPortProcess.test_listener_lookup_excludes_client_process _______
+tests/gateway/test_whatsapp_bridge_pidfile.py:100: in test_listener_lookup_excludes_client_process
+    srv.bind(("127.0.0.1", 0))
+E   PermissionError: [Errno 1] Operation not permitted
+=========================== short test summary info ============================
+FAILED tests/gateway/test_whatsapp_bridge_pidfile.py::TestKillPortProcess::test_listener_lookup_excludes_client_process
+1 failed, 2 passed in 1.09s
+
+--- tests/agent/test_system_prompt.py ---
+..............................F.....................................     [100%]
+=================================== FAILURES ===================================
+________ test_stored_prompt_stamped_for_another_session_is_not_restored ________
+tests/agent/test_system_prompt.py:291: in test_stored_prompt_stamped_for_another_session_is_not_restored
+    parent_prompt = build_system_prompt(_make_agent(session_id="parent-sid", **fields))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent/system_prompt.py:798: in build_system_prompt
+    agent._emit_diagnostic_status(warning)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'types.SimpleNamespace' object has no attribute '_emit_diagnostic_status'
+------------------------------ Captured log call -------------------------------
+WARNING  agent.prompt_builder:prompt_builder.py:1514 ⚠️  Context file ../../../../../../AGENTS.md TRUNCATED: 33158 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+=========================== short test summary info ============================
+FAILED tests/agent/test_system_prompt.py::test_stored_prompt_stamped_for_another_session_is_not_restored
+1 failed, 67 passed in 7.90s
+
+=== 4 files with test failures (7 tests failed) ===
+  tests/agent/test_project_skills.py  (1 test failed)
+  tests/agent/test_prompt_builder.py  (4 tests failed)
+  tests/gateway/test_whatsapp_bridge_pidfile.py  (1 test failed)
+  tests/agent/test_system_prompt.py  (1 test failed)
+
+EXIT_CODE: 1

@@ -1,0 +1,543 @@
+diff --git a/agent/prompt_builder.py b/agent/prompt_builder.py
+index 37bb56dc79..a71ac0fa2f 100644
+--- a/agent/prompt_builder.py
++++ b/agent/prompt_builder.py
+@@ -344,14 +344,11 @@ KANBAN_GUIDANCE = (
+ 
+ TOOL_USE_ENFORCEMENT_GUIDANCE = (
+     "# Tool-use enforcement\n"
+-    "You MUST use your tools to take action — do not describe what you would do or plan to do without actually doing "
+-    "it. When you say you will perform an action (e.g. 'I will run the tests', 'Let me check the file', 'I will create "
+-    "the project'), you MUST immediately make the corresponding tool call in the same response. Never end your turn "
+-    "with a promise of future action — execute it now.\n"
+-    "Keep working until the task is actually complete. Do not stop with a summary of what you plan to do next time. If "
+-    "you have tools available that can accomplish the task, use them instead of telling the user what you would do.\n"
+-    "Every response should either (a) contain tool calls that make progress, or (b) deliver a final result to the "
+-    "user. Responses that only describe intentions without acting are not acceptable."
++    "You MUST use available tools to act, not merely describe intentions. "
++    "When you promise an action, immediately make the corresponding tool call "
++    "in the same response. Keep working until the task is complete; each response "
++    "must contain tool calls that make progress or deliver a final result, "
++    "never just a promise or a plan for next time."
+ )
+ 
+ # "muse" = Meta Muse Spark: on defaults it answers in prose with 0 tool calls and the turn closes on
+@@ -379,14 +376,12 @@ EXECUTION_GUIDANCE_MODELS = (
+ # fabricate output when the real path is blocked. Ships in every cached prompt — keep tight.
+ TASK_COMPLETION_GUIDANCE = (
+     "# Finishing the job\n"
+-    "When the user asks you to build, run, or verify something, the deliverable is a working artifact backed by real "
+-    "tool output — not a description of one. Do not stop after writing a stub, a plan, or a single command. Keep "
+-    "working until you have actually exercised the code or produced the requested result, then report what real "
+-    "execution returned.\n"
+-    "If a tool, install, or network call fails and blocks the real path, say so directly and try an alternative "
+-    "(different package manager, different approach, ask the user). NEVER substitute plausible-looking fabricated "
+-    "output (made-up data, invented file contents, synthesised API responses) for results you couldn't actually "
+-    "produce. Reporting a blocker honestly is always better than inventing a result."
++    "Build/run/verify requests require a working artifact backed by real tool output, "
++    "not a description, stub, plan, or single command. Exercise the code or produce "
++    "the requested result before finishing, then report what execution returned.\n"
++    "If a tool, install, or network failure blocks the real path, report the blocker "
++    "and try an alternative approach or ask the user. NEVER substitute fabricated "
++    "data, file contents, or API responses for results you could not produce."
+ )
+ 
+ # Universal parallel-tool-call guidance (ALL models): the runtime already executes independent calls
+@@ -407,12 +402,10 @@ TASK_COMPLETION_GUIDANCE = (
+ # to hermes-agent's Python prompt-assembly architecture.
+ PARALLEL_TOOL_CALL_GUIDANCE = (
+     "# Parallel tool calls\n"
+-    "When you need several pieces of information that don't depend on each other, request them together in a "
+-    "single response instead of one tool call per turn. Independent reads, searches, web fetches, and "
+-    "read-only commands should be batched into the same assistant turn — the runtime executes independent "
+-    "calls concurrently, and batching avoids resending the whole conversation on every extra round-trip.\n"
+-    "Only serialize calls when a later call genuinely depends on an earlier call's result (e.g. you must "
+-    "read a file before you can patch it). When in doubt and the calls are independent, batch them."
++    "Independent reads, searches, web fetches, and read-only commands belong in "
++    "a single response: the runtime executes them concurrently, avoiding extra "
++    "round-trips and resent context. Only serialize when a later call depends on "
++    "an earlier result (e.g. read a file before patching it)."
+ )
+ 
+ # Execution-discipline guidance for models that abandon partial results, skip prerequisite lookups, answer
+@@ -430,11 +423,10 @@ PARALLEL_TOOL_CALL_GUIDANCE = (
+ OPENAI_MODEL_EXECUTION_GUIDANCE = (
+     "# Execution discipline\n"
+     "<tool_persistence>\n"
+-    "- Use tools whenever they improve correctness, completeness, or grounding.\n"
+-    "- Do not stop early when another tool call would materially improve the result.\n"
++    "- Use tools whenever they improve correctness, completeness, or grounding; "
++    "continue until the task is complete and the result verified.\n"
+     "- If a tool returns empty, partial, or suspiciously narrow results, retry with a broader or different query or "
+     "strategy before concluding.\n"
+-    "- Keep calling tools until: (1) the task is complete, AND (2) you have verified the result.\n"
+     "</tool_persistence>\n\n"
+     "<mandatory_tool_use>\n"
+     "NEVER answer these from memory or mental computation — ALWAYS use a tool:\n"
+@@ -457,9 +449,8 @@ OPENAI_MODEL_EXECUTION_GUIDANCE = (
+     "Only ask for clarification when the ambiguity genuinely changes what tool you would call.\n"
+     "</act_dont_ask>\n\n"
+     "<prerequisite_checks>\n"
+-    "- Before taking an action, check whether prerequisite discovery, lookup, or context-gathering steps are needed.\n"
+-    "- Do not skip prerequisite steps just because the final action seems obvious.\n"
+-    "- If a task depends on output from a prior step, resolve that dependency first.\n"
++    "- Before acting, check for prerequisite discovery, lookup, or context gathering, "
++    "even when the action seems obvious. Resolve each dependency first.\n"
+     "</prerequisite_checks>\n\n"
+     "<verification>\n"
+     "Before finalizing your response:\n"
+@@ -1382,15 +1373,13 @@ def _render_skills_index(
+         )
+     return (
+         "## Skills\n"
+-        "Before replying, scan the skills below. If a skill matches or is even partially relevant to your "
+-        "task, you MUST load it with skill_view(name) and follow its instructions. Err on the side of "
+-        "loading — it is always better to have context you don't need than to miss critical steps, pitfalls, "
+-        "or established workflows. Skills contain specialized knowledge — API endpoints, tool-specific "
+-        "commands, and proven workflows that outperform general-purpose approaches. Load the skill "
+-        f"even if you think you could handle the task with basic tools like {_basic_tools}. "
+-        "Skills also encode the user's preferred approach, conventions, and quality standards for tasks like "
+-        "code review, planning, and testing — load them even for tasks you already know how to do, because "
+-        "the skill defines how it should be done here.\n"
++        "You MUST load clearly applicable procedural skills with skill_view(name) "
++        "before specialist work or actions, and follow their instructions. Skills encode "
++        "domain safety requirements, established workflows, and the user's conventions "
++        "for tasks like code review, planning, and testing; knowing how to use "
++        f"{_basic_tools} is not a substitute. "
++        "Casual conversation and tangential matches do not require a skill lookup. "
++        "This does not waive explicit skill-loading requirements or domain safety prerequisites.\n"
+         "If a skill has issues, fix it with skill_manage(action='patch').\n"
+         "After difficult/iterative tasks, offer to save as a skill. If a skill you loaded was missing steps, "
+         "had wrong commands, or needed pitfalls you discovered, update it before finishing.\n"
+@@ -1398,7 +1387,8 @@ def _render_skills_index(
+         "<available_skills>\n"
+         + "\n".join(index_lines) + "\n"
+         "</available_skills>\n\n"
+-        "Only proceed without loading a skill if genuinely none are relevant to the task."
++        "Proceed without a skill lookup when no procedural skill clearly applies, "
++        "unless an explicit requirement above applies."
+         + hidden_note
+     )
+ 
+diff --git a/gateway/authz_mixin.py b/gateway/authz_mixin.py
+index 2c97016e57..23cccc6669 100644
+--- a/gateway/authz_mixin.py
++++ b/gateway/authz_mixin.py
+@@ -542,6 +542,18 @@ class GatewayAuthorizationMixin:
+         # Chat-scoped group allowlists must work with ``user_id is None`` (anonymous admins,
+         # sender_chat posts, channel broadcasts).
+         if is_group and source.chat_id:
++            # WhatsApp's group JID grant is independent of the DM sender list.
++            # Re-check the actual receiving adapter: never trust a policy label
++            # alone, a different profile's config, or an unlisted group.
++            if source.platform == Platform.WHATSAPP and allow_adapter_delegation:
++                adapter = self._authorization_adapter(source.platform, adapter_profile)
++                if (
++                    self._adapter_flag(source.platform, "enforces_own_access_policy", adapter_profile)
++                    and self._adapter_policy(source.platform, "group", adapter_profile) == "allowlist"
++                    and callable(check := getattr(adapter, "_is_group_allowed", None))
++                    and check(source.chat_id, source.user_id or "") is True
++                ):
++                    return True
+             chat_allowlist_env = _GROUP_CHAT_ENV.get(source.platform, "")
+             if chat_allowlist_env and _allows(_coerce_allow_set(_auth_env(chat_allowlist_env)), source.chat_id):
+                 return True
+diff --git a/gateway/display_config.py b/gateway/display_config.py
+index 52c398884a..728480b133 100644
+--- a/gateway/display_config.py
++++ b/gateway/display_config.py
+@@ -1,9 +1,10 @@
+-"""Per-platform display/verbosity resolver (``resolve_display_setting``).
++"""Per-conversation/platform display resolver (``resolve_display_setting``).
+ 
+-Resolution order, first non-None wins: ``display.platforms.<platform>.<key>`` →
++Resolution order, first non-None wins: ``display.chats.<chat_id>.<key>`` →
++``display.platforms.<platform>.<key>`` →
+ ``display.<key>`` → ``_PLATFORM_DEFAULTS[platform][key]`` → ``_GLOBAL_DEFAULTS[key]``.
+ Exception: ``display.streaming`` is CLI-only; gateway streaming follows the top-level
+-``streaming`` config unless a per-platform override sets it. Legacy
++``streaming`` config unless a chat or per-platform override sets it. Legacy
+ ``display.tool_progress_overrides`` is still read as a ``tool_progress`` fallback.
+ """
+ 
+@@ -79,13 +80,13 @@ _PLATFORM_DEFAULTS: dict[str, dict[str, Any]] = {
+ OVERRIDEABLE_KEYS = frozenset(_GLOBAL_DEFAULTS.keys())
+ 
+ 
+-def resolve_display_setting(user_config: dict, platform_key: str, setting: str, fallback: Any = None) -> Any:
++def resolve_display_setting(user_config: dict, platform_key: str, setting: str, fallback: Any = None, *, chat_id: str | None = None) -> Any:
+     """Resolve a display setting with per-platform override support (see module docstring for order).
+ 
+     ``platform_key`` is the platform config key (``"telegram"``; see ``_platform_config_key`` in
+     gateway/run.py). Returns *fallback* when nothing is configured.
+     """
+-    configured = _configured_display_value(user_config, platform_key, setting)
++    configured = _configured_display_value(user_config, platform_key, setting, chat_id=chat_id)
+     if configured is not None:
+         return _normalise(setting, configured)
+     val = _PLATFORM_DEFAULTS.get(platform_key, {}).get(setting)
+@@ -94,11 +95,29 @@ def resolve_display_setting(user_config: dict, platform_key: str, setting: str,
+     return fallback if val is None else val
+ 
+ 
+-def _configured_display_value(user_config: dict, platform_key: str, setting: str) -> Any:
++def chat_display_override(chats: Any, chat_id: Any) -> dict | None:
++    """The ``display.chats`` entry for ``chat_id``, matching unquoted numeric YAML keys too.
++
++    Chat ids reach the gateway as strings; a Discord or Telegram operator who writes
++    ``chats: {123456789: {...}}`` gets an int key from YAML, so compare by ``str``.
++    """
++    if not isinstance(chats, dict) or chat_id is None:
++        return None
++    wanted = str(chat_id)
++    entry = chats.get(wanted)
++    if entry is None:
++        entry = next((v for k, v in chats.items() if str(k) == wanted), None)
++    return entry if isinstance(entry, dict) else None
++
++
++def _configured_display_value(user_config: dict, platform_key: str, setting: str, *, chat_id: str | None = None) -> Any:
+     """First non-None operator value, without introducing tier defaults."""
+     display_cfg = user_config.get("display")
+     if not isinstance(display_cfg, dict):
+         return None
++    chat = chat_display_override(display_cfg.get("chats"), chat_id)
++    if isinstance(chat, dict) and chat.get(setting) is not None:
++        return chat[setting]
+     platforms = display_cfg.get("platforms")
+     plat_overrides = platforms.get(platform_key) if isinstance(platforms, dict) else None
+     if isinstance(plat_overrides, dict) and plat_overrides.get(setting) is not None:
+@@ -112,18 +131,18 @@ def _configured_display_value(user_config: dict, platform_key: str, setting: str
+     return None
+ 
+ 
+-def resolve_tool_progress(user_config: dict, platform_key: str, env_mode: str | None = None) -> tuple[str, bool]:
++def resolve_tool_progress(user_config: dict, platform_key: str, env_mode: str | None = None, *, chat_id: str | None = None) -> tuple[str, bool]:
+     """Return (mode, explicit intent) from the same winning source.
+ 
+     Non-None YAML wins over the legacy env bridge. Null inherits through to env,
+     then tier defaults. A tier's off is not an operator request to disable cards.
+     """
+-    configured = _configured_display_value(user_config, platform_key, "tool_progress")
++    configured = _configured_display_value(user_config, platform_key, "tool_progress", chat_id=chat_id)
+     if configured is not None:
+         return _normalise("tool_progress", configured), True
+     if env_mode:
+         return _normalise("tool_progress", env_mode), True
+-    return resolve_display_setting(user_config, platform_key, "tool_progress"), False
++    return resolve_display_setting(user_config, platform_key, "tool_progress", chat_id=chat_id), False
+ 
+ 
+ # --- Normalisation of YAML quirks (bare ``off`` → False in YAML 1.1, etc.) ---
+diff --git a/gateway/platforms/whatsapp_common.py b/gateway/platforms/whatsapp_common.py
+index 1ac99c8839..1a38d36c6f 100644
+--- a/gateway/platforms/whatsapp_common.py
++++ b/gateway/platforms/whatsapp_common.py
+@@ -146,8 +146,10 @@ class WhatsAppBehaviorMixin(OwnAccessPolicyMixin):
+     def _normalize_whatsapp_id(value: Optional[str]) -> str:
+         if not value:
+             return ""
+-        # Device-qualified ids (`<user>:<device>@lid`) must equal their bare form.
+-        return re.sub(r":\d+(?=@)", "", str(value).strip())
++        # Baileys has supplied both <user>:<device>@lid and <user>@<device>@lid.
++        # Preserve the namespace; equal numeric phone/LID IDs are not identity proof.
++        value = re.sub(r"^(\d+)@\d+(@lid)$", r"\1\2", str(value).strip())
++        return re.sub(r":\d+(?=@)", "", value)
+ 
+     @staticmethod
+     def _is_broadcast_chat(chat_id: str) -> bool:
+diff --git a/gateway/run.py b/gateway/run.py
+index 20071c3164..eb5d81a81d 100644
+--- a/gateway/run.py
++++ b/gateway/run.py
+@@ -842,11 +842,18 @@ def _resolve_progress_thread_id(
+     return None
+ 
+ 
+-def _has_platform_display_override(user_config: dict, platform_key: str, setting: str) -> bool:
+-    """Return True when display.platforms.<platform> explicitly sets setting."""
++def _has_platform_display_override(
++    user_config: dict, platform_key: str, setting: str, *, chat_id: str | None = None,
++) -> bool:
++    """Return True for an explicit chat value or a platform-level opt-in."""
++    from gateway.display_config import chat_display_override
++
+     display = user_config.get("display") if isinstance(user_config, dict) else None
+     if not isinstance(display, dict):
+         return False
++    chat = chat_display_override(display.get("chats"), chat_id)
++    if isinstance(chat, dict) and chat.get(setting) is not None:
++        return True
+     platforms = display.get("platforms")
+     if not isinstance(platforms, dict):
+         return False
+@@ -856,21 +863,22 @@ def _has_platform_display_override(user_config: dict, platform_key: str, setting
+ 
+ def _resolve_gateway_display_bool(
+     user_config: dict, platform_key: str, setting: str, *, default: bool = False,
+-    platform: Any = None, require_platform_override_for: set[Any] | None = None) -> bool:
+-    """Resolve a boolean display setting with optional platform-only opt-in.
++    platform: Any = None, require_platform_override_for: set[Any] | None = None,
++    chat_id: str | None = None) -> bool:
++    """Resolve a boolean display setting with optional platform/chat opt-in.
+ 
+-    Scratch-text is too noisy for threaded surfaces (Mattermost): they need an explicit per-platform override.
++    Scratch-text is too noisy for threaded surfaces (Mattermost): they need an explicit platform or chat override.
+     """
+     current_platform = _gateway_platform_value(platform or platform_key)
+     platform_only = {_gateway_platform_value(c) for c in (require_platform_override_for or set())}
+     if (
+         current_platform in platform_only
+-        and not _has_platform_display_override(user_config, platform_key, setting)):
++        and not _has_platform_display_override(user_config, platform_key, setting, chat_id=chat_id)):
+         return False
+ 
+     from gateway.display_config import resolve_display_setting
+ 
+-    value = resolve_display_setting(user_config, platform_key, setting, default)
++    value = resolve_display_setting(user_config, platform_key, setting, default, chat_id=chat_id)
+     if isinstance(value, bool):
+         return value
+     if isinstance(value, str):
+diff --git a/gateway/run_busy.py b/gateway/run_busy.py
+index 537d434413..7169b290de 100644
+--- a/gateway/run_busy.py
++++ b/gateway/run_busy.py
+@@ -677,6 +677,7 @@ class GatewayBusySessionMixin:
+                 resolve_display_setting(
+                     _load_gateway_config(), _platform_config_key(event.source.platform),
+                     "busy_steer_ack_enabled", True,
++                    chat_id=event.source.chat_id,
+                 )
+             )
+         if not steer_ack_enabled:
+@@ -703,6 +704,7 @@ class GatewayBusySessionMixin:
+             resolve_display_setting(
+                 _load_gateway_config(), _platform_config_key(event.source.platform),
+                 "busy_ack_detail", True,
++                chat_id=event.source.chat_id,
+             )
+         )
+         if busy_ack_detail_enabled and running_agent and running_agent is not _AGENT_PENDING_SENTINEL:
+diff --git a/gateway/run_turn.py b/gateway/run_turn.py
+index 1484ea2059..9e7c2f3cf2 100644
+--- a/gateway/run_turn.py
++++ b/gateway/run_turn.py
+@@ -20,6 +20,7 @@ from agent.session_activity import format_iteration_progress
+ from agent.turn_failure_copy import FAILED_TURN_DISPLAY_KIND, FAILED_TURN_NOTICE, PARTIAL_FAILED_TURN_NOTICE
+ from contextlib import nullcontext, suppress
+ from contextvars import copy_context
++from functools import partial
+ from gateway.config import Platform
+ from gateway.media_repair import repair_explicit_computer_use_media_paths
+ from gateway.platforms.base import BasePlatformAdapter, ProcessingOutcome
+@@ -1600,13 +1601,14 @@ class GatewayTurnMixin:
+     }
+ 
+     def _hmwa_prepend_reasoning(self, agent_result, response, source, _intentional_silence):
+-        """Prepend the last reasoning block when show_reasoning is on for this platform. Mattermost
+-        requires an explicit per-platform opt-in (scratch text, not final-answer content)."""
++        """Prepend the last reasoning block when show_reasoning is on for this conversation. Mattermost
++        requires an explicit platform or chat opt-in (scratch text, not final-answer content)."""
+         from gateway.run import _load_gateway_config, _platform_config_key, _resolve_gateway_display_bool
+         try:
+             _show_reasoning_effective = _resolve_gateway_display_bool(
+                 _load_gateway_config(), _platform_config_key(source.platform), "show_reasoning",
+                 default=bool(getattr(self, "_show_reasoning", False)), platform=source.platform,
++                chat_id=source.chat_id,
+                 require_platform_override_for={Platform.MATTERMOST},
+             )
+         except Exception:
+@@ -1628,6 +1630,7 @@ class GatewayTurnMixin:
+             from gateway.display_config import resolve_display_setting
+             _reasoning_style = resolve_display_setting(
+                 _load_gateway_config(), _platform_config_key(source.platform), "reasoning_style", "code",
++                chat_id=source.chat_id,
+             )
+         except Exception:
+             _reasoning_style = "code"
+@@ -2724,7 +2727,9 @@ class GatewayTurnMixin:
+             from gateway.config import StreamingConfig
+             _scfg = StreamingConfig()
+         from gateway.display_config import resolve_display_setting
+-        _plat_streaming = resolve_display_setting(_load_gateway_config(), _platform_config_key(source.platform), "streaming")
++        _plat_streaming = resolve_display_setting(
++            _load_gateway_config(), _platform_config_key(source.platform), "streaming", chat_id=source.chat_id,
++        )
+         _streaming_enabled = (
+             _scfg.enabled and _scfg.transport != "off" if _plat_streaming is None else bool(_plat_streaming)
+         )
+@@ -2933,7 +2938,7 @@ class GatewayTurnMixin:
+             return await self._run_agent_inner(message, context_prompt, history, source, session_id, **turn_kwargs)
+ 
+     def _run_agent_display_settings(self, source: SessionSource) -> "GatewayRunner._RunAgentDisplay":
+-        """Resolve per-platform display, progress, status and streaming-surface settings for a turn."""
++        """Resolve per-conversation display, progress, status and streaming-surface settings for a turn."""
+         from gateway.run import (
+             _gateway_platform_value, _has_platform_display_override, _load_gateway_config,
+             _platform_config_key,
+@@ -2941,6 +2946,8 @@ class GatewayTurnMixin:
+         from agent.secret_scope import get_secret
+         from gateway.display_config import resolve_display_setting, resolve_tool_progress
+         from gateway.status_phrases import choose_status_phrase, resolve_status_phrase_catalog
++        # Carry the conversation scope into the display namespace and TurnContext consumers.
++        resolve_display_setting = partial(resolve_display_setting, chat_id=source.chat_id)
+         user_config = _load_gateway_config()
+         platform_key = _platform_config_key(source.platform)
+         enabled_toolsets, disabled_toolsets = self._resolve_turn_toolsets(user_config, source, platform_key)
+@@ -2960,6 +2967,7 @@ class GatewayTurnMixin:
+         # (#116898); get_secret resolves through the active profile's scope instead.
+         progress_mode, _tool_progress_explicit = resolve_tool_progress(
+             user_config, platform_key, get_secret("HERMES_TOOL_PROGRESS_MODE"),
++            chat_id=source.chat_id,
+         )
+         # "accumulate" (edit one bubble) or "separate" (one msg per tool)
+         progress_grouping = resolve_display_setting(user_config, platform_key, "tool_progress_grouping") or "accumulate"
+@@ -2976,7 +2984,9 @@ class GatewayTurnMixin:
+                 platform_only = {_gateway_platform_value(item) for item in require_platform_override_for}
+                 if (
+                     current_platform in platform_only
+-                    and not _has_platform_display_override(user_config, platform_key, setting)
++                    and not _has_platform_display_override(
++                        user_config, platform_key, setting, chat_id=source.chat_id,
++                    )
+                 ):
+                     return "off"
+             value = resolve_display_setting(user_config, platform_key, setting, default)
+@@ -3005,7 +3015,7 @@ class GatewayTurnMixin:
+         # "log" mode: tool calls go to ~/.hermes/logs/tool_calls.log instead of the chat. Gateway-only.
+         log_mode_enabled = progress_mode == "log" and not is_webhook
+         # Interim assistant messages and thinking_progress are independent of tool progress (same
+-        # queue). Mattermost requires a per-platform opt-in: scratch text leaks into public threads.
++        # queue). Mattermost requires a platform or chat opt-in: scratch text leaks into public threads.
+         interim_assistant_messages_mode = _display_surface_mode(
+             "interim_assistant_messages", default=True, require_platform_override_for={Platform.MATTERMOST},
+         )
+@@ -3020,7 +3030,7 @@ class GatewayTurnMixin:
+         # feature inactive).
+         # Cards are still tool progress. Slack's TIER default (``off``) only quiets the text lane so
+         # cards stay on for unconfigured installs, but an operator who WRITES ``tool_progress: off``
+-        # (global, platform override, or legacy overrides) has asked for no tool progress at all and
++        # (global, chat, platform override, or legacy overrides) has asked for no tool progress at all and
+         # gets no cards either. Every other explicit mode keeps the card lane.
+         _native_slack_task_cards = False
+         if (
+@@ -3097,7 +3107,8 @@ class GatewayTurnMixin:
+         )
+         turn_runner = TurnRunner(self, turn_ctx)
+         turn_ctx.mute_notification_reply = diagnostic_turn_muted(
+-            turn_ctx.persist_user_display_metadata, source.platform, turn_ctx.user_config)
++            turn_ctx.persist_user_display_metadata, source.platform, turn_ctx.user_config,
++            chat_id=source.chat_id)
+         # Agent tool-lifecycle callbacks live on the runner (bound methods, same signatures).
+         turn_ctx.progress_callback = turn_runner.progress_callback
+         turn_ctx.voice_ack_callback = turn_runner.voice_ack_callback
+diff --git a/gateway/run_turn_runner.py b/gateway/run_turn_runner.py
+index 1b2e2c0bd3..a21f716c5f 100644
+--- a/gateway/run_turn_runner.py
++++ b/gateway/run_turn_runner.py
+@@ -190,7 +190,7 @@ class TurnRunner:
+                 )
+                 render_notification(
+                     lambda: self._schedule(self._runner._deliver_platform_notice(ctx.source, line), "subagent failure notice scheduling error"),
+-                    platform=ctx.source.platform, user_config=ctx.user_config)
++                    platform=ctx.source.platform, user_config=ctx.user_config, chat_id=ctx.source.chat_id)
+         except Exception:
+             logger.debug("subagent failure notice failed", exc_info=True)
+ 
+@@ -903,7 +903,7 @@ class TurnRunner:
+             if fut is not None and ctx._cleanup_progress:
+                 fut.add_done_callback(self._track_future_cleanup_id)
+         render_notification(present, platform=ctx.source.platform, user_config=ctx.user_config,
+-                            diagnostic=is_warning_status(event_type, message))
++                            diagnostic=is_warning_status(event_type, message), chat_id=ctx.source.chat_id)
+ 
+     # ── stream consumer / interim commentary wiring ─────────────────────────────────────────
+ 
+@@ -919,7 +919,7 @@ class TurnRunner:
+         if scfg is None:
+             from gateway.config import StreamingConfig
+             scfg = StreamingConfig()
+-        # display.platforms.<plat>.streaming may disable streaming per platform; None = follow global.
++        # The turn-bound resolver honors chat/platform streaming overrides; None = follow global.
+         plat_streaming = ctx.resolve_display_setting(ctx.user_config, platform_key, "streaming")
+         want_stream_deltas = not ctx.scheduled_heartbeat and (
+             scfg.enabled and scfg.transport != "off" if plat_streaming is None else bool(plat_streaming)
+@@ -1187,7 +1187,8 @@ class TurnRunner:
+             if line:
+                 self._schedule(self._runner._deliver_platform_notice(self._ctx.source, line), "notice_callback delivery scheduling error")
+         render_notification(present, platform=self._ctx.source.platform,
+-                            user_config=self._ctx.user_config, diagnostic=diagnostic)
++                            user_config=self._ctx.user_config, diagnostic=diagnostic,
++                            chat_id=self._ctx.source.chat_id)
+ 
+     def _make_bg_review_callbacks(self):
+         """(send, release): background-review messages ("💾 Memory updated") are held until the
+diff --git a/gateway/warning_notifications.py b/gateway/warning_notifications.py
+index 03e8e604f0..52730845ac 100644
+--- a/gateway/warning_notifications.py
++++ b/gateway/warning_notifications.py
+@@ -46,11 +46,11 @@ def effective_user_config() -> dict:
+     return config if isinstance(config, dict) else {}
+ 
+ 
+-def diagnostic_turn_muted(display_metadata, platform, user_config=None) -> bool:
++def diagnostic_turn_muted(display_metadata, platform, user_config=None, *, chat_id=None) -> bool:
+     """One admission rule for every surface: a diagnostic-category wake mutes its turn's
+     presentation only when the owning policy hides diagnostics. Human content never mutes."""
+     return ((display_metadata or {}).get("notification_category") == "diagnostic"
+-            and not warning_notifications_enabled(platform, user_config))
++            and not warning_notifications_enabled(platform, user_config, chat_id=chat_id))
+ 
+ 
+ def diagnostic_wake_muted(event, user_config=None) -> bool:
+@@ -59,35 +59,35 @@ def diagnostic_wake_muted(event, user_config=None) -> bool:
+     if isinstance(snapshot, bool):
+         return snapshot
+     return bool(getattr(event, "internal", False)) and diagnostic_turn_muted(
+-        getattr(event, "metadata", None), event.source.platform, user_config)
++        getattr(event, "metadata", None), event.source.platform, user_config, chat_id=event.source.chat_id)
+ 
+ 
+-def render_notification(render, *, platform, diagnostic=True, user_config=None) -> bool:
++def render_notification(render, *, platform, diagnostic=True, user_config=None, chat_id=None) -> bool:
+     """Invoke a synchronous UI renderer only when its classified content is visible.
+ 
+     Return whether the renderer ran, not whether a transport delivered anything.
+     Call only at a presentation sink, never around producer callbacks or persistence.
+     The caller supplies the owning scope/turn snapshot; exceptions remain its policy.
+     """
+-    if diagnostic and not warning_notifications_enabled(platform, user_config):
++    if diagnostic and not warning_notifications_enabled(platform, user_config, chat_id=chat_id):
+         return False
+     render()
+     return True
+ 
+ 
+-async def present_notification(present, *, platform, diagnostic=True, user_config=None) -> bool:
++async def present_notification(present, *, platform, diagnostic=True, user_config=None, chat_id=None) -> bool:
+     """Async twin of :func:`render_notification` for lifecycle emitters that await a send.
+ 
+     Return whether the presenter ran; its own receipt/exception is the caller's to interpret.
+     The caller binds the owning profile scope BEFORE calling (watchers/shutdown fan-outs).
+     """
+-    if diagnostic and not warning_notifications_enabled(platform, user_config):
++    if diagnostic and not warning_notifications_enabled(platform, user_config, chat_id=chat_id):
+         return False
+     await present()
+     return True
+ 
+ 
+-def warning_notifications_enabled(platform, user_config=None) -> bool:
++def warning_notifications_enabled(platform, user_config=None, *, chat_id=None) -> bool:
+     """Use the turn snapshot when supplied, otherwise the active profile's effective config.
+ 
+     No surface exemption: direct command/API outcomes are not notifications.
+@@ -98,4 +98,6 @@ def warning_notifications_enabled(platform, user_config=None) -> bool:
+     elif not isinstance(user_config, dict):
+         user_config = {}
+     platform_key = getattr(platform, "value", platform)
+-    return not resolve_display_setting(user_config, platform_key, "suppress_warning_notifications", False)
++    return not resolve_display_setting(
++        user_config, platform_key, "suppress_warning_notifications", False, chat_id=chat_id,
++    )

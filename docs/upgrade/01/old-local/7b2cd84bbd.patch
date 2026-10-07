@@ -1,0 +1,164 @@
+commit 7b2cd84bbdf1d0642ac4b0368d2bed952cb8bbb6
+Author:     Kahran Singh <kahran_s@hotmail.com>
+AuthorDate: Sat Sep 5 11:44:18 2026 -0400
+Commit:     Kahran Singh <kahran_s@hotmail.com>
+CommitDate: Sat Sep 5 11:44:18 2026 -0400
+
+    fix(whatsapp): honor allowed groups alongside DM allowlist
+
+diff --git a/gateway/authz_mixin.py b/gateway/authz_mixin.py
+index d7b3ca13ae..56834d0439 100644
+--- a/gateway/authz_mixin.py
++++ b/gateway/authz_mixin.py
+@@ -615,6 +615,35 @@ class GatewayAuthorizationMixin:
+             group_chat_allowlist = _auth_env(platform_group_chat_env_map.get(source.platform, ""))
+         global_allowlist = _auth_env("GATEWAY_ALLOWED_USERS")
+ 
++        # WhatsApp's sender allowlist is DM-scoped; it must not override the
++        # independently configured group-chat allowlist. Re-check the live
++        # adapter here rather than treating group_policy="allowlist" alone as a
++        # grant: this preserves exact chat-ID matching and fails closed for
++        # unlisted groups or a missing adapter. Stored routes disable adapter
++        # delegation, so only messages arriving through the current adapter can
++        # use this intake authorization.
++        if (
++            allow_adapter_delegation
++            and source.platform == Platform.WHATSAPP
++            and source.chat_type in {"group", "forum", "channel"}
++            and source.chat_id
++            and self._adapter_enforces_own_access_policy(
++                source.platform,
++                profile=adapter_profile,
++            )
++            and self._adapter_group_policy(
++                source.platform,
++                profile=adapter_profile,
++            ) == "allowlist"
++        ):
++            adapter = self._authorization_adapter(
++                source.platform,
++                profile=adapter_profile,
++            )
++            group_check = getattr(adapter, "_is_group_allowed", None)
++            if callable(group_check):
++                return bool(group_check(source.chat_id))
++
+         if not platform_allowlist and not group_user_allowlist and not group_chat_allowlist and not global_allowlist:
+             # No env allowlist configured. Adapters that own their own
+             # config-driven access policy (dm_policy / group_policy /
+diff --git a/tests/gateway/test_config_driven_access_policy.py b/tests/gateway/test_config_driven_access_policy.py
+index 7c74140b25..02cadd456a 100644
+--- a/tests/gateway/test_config_driven_access_policy.py
++++ b/tests/gateway/test_config_driven_access_policy.py
+@@ -227,6 +227,111 @@ def test_own_policy_allowlist_authorized_for_group_chat(monkeypatch, platform):
+     assert runner._is_user_authorized(_source(platform, chat_type="group")) is True
+ 
+ 
++def test_whatsapp_allowed_group_is_authorized_with_separate_dm_allowlist(monkeypatch):
++    """A DM sender allowlist must not override an adapter-allowed group chat."""
++    _clear_auth_env(monkeypatch)
++    monkeypatch.setenv("WHATSAPP_ALLOWED_USERS", "15550001111")
++    allowed_group = "120363001234567890@g.us"
++    config = GatewayConfig(
++        platforms={
++            Platform.WHATSAPP: PlatformConfig(
++                enabled=True,
++                extra={
++                    "dm_policy": "allowlist",
++                    "group_policy": "allowlist",
++                    "group_allow_from": [allowed_group],
++                },
++            )
++        }
++    )
++    runner, _adapter = _make_runner(Platform.WHATSAPP, config, enforces=True)
++    from plugins.platforms.whatsapp.adapter import WhatsAppAdapter
++
++    runner.adapters[Platform.WHATSAPP] = WhatsAppAdapter(
++        config.platforms[Platform.WHATSAPP]
++    )
++
++    source = SessionSource(
++        platform=Platform.WHATSAPP,
++        user_id="arbitrary-family-member@s.whatsapp.net",
++        chat_id=allowed_group,
++        user_name="family member",
++        chat_type="group",
++    )
++    assert runner._is_user_authorized(source) is True
++
++
++def test_whatsapp_unlisted_group_stays_denied_with_separate_dm_allowlist(monkeypatch):
++    """The group exception must re-check the exact chat ID and fail closed."""
++    _clear_auth_env(monkeypatch)
++    monkeypatch.setenv("WHATSAPP_ALLOWED_USERS", "15550001111")
++    allowed_group = "120363001234567890@g.us"
++    config = GatewayConfig(
++        platforms={
++            Platform.WHATSAPP: PlatformConfig(
++                enabled=True,
++                extra={
++                    "dm_policy": "allowlist",
++                    "group_policy": "allowlist",
++                    "group_allow_from": [allowed_group],
++                },
++            )
++        }
++    )
++    from plugins.platforms.whatsapp.adapter import WhatsAppAdapter
++
++    runner, _adapter = _make_runner(Platform.WHATSAPP, config, enforces=True)
++    runner.adapters[Platform.WHATSAPP] = WhatsAppAdapter(
++        config.platforms[Platform.WHATSAPP]
++    )
++    source = SessionSource(
++        platform=Platform.WHATSAPP,
++        user_id="arbitrary-family-member@s.whatsapp.net",
++        chat_id="120363009999999999@g.us",
++        user_name="family member",
++        chat_type="group",
++    )
++
++    assert runner._is_user_authorized(source) is False
++
++
++def test_whatsapp_stored_route_cannot_reuse_allowed_group_with_dm_allowlist(monkeypatch):
++    """Stored replay disables the live-adapter group authorization shortcut."""
++    _clear_auth_env(monkeypatch)
++    monkeypatch.setenv("WHATSAPP_ALLOWED_USERS", "15550001111")
++    allowed_group = "120363001234567890@g.us"
++    config = GatewayConfig(
++        platforms={
++            Platform.WHATSAPP: PlatformConfig(
++                enabled=True,
++                extra={
++                    "dm_policy": "allowlist",
++                    "group_policy": "allowlist",
++                    "group_allow_from": [allowed_group],
++                },
++            )
++        }
++    )
++    from plugins.platforms.whatsapp.adapter import WhatsAppAdapter
++
++    runner, _adapter = _make_runner(Platform.WHATSAPP, config, enforces=True)
++    runner.adapters[Platform.WHATSAPP] = WhatsAppAdapter(
++        config.platforms[Platform.WHATSAPP]
++    )
++    source = SessionSource(
++        platform=Platform.WHATSAPP,
++        user_id="arbitrary-family-member@s.whatsapp.net",
++        chat_id=allowed_group,
++        user_name="family member",
++        chat_type="group",
++    )
++
++    assert runner._is_user_authorized(
++        source,
++        allow_adapter_delegation=False,
++    ) is False
++
++
+ @pytest.mark.parametrize("platform", _OWN_POLICY_PLATFORMS)
+ def test_own_policy_open_group_not_authorized_without_allowlist(monkeypatch, platform):
+     """``group_policy: open`` is the same fail-open class as DM open → deny."""

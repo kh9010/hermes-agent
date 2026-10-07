@@ -1,0 +1,28 @@
+[
+  {
+    "n": 1,
+    "title": "Quiet family gateway",
+    "date": "2026-10-07",
+    "commit": null,
+    "base_commit": "f97608f178d1ffeca59860195ab7da295f7c8e5f",
+    "branch": "kahran-oct07-hermes-upgrade",
+    "status": "superseded-by-02",
+    "note": "Hermes-built candidate: four behavior ports on release 0.21.5, inferred addressing excluded, isolated regression evidence; never committed on its own (landed inside 02's commit)",
+    "requirements": "docs/upgrade/01/REQUIREMENTS.md",
+    "evidence": "docs/upgrade/01/manifest.json",
+    "handoff": "HANDOFF.md"
+  },
+  {
+    "n": 2,
+    "title": "Reviewed candidate",
+    "date": "2026-10-07",
+    "commit": null,
+    "base_commit": "f97608f178d1ffeca59860195ab7da295f7c8e5f",
+    "branch": "kahran-oct07-hermes-upgrade",
+    "status": "landing-not-deployed",
+    "note": "01 + Opus review fixes: numeric YAML chat keys matched by string; reasoning/notification chat scope and the safety sentence pinned by tests; privacy-logging plugin made 0.21-compatible in hermes-kmini #80",
+    "requirements": "docs/upgrade/01/REQUIREMENTS.md",
+    "evidence": "docs/upgrade/02/manifest.json",
+    "handoff": "HANDOFF.md"
+  }
+]

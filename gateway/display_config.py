@@ -1,9 +1,10 @@
-"""Per-platform display/verbosity resolver (``resolve_display_setting``).
+"""Per-conversation/platform display resolver (``resolve_display_setting``).
 
-Resolution order, first non-None wins: ``display.platforms.<platform>.<key>`` →
+Resolution order, first non-None wins: ``display.chats.<chat_id>.<key>`` →
+``display.platforms.<platform>.<key>`` →
 ``display.<key>`` → ``_PLATFORM_DEFAULTS[platform][key]`` → ``_GLOBAL_DEFAULTS[key]``.
 Exception: ``display.streaming`` is CLI-only; gateway streaming follows the top-level
-``streaming`` config unless a per-platform override sets it. Legacy
+``streaming`` config unless a chat or per-platform override sets it. Legacy
 ``display.tool_progress_overrides`` is still read as a ``tool_progress`` fallback.
 """
 
@@ -79,13 +80,13 @@ _PLATFORM_DEFAULTS: dict[str, dict[str, Any]] = {
 OVERRIDEABLE_KEYS = frozenset(_GLOBAL_DEFAULTS.keys())
 
 
-def resolve_display_setting(user_config: dict, platform_key: str, setting: str, fallback: Any = None) -> Any:
+def resolve_display_setting(user_config: dict, platform_key: str, setting: str, fallback: Any = None, *, chat_id: str | None = None) -> Any:
     """Resolve a display setting with per-platform override support (see module docstring for order).
 
     ``platform_key`` is the platform config key (``"telegram"``; see ``_platform_config_key`` in
     gateway/run.py). Returns *fallback* when nothing is configured.
     """
-    configured = _configured_display_value(user_config, platform_key, setting)
+    configured = _configured_display_value(user_config, platform_key, setting, chat_id=chat_id)
     if configured is not None:
         return _normalise(setting, configured)
     val = _PLATFORM_DEFAULTS.get(platform_key, {}).get(setting)
@@ -94,11 +95,29 @@ def resolve_display_setting(user_config: dict, platform_key: str, setting: str, 
     return fallback if val is None else val
 
 
-def _configured_display_value(user_config: dict, platform_key: str, setting: str) -> Any:
+def chat_display_override(chats: Any, chat_id: Any) -> dict | None:
+    """The ``display.chats`` entry for ``chat_id``, matching unquoted numeric YAML keys too.
+
+    Chat ids reach the gateway as strings; a Discord or Telegram operator who writes
+    ``chats: {123456789: {...}}`` gets an int key from YAML, so compare by ``str``.
+    """
+    if not isinstance(chats, dict) or chat_id is None:
+        return None
+    wanted = str(chat_id)
+    entry = chats.get(wanted)
+    if entry is None:
+        entry = next((v for k, v in chats.items() if str(k) == wanted), None)
+    return entry if isinstance(entry, dict) else None
+
+
+def _configured_display_value(user_config: dict, platform_key: str, setting: str, *, chat_id: str | None = None) -> Any:
     """First non-None operator value, without introducing tier defaults."""
     display_cfg = user_config.get("display")
     if not isinstance(display_cfg, dict):
         return None
+    chat = chat_display_override(display_cfg.get("chats"), chat_id)
+    if isinstance(chat, dict) and chat.get(setting) is not None:
+        return chat[setting]
     platforms = display_cfg.get("platforms")
     plat_overrides = platforms.get(platform_key) if isinstance(platforms, dict) else None
     if isinstance(plat_overrides, dict) and plat_overrides.get(setting) is not None:
@@ -112,18 +131,18 @@ def _configured_display_value(user_config: dict, platform_key: str, setting: str
     return None
 
 
-def resolve_tool_progress(user_config: dict, platform_key: str, env_mode: str | None = None) -> tuple[str, bool]:
+def resolve_tool_progress(user_config: dict, platform_key: str, env_mode: str | None = None, *, chat_id: str | None = None) -> tuple[str, bool]:
     """Return (mode, explicit intent) from the same winning source.
 
     Non-None YAML wins over the legacy env bridge. Null inherits through to env,
     then tier defaults. A tier's off is not an operator request to disable cards.
     """
-    configured = _configured_display_value(user_config, platform_key, "tool_progress")
+    configured = _configured_display_value(user_config, platform_key, "tool_progress", chat_id=chat_id)
     if configured is not None:
         return _normalise("tool_progress", configured), True
     if env_mode:
         return _normalise("tool_progress", env_mode), True
-    return resolve_display_setting(user_config, platform_key, "tool_progress"), False
+    return resolve_display_setting(user_config, platform_key, "tool_progress", chat_id=chat_id), False
 
 
 # --- Normalisation of YAML quirks (bare ``off`` → False in YAML 1.1, etc.) ---

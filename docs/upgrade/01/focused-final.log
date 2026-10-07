@@ -1,0 +1,7 @@
+COMMAND: /Users/kahransingh/Dev/hermes-agent-oct07-upgrade/.venv/bin/python -m pytest -q --tb=short tests/gateway/test_oct07_upgrade_contracts.py tests/gateway/test_oct07_compatibility.py tests/agent/test_oct07_prompt_contracts.py tests/gateway/test_display_config.py tests/gateway/test_config_driven_access_policy.py tests/gateway/test_whatsapp_group_gating.py
+ISOLATION: empty env; disposable HOME/HERMES_HOME; sandbox deny network and live Hermes reads/writes
+........................................................................ [ 66%]
+....................................                                     [100%]
+108 passed in 1.35s
+
+EXIT_CODE: 0
