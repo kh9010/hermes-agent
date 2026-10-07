@@ -1,7 +1,7 @@
-PASS rail: versions 01-02 on release f97608f178; latest "Reviewed candidate" (landing-not-deployed)
+PASS rail: versions 01-02 on release f97608f178; latest "Reviewed candidate" (deployed-2026-10-07)
 PASS integrity: 01 and 02 evidence sealed read-only; 9 runtime + 4 test files match 02
 PASS archive: 6 old local commits; 16 changed paths including tests
 PASS requirements: explicit family group + reply gate recorded; inferred addressing absent
 PASS differential (01): 122-file run; all 9 failures reproduced with release bytes; 19 bridge tests
 PASS focused evidence (02): 111 Python tests; kMini plugins compat clean; Ruff clean; git diff --check
-STATUS deployment: landing-not-deployed
+STATUS deployment: deployed-2026-10-07
