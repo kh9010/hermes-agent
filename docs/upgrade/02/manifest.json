@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "release": "f97608f178d1ffeca59860195ab7da295f7c8e5f",
+  "candidate": {
+    "agent/prompt_builder.py": "2170a3d7d44c3c5f433af2827c87463d3325abd7343a75949769bf0facc84447",
+    "gateway/authz_mixin.py": "fe39051e2539c1d05648af05b2de57f7771e6f81bc78414e07f46f54160a8713",
+    "gateway/display_config.py": "0697bc0e4c65ee72c570972c206cbc95f9a773a3c03aeab0e611bea0d0d4f74d",
+    "gateway/platforms/whatsapp_common.py": "f3caf110a4ba9def3673e09d66c11f38b55799a3e008ed4e0d353fe714c6df75",
+    "gateway/run.py": "3287c8290ac006fdb30ebf46ae3d619165deceb5974d24d2ad1a9f8d48b6a8aa",
+    "gateway/run_busy.py": "f37c6035bdd56606eededd87abaab42b6db3852e2cd8886476a072150c39cdba",
+    "gateway/run_turn.py": "d2fed46b17cdadfb60991e663765fc8c19dab3a16861fe70883e3b3478405149",
+    "gateway/run_turn_runner.py": "a9d67e91600b0ea80f43592548dc032ca9ed255c7324e9f79625d3c7f81f5770",
+    "gateway/warning_notifications.py": "8f009d2352c029057e1c27a7771f024635a970006baee1f77541ff09caef7262",
+    "tests/gateway/test_oct07_compatibility.py": "d1d5c780485ee270cb971d562e2e6244989c8d0805350ebd5f078c86d5bc7220",
+    "tests/gateway/test_oct07_upgrade_contracts.py": "9da6cc8481aee305941d9e2733393560d9ec2fd79d73c02878016b02f127d8a7",
+    "tests/agent/test_oct07_prompt_contracts.py": "b7ba41d383f7298369699fbed1005caec78703b22d7851cea53da36d6fb49cbe",
+    "tests/gateway/test_oct07_chat_scope_propagation.py": "b2d204a4a28f19a92033cb526aac76b99c2bfe1be9993a96584355c59a03b51a"
+  },
+  "evidence": {
+    "docs/upgrade/02/REVIEW.md": "e119cb84aa6a538690bf63c0f6817f7ad2ba45f84aae0b8fb5df3ab6c107a6e9",
+    "docs/upgrade/02/candidate-diffstat.txt": "e57ab0067c3602c5cfb5a343ef0513d8cb739d44bcf8248dc84f13f2e67a26bc",
+    "docs/upgrade/02/candidate.patch": "3bc0a5b3e13deb03b720df66c74b1b858bd650f3eddce43a07cc3e0cbc8accbc",
+    "docs/upgrade/02/compat.log": "dae238c8909840d09c87e51c3c7b6867546556b692d07805dc5e2e4393d05676",
+    "docs/upgrade/02/focused.log": "713011161708be8c03ac9ae44b787693f975f6aadf1e98916c673579d973791d",
+    "docs/upgrade/02/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "docs/upgrade/02/run_02.py": "df4852357d4b8096e858d52d2ee993c90f69fd7f45db0e3cf5e73a0f570ae675",
+    "docs/upgrade/02/test-results.json": "e0c0f6892fa39a764d7f995f0b9e208e878751dcd72aa505475c3336489cd59a"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/.venv/bin/python",
+    "docs/upgrade/01/broad_runner.py",
+    "tests/gateway/test_api_server_reasoning_nonstream.py",
+    "-q",
+    "--tb=short"
+  ],
+  "exit_code": 1,
+  "log": "baseline-socket.log"
+}

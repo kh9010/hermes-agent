@@ -1,0 +1,31 @@
+COMMAND: /opt/homebrew/bin/node --test scripts/whatsapp-bridge/allowlist.test.mjs scripts/whatsapp-bridge/owner_message_gate.test.mjs scripts/whatsapp-bridge/outbound_ids.test.mjs
+ISOLATION: empty env; disposable HOME/HERMES_HOME; sandbox deny network and live Hermes reads/writes
+✔ normalizeWhatsAppIdentifier strips jid syntax and plus prefix (0.763292ms)
+✔ expandWhatsAppIdentifiers resolves phone and lid aliases from session files (1.075791ms)
+✔ matchesAllowedUser accepts mapped lid sender when allowlist only contains phone number (0.532959ms)
+✔ matchesAllowedSender accepts the Baileys alt phone JID when a first-contact LID has no mapping yet (#63415, #72529) (0.241833ms)
+✔ matchesAllowedUser treats * as allow-all wildcard (0.162083ms)
+✔ group intake follows group policy and group-JID allowlist independently of DM users (0.23625ms)
+✔ matchesAllowedUser rejects everyone when allowlist is empty (#8389) (0.174083ms)
+✔ remembers and recognises an outbound id (0.373458ms)
+✔ ignores empty / falsy ids (0.064292ms)
+✔ evicts oldest entry once the cap is exceeded (0.053916ms)
+✔ rejects non-positive maxSize (0.17075ms)
+✔ non-fromMe messages always pass through (0.634792ms)
+✔ fromMe echo of our own /send is dropped (0.066208ms)
+✔ fromMe is dropped when forwarding is disabled (0.391417ms)
+✔ fromMe is dropped when chatId is not on the allowlist (regression) (0.064541ms)
+✔ fromMe is forwarded as owner when chatId is allowlisted (0.055375ms)
+✔ open-allowlist (matchesAllowedUser short-circuits true) forwards as owner (0.047208ms)
+✔ echo check fires before allowlist check (0.045792ms)
+✔ disabled flag fires before allowlist check (0.049708ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 49.7615
+
+EXIT_CODE: 0

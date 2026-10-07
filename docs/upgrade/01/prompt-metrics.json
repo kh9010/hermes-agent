@@ -1,0 +1,22 @@
+{
+  "TOOL_USE_ENFORCEMENT_GUIDANCE": {
+    "release_chars": 824,
+    "candidate_chars": 357
+  },
+  "TASK_COMPLETION_GUIDANCE": {
+    "release_chars": 769,
+    "candidate_chars": 485
+  },
+  "PARALLEL_TOOL_CALL_GUIDANCE": {
+    "release_chars": 618,
+    "candidate_chars": 303
+  },
+  "OPENAI_MODEL_EXECUTION_GUIDANCE": {
+    "release_chars": 3952,
+    "candidate_chars": 3719
+  },
+  "total": {
+    "release_chars": 6163,
+    "candidate_chars": 4864
+  }
+}

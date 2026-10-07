@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "tests/gateway/test_oct07_upgrade_contracts.py"
+  ],
+  "exit_code": 1,
+  "log": "red.log"
+}

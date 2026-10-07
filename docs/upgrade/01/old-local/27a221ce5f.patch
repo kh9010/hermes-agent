@@ -1,0 +1,236 @@
+commit 27a221ce5f323e4b6519ff101a811036ce79660a
+Author:     Kahran Singh <kahran_s@hotmail.com>
+AuthorDate: Tue Sep 22 16:27:51 2026 -0400
+Commit:     Kahran Singh <kahran_s@hotmail.com>
+CommitDate: Tue Sep 22 16:27:51 2026 -0400
+
+    perf(prompt): narrow skill lookups and consolidate guidance
+    
+    Keep domain safety, execution verification, and model settings intact.
+    
+    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+diff --git a/agent/prompt_builder.py b/agent/prompt_builder.py
+index eb7175ec44..7c1fba5352 100644
+--- a/agent/prompt_builder.py
++++ b/agent/prompt_builder.py
+@@ -401,17 +401,11 @@ KANBAN_GUIDANCE = (
+ 
+ TOOL_USE_ENFORCEMENT_GUIDANCE = (
+     "# Tool-use enforcement\n"
+-    "You MUST use your tools to take action — do not describe what you would do "
+-    "or plan to do without actually doing it. When you say you will perform an "
+-    "action (e.g. 'I will run the tests', 'Let me check the file', 'I will create "
+-    "the project'), you MUST immediately make the corresponding tool call in the same "
+-    "response. Never end your turn with a promise of future action — execute it now.\n"
+-    "Keep working until the task is actually complete. Do not stop with a summary of "
+-    "what you plan to do next time. If you have tools available that can accomplish "
+-    "the task, use them instead of telling the user what you would do.\n"
+-    "Every response should either (a) contain tool calls that make progress, or "
+-    "(b) deliver a final result to the user. Responses that only describe intentions "
+-    "without acting are not acceptable."
++    "You MUST use available tools to act, not merely describe intentions. "
++    "When you promise an action, immediately make the corresponding tool call "
++    "in the same response. Keep working until the task is complete; each response "
++    "must contain tool calls that make progress or deliver a final result, "
++    "never just a promise or a plan for next time."
+ )
+ 
+ # Model name substrings that trigger tool-use enforcement guidance.
+@@ -455,17 +449,12 @@ EXECUTION_GUIDANCE_MODELS = (
+ # then amortised across all sessions via prefix caching.  Keep it tight.
+ TASK_COMPLETION_GUIDANCE = (
+     "# Finishing the job\n"
+-    "When the user asks you to build, run, or verify something, the deliverable is "
+-    "a working artifact backed by real tool output — not a description of one. "
+-    "Do not stop after writing a stub, a plan, or a single command. Keep working "
+-    "until you have actually exercised the code or produced the requested result, "
+-    "then report what real execution returned.\n"
+-    "If a tool, install, or network call fails and blocks the real path, say so "
+-    "directly and try an alternative (different package manager, different "
+-    "approach, ask the user). NEVER substitute plausible-looking fabricated "
+-    "output (made-up data, invented file contents, synthesised API responses) "
+-    "for results you couldn't actually produce. Reporting a blocker honestly "
+-    "is always better than inventing a result."
++    "Build/run/verify requests require a working artifact backed by real tool output, "
++    "not a description, stub, plan, or single command. Exercise the code or produce "
++    "the requested result before finishing, then report what execution returned.\n"
++    "If a tool, install, or network failure blocks the real path, report the blocker "
++    "and try an alternative approach or ask the user. NEVER substitute fabricated "
++    "data, file contents, or API responses for results you could not produce."
+ )
+ 
+ # Universal parallel-tool-call guidance — applied to ALL models.
+@@ -498,15 +487,10 @@ TASK_COMPLETION_GUIDANCE = (
+ # prompt-assembly architecture.
+ PARALLEL_TOOL_CALL_GUIDANCE = (
+     "# Parallel tool calls\n"
+-    "When you need several pieces of information that don't depend on each "
+-    "other, request them together in a single response instead of one tool "
+-    "call per turn. Independent reads, searches, web fetches, and read-only "
+-    "commands should be batched into the same assistant turn — the runtime "
+-    "executes independent calls concurrently, and batching avoids resending "
+-    "the whole conversation on every extra round-trip.\n"
+-    "Only serialize calls when a later call genuinely depends on an earlier "
+-    "call's result (e.g. you must read a file before you can patch it). When "
+-    "in doubt and the calls are independent, batch them."
++    "Independent reads, searches, web fetches, and read-only commands belong in "
++    "a single response: the runtime executes them concurrently, avoiding extra "
++    "round-trips and resent context. Only serialize when a later call depends on "
++    "an earlier result (e.g. read a file before patching it)."
+ )
+ 
+ # OpenAI GPT/Codex-specific execution guidance.  Addresses known failure modes
+@@ -529,12 +513,10 @@ PARALLEL_TOOL_CALL_GUIDANCE = (
+ OPENAI_MODEL_EXECUTION_GUIDANCE = (
+     "# Execution discipline\n"
+     "<tool_persistence>\n"
+-    "- Use tools whenever they improve correctness, completeness, or grounding.\n"
+-    "- Do not stop early when another tool call would materially improve the result.\n"
++    "- Use tools whenever they improve correctness, completeness, or grounding; "
++    "continue until the task is complete and the result verified.\n"
+     "- If a tool returns empty, partial, or suspiciously narrow results, retry "
+     "with a broader or different query or strategy before concluding.\n"
+-    "- Keep calling tools until: (1) the task is complete, AND (2) you have verified "
+-    "the result.\n"
+     "</tool_persistence>\n"
+     "\n"
+     "<mandatory_tool_use>\n"
+@@ -562,10 +544,8 @@ OPENAI_MODEL_EXECUTION_GUIDANCE = (
+     "</act_dont_ask>\n"
+     "\n"
+     "<prerequisite_checks>\n"
+-    "- Before taking an action, check whether prerequisite discovery, lookup, or "
+-    "context-gathering steps are needed.\n"
+-    "- Do not skip prerequisite steps just because the final action seems obvious.\n"
+-    "- If a task depends on output from a prior step, resolve that dependency first.\n"
++    "- Before acting, check for prerequisite discovery, lookup, or context gathering, "
++    "even when the action seems obvious. Resolve each dependency first.\n"
+     "</prerequisite_checks>\n"
+     "\n"
+     "<verification>\n"
+@@ -2112,16 +2092,13 @@ def _build_skills_system_prompt_inner(
+ 
+         result = (
+             "## Skills\n"
+-            "Before replying, scan the skills below. If a skill matches or is even partially relevant "
+-            "to your task, you MUST load it with skill_view(name) and follow its instructions. "
+-            "Err on the side of loading — it is always better to have context you don't need "
+-            "than to miss critical steps, pitfalls, or established workflows. "
+-            "Skills contain specialized knowledge — API endpoints, tool-specific commands, "
+-            "and proven workflows that outperform general-purpose approaches. Load the skill "
+-            f"even if you think you could handle the task with basic tools like {_basic_tools}. "
+-            "Skills also encode the user's preferred approach, conventions, and quality standards "
+-            "for tasks like code review, planning, and testing — load them even for tasks you "
+-            "already know how to do, because the skill defines how it should be done here.\n"
++            "You MUST load clearly applicable procedural skills with skill_view(name) "
++            "before specialist work or actions, and follow their instructions. Skills encode "
++            "domain safety requirements, established workflows, and the user's conventions "
++            "for tasks like code review, planning, and testing; knowing how to use "
++            f"{_basic_tools} is not a substitute. "
++            "Casual conversation and tangential matches do not require a skill lookup. "
++            "This does not waive explicit skill-loading requirements or domain safety prerequisites.\n"
+             "If a skill has issues, fix it with skill_manage(action='patch').\n"
+             "After difficult/iterative tasks, offer to save as a skill. "
+             "If a skill you loaded was missing steps, had wrong commands, or needed "
+@@ -2131,7 +2108,8 @@ def _build_skills_system_prompt_inner(
+             + "\n".join(index_lines) + "\n"
+             "</available_skills>\n"
+             "\n"
+-            "Only proceed without loading a skill if genuinely none are relevant to the task."
++            "Proceed without a skill lookup when no procedural skill clearly applies, "
++            "unless an explicit requirement above applies."
+             + hidden_note
+         )
+ 
+diff --git a/tests/agent/test_prompt_guidance_contracts.py b/tests/agent/test_prompt_guidance_contracts.py
+new file mode 100644
+index 0000000000..ae478e6a7a
+--- /dev/null
++++ b/tests/agent/test_prompt_guidance_contracts.py
+@@ -0,0 +1,85 @@
++"""Contracts for rendered instructions, not source snapshots or LLM evaluations."""
++
++import pytest
++
++from agent import prompt_builder as pb
++
++
++@pytest.fixture
++def skills_prompt(tmp_path, monkeypatch):
++    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
++    skill = tmp_path / "skills" / "specialist" / "safe-work"
++    skill.mkdir(parents=True)
++    (skill / "SKILL.md").write_text(
++        "---\nname: safe-work\ndescription: Use before specialist actions.\n---\n"
++        "Confirm scope before writes.\n"
++    )
++    pb.clear_skills_system_prompt_cache(clear_snapshot=True)
++    yield pb.build_skills_system_prompt(available_tools={"terminal", "skill_view"})
++    pb.clear_skills_system_prompt_cache(clear_snapshot=True)
++
++
++def test_skill_loading_distinguishes_procedural_work_from_conversation(skills_prompt):
++    assert "MUST load" in skills_prompt
++    assert "clearly applicable procedural skills" in skills_prompt
++    assert "before specialist work or actions" in skills_prompt
++    assert "Casual conversation" in skills_prompt
++    assert "tangential matches do not require a skill lookup" in skills_prompt
++    assert "even partially relevant" not in skills_prompt
++    assert "Err on the side of loading" not in skills_prompt
++    assert "genuinely none are relevant" not in skills_prompt
++    assert "domain safety" in skills_prompt
++    assert "skill_manage(action='patch')" in skills_prompt
++    assert "update it before finishing" in skills_prompt
++    assert "safe-work" in skills_prompt
++    assert "web_search" not in skills_prompt
++
++
++@pytest.mark.parametrize(
++    "guidance, obligations",
++    [
++        (pb.TASK_COMPLETION_GUIDANCE, (
++            "working artifact", "real tool output", "stub", "report",
++            "alternative", "NEVER", "fabricated", "blocker",
++        )),
++        (pb.TOOL_USE_ENFORCEMENT_GUIDANCE, (
++            "MUST", "tool call", "same response", "final result",
++        )),
++        (pb.PARALLEL_TOOL_CALL_GUIDANCE, (
++            "Independent", "single response", "depends", "read a file",
++        )),
++        (pb.OPENAI_MODEL_EXECUTION_GUIDANCE, (
++            "correctness, completeness, or grounding", "empty, partial",
++            "broader or different", "prerequisite", "dependency first",
++            "every stated requirement", "factual claims", "format or schema",
++            "confirm scope before executing", "every named acceptance criterion",
++            "requested output must appear", "reading back the exact target",
++            "Do NOT re-verify internal file edits", "Declared totals",
++            "re-fetch or parse programmatically", "set fields explicitly",
++            "Preserve identifiers, commands, and values exactly as given",
++            "validate format first", "do NOT guess or hallucinate",
++            "information cannot be retrieved by tools", "label assumptions explicitly",
++        )),
++    ],
++)
++def test_guidance_retains_action_and_safety_obligations(guidance, obligations):
++    # These are instructions delivered to the model, not Python source checks.
++    for obligation in obligations:
++        assert obligation in guidance
++
++
++@pytest.mark.parametrize("tools", [None, {"terminal", "web_search"}, {"terminal"}])
++def test_execution_guidance_toolset_filter_keeps_safety_contract(tools):
++    rendered = pb.execution_guidance_text(tools)
++    assert rendered == pb.execution_guidance_text(tools)
++    for section in ("verification", "external_state_verification",
++                    "literal_preservation", "missing_context"):
++        assert f"<{section}>" in rendered
++        assert f"</{section}>" in rendered
++    assert "Arithmetic, math, calculations → use terminal or execute_code" in rendered
++    assert "Your memory and user profile describe the USER" in rendered
++    if tools is not None and "web_search" not in tools:
++        assert "web_search" not in rendered
++        assert "(search_files, read_file, etc.)" in rendered
++    else:
++        assert "Current facts (weather, news, versions) → use web_search" in rendered
