@@ -1,0 +1,3433 @@
+............................F...........F............................... [  3%]
+........................................................................ [  7%]
+........................................................................ [ 10%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+........................................................................ [ 32%]
+........................................................................ [ 35%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+..........s...................................s......................... [ 57%]
+..............................................s.FF............EEEEEEEEFF [ 60%]
+FF...................................................................... [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+...................F.................................................... [ 74%]
+........................................................................ [ 78%]
+................................................................s....... [ 82%]
+....................................................FFFFFF.............. [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+..............F......................................................... [ 96%]
+........................................................................ [ 99%]
+..                                                                       [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_send_builder_selection[markdown_bare_domain_without_scheme_keeps_markdown] _
+
+    @pytest.fixture(scope="module")
+    def verdicts() -> dict[str, str]:
+        """Run every case through the real send-format module in one node call."""
+        harness = (
+            f"import {{ chooseSendFormat }} from {json.dumps(_MODULE.as_uri())};\n"
+            "const chunks = [];\n"
+            "process.stdin.on('data', (c) => chunks.push(c));\n"
+            "process.stdin.on('end', () => {\n"
+            "  const cases = JSON.parse(Buffer.concat(chunks).toString('utf-8'));\n"
+            "  const out = {};\n"
+            "  for (const [name, [format, text]] of Object.entries(cases)) {\n"
+            "    out[name] = chooseSendFormat(format, text);\n"
+            "  }\n"
+            "  process.stdout.write(JSON.stringify(out));\n"
+            "});\n"
+        )
+        payload = {name: [fmt, text] for name, (fmt, text, _) in _CASES.items()}
+>       run = subprocess.run(
+            ["node", "--input-type=module", "-e", harness],
+            input=json.dumps(payload),
+            cwd=Path.cwd(),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+tests/plugins/platforms/photon/test_url_send_path.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', '--input-type=module', '-e', 'import ...>
+args = ['node', '--input-type=module', '-e', 'import { chooseSendFormat } from "file:///Users/kahransingh/Dev/hermes-candidat...(cases)) {\n    out[name] = chooseSendFormat(format, text);\n  }\n  process.stdout.write(JSON.stringify(out));\n});\n']
+executable = b'node', preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = PosixPath('/Users/kahransingh/Dev/hermes-candidate-0.22.x'), env = None
+startupinfo = None, creationflags = 0, shell = False, p2cread = 12
+p2cwrite = 13, c2pread = 14, c2pwrite = 23, errread = 24, errwrite = 25
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+_ ERROR at setup of test_send_builder_selection[markdown_link_syntax_also_falls_back_to_text] _
+
+    @pytest.fixture(scope="module")
+    def verdicts() -> dict[str, str]:
+        """Run every case through the real send-format module in one node call."""
+        harness = (
+            f"import {{ chooseSendFormat }} from {json.dumps(_MODULE.as_uri())};\n"
+            "const chunks = [];\n"
+            "process.stdin.on('data', (c) => chunks.push(c));\n"
+            "process.stdin.on('end', () => {\n"
+            "  const cases = JSON.parse(Buffer.concat(chunks).toString('utf-8'));\n"
+            "  const out = {};\n"
+            "  for (const [name, [format, text]] of Object.entries(cases)) {\n"
+            "    out[name] = chooseSendFormat(format, text);\n"
+            "  }\n"
+            "  process.stdout.write(JSON.stringify(out));\n"
+            "});\n"
+        )
+        payload = {name: [fmt, text] for name, (fmt, text, _) in _CASES.items()}
+>       run = subprocess.run(
+            ["node", "--input-type=module", "-e", harness],
+            input=json.dumps(payload),
+            cwd=Path.cwd(),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+tests/plugins/platforms/photon/test_url_send_path.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', '--input-type=module', '-e', 'import ...>
+args = ['node', '--input-type=module', '-e', 'import { chooseSendFormat } from "file:///Users/kahransingh/Dev/hermes-candidat...(cases)) {\n    out[name] = chooseSendFormat(format, text);\n  }\n  process.stdout.write(JSON.stringify(out));\n});\n']
+executable = b'node', preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = PosixPath('/Users/kahransingh/Dev/hermes-candidate-0.22.x'), env = None
+startupinfo = None, creationflags = 0, shell = False, p2cread = 12
+p2cwrite = 13, c2pread = 14, c2pwrite = 23, errread = 24, errwrite = 25
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+_ ERROR at setup of test_send_builder_selection[markdown_with_http_url_falls_back_to_text] _
+
+    @pytest.fixture(scope="module")
+    def verdicts() -> dict[str, str]:
+        """Run every case through the real send-format module in one node call."""
+        harness = (
+            f"import {{ chooseSendFormat }} from {json.dumps(_MODULE.as_uri())};\n"
+            "const chunks = [];\n"
+            "process.stdin.on('data', (c) => chunks.push(c));\n"
+            "process.stdin.on('end', () => {\n"
+            "  const cases = JSON.parse(Buffer.concat(chunks).toString('utf-8'));\n"
+            "  const out = {};\n"
+            "  for (const [name, [format, text]] of Object.entries(cases)) {\n"
+            "    out[name] = chooseSendFormat(format, text);\n"
+            "  }\n"
+            "  process.stdout.write(JSON.stringify(out));\n"
+            "});\n"
+        )
+        payload = {name: [fmt, text] for name, (fmt, text, _) in _CASES.items()}
+>       run = subprocess.run(
+            ["node", "--input-type=module", "-e", harness],
+            input=json.dumps(payload),
+            cwd=Path.cwd(),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+tests/plugins/platforms/photon/test_url_send_path.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', '--input-type=module', '-e', 'import ...>
+args = ['node', '--input-type=module', '-e', 'import { chooseSendFormat } from "file:///Users/kahransingh/Dev/hermes-candidat...(cases)) {\n    out[name] = chooseSendFormat(format, text);\n  }\n  process.stdout.write(JSON.stringify(out));\n});\n']
+executable = b'node', preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = PosixPath('/Users/kahransingh/Dev/hermes-candidate-0.22.x'), env = None
+startupinfo = None, creationflags = 0, shell = False, p2cread = 12
+p2cwrite = 13, c2pread = 14, c2pwrite = 23, errread = 24, errwrite = 25
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+_ ERROR at setup of test_send_builder_selection[markdown_with_https_url_falls_back_to_text] _
+
+    @pytest.fixture(scope="module")
+    def verdicts() -> dict[str, str]:
+        """Run every case through the real send-format module in one node call."""
+        harness = (
+            f"import {{ chooseSendFormat }} from {json.dumps(_MODULE.as_uri())};\n"
+            "const chunks = [];\n"
+            "process.stdin.on('data', (c) => chunks.push(c));\n"
+            "process.stdin.on('end', () => {\n"
+            "  const cases = JSON.parse(Buffer.concat(chunks).toString('utf-8'));\n"
+            "  const out = {};\n"
+            "  for (const [name, [format, text]] of Object.entries(cases)) {\n"
+            "    out[name] = chooseSendFormat(format, text);\n"
+            "  }\n"
+            "  process.stdout.write(JSON.stringify(out));\n"
+            "});\n"
+        )
+        payload = {name: [fmt, text] for name, (fmt, text, _) in _CASES.items()}
+>       run = subprocess.run(
+            ["node", "--input-type=module", "-e", harness],
+            input=json.dumps(payload),
+            cwd=Path.cwd(),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+tests/plugins/platforms/photon/test_url_send_path.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', '--input-type=module', '-e', 'import ...>
+args = ['node', '--input-type=module', '-e', 'import { chooseSendFormat } from "file:///Users/kahransingh/Dev/hermes-candidat...(cases)) {\n    out[name] = chooseSendFormat(format, text);\n  }\n  process.stdout.write(JSON.stringify(out));\n});\n']
+executable = b'node', preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = PosixPath('/Users/kahransingh/Dev/hermes-candidate-0.22.x'), env = None
+startupinfo = None, creationflags = 0, shell = False, p2cread = 12
+p2cwrite = 13, c2pread = 14, c2pwrite = 23, errread = 24, errwrite = 25
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+_ ERROR at setup of test_send_builder_selection[markdown_with_uppercase_scheme_falls_back_to_text] _
+
+    @pytest.fixture(scope="module")
+    def verdicts() -> dict[str, str]:
+        """Run every case through the real send-format module in one node call."""
+        harness = (
+            f"import {{ chooseSendFormat }} from {json.dumps(_MODULE.as_uri())};\n"
+            "const chunks = [];\n"
+            "process.stdin.on('data', (c) => chunks.push(c));\n"
+            "process.stdin.on('end', () => {\n"
+            "  const cases = JSON.parse(Buffer.concat(chunks).toString('utf-8'));\n"
+            "  const out = {};\n"
+            "  for (const [name, [format, text]] of Object.entries(cases)) {\n"
+            "    out[name] = chooseSendFormat(format, text);\n"
+            "  }\n"
+            "  process.stdout.write(JSON.stringify(out));\n"
+            "});\n"
+        )
+        payload = {name: [fmt, text] for name, (fmt, text, _) in _CASES.items()}
+>       run = subprocess.run(
+            ["node", "--input-type=module", "-e", harness],
+            input=json.dumps(payload),
+            cwd=Path.cwd(),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+tests/plugins/platforms/photon/test_url_send_path.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', '--input-type=module', '-e', 'import ...>
+args = ['node', '--input-type=module', '-e', 'import { chooseSendFormat } from "file:///Users/kahransingh/Dev/hermes-candidat...(cases)) {\n    out[name] = chooseSendFormat(format, text);\n  }\n  process.stdout.write(JSON.stringify(out));\n});\n']
+executable = b'node', preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = PosixPath('/Users/kahransingh/Dev/hermes-candidate-0.22.x'), env = None
+startupinfo = None, creationflags = 0, shell = False, p2cread = 12
+p2cwrite = 13, c2pread = 14, c2pwrite = 23, errread = 24, errwrite = 25
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+_ ERROR at setup of test_send_builder_selection[markdown_without_url_keeps_markdown] _
+
+    @pytest.fixture(scope="module")
+    def verdicts() -> dict[str, str]:
+        """Run every case through the real send-format module in one node call."""
+        harness = (
+            f"import {{ chooseSendFormat }} from {json.dumps(_MODULE.as_uri())};\n"
+            "const chunks = [];\n"
+            "process.stdin.on('data', (c) => chunks.push(c));\n"
+            "process.stdin.on('end', () => {\n"
+            "  const cases = JSON.parse(Buffer.concat(chunks).toString('utf-8'));\n"
+            "  const out = {};\n"
+            "  for (const [name, [format, text]] of Object.entries(cases)) {\n"
+            "    out[name] = chooseSendFormat(format, text);\n"
+            "  }\n"
+            "  process.stdout.write(JSON.stringify(out));\n"
+            "});\n"
+        )
+        payload = {name: [fmt, text] for name, (fmt, text, _) in _CASES.items()}
+>       run = subprocess.run(
+            ["node", "--input-type=module", "-e", harness],
+            input=json.dumps(payload),
+            cwd=Path.cwd(),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+tests/plugins/platforms/photon/test_url_send_path.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', '--input-type=module', '-e', 'import ...>
+args = ['node', '--input-type=module', '-e', 'import { chooseSendFormat } from "file:///Users/kahransingh/Dev/hermes-candidat...(cases)) {\n    out[name] = chooseSendFormat(format, text);\n  }\n  process.stdout.write(JSON.stringify(out));\n});\n']
+executable = b'node', preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = PosixPath('/Users/kahransingh/Dev/hermes-candidate-0.22.x'), env = None
+startupinfo = None, creationflags = 0, shell = False, p2cread = 12
+p2cwrite = 13, c2pread = 14, c2pwrite = 23, errread = 24, errwrite = 25
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+____ ERROR at setup of test_send_builder_selection[text_format_stays_text] _____
+
+    @pytest.fixture(scope="module")
+    def verdicts() -> dict[str, str]:
+        """Run every case through the real send-format module in one node call."""
+        harness = (
+            f"import {{ chooseSendFormat }} from {json.dumps(_MODULE.as_uri())};\n"
+            "const chunks = [];\n"
+            "process.stdin.on('data', (c) => chunks.push(c));\n"
+            "process.stdin.on('end', () => {\n"
+            "  const cases = JSON.parse(Buffer.concat(chunks).toString('utf-8'));\n"
+            "  const out = {};\n"
+            "  for (const [name, [format, text]] of Object.entries(cases)) {\n"
+            "    out[name] = chooseSendFormat(format, text);\n"
+            "  }\n"
+            "  process.stdout.write(JSON.stringify(out));\n"
+            "});\n"
+        )
+        payload = {name: [fmt, text] for name, (fmt, text, _) in _CASES.items()}
+>       run = subprocess.run(
+            ["node", "--input-type=module", "-e", harness],
+            input=json.dumps(payload),
+            cwd=Path.cwd(),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+tests/plugins/platforms/photon/test_url_send_path.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', '--input-type=module', '-e', 'import ...>
+args = ['node', '--input-type=module', '-e', 'import { chooseSendFormat } from "file:///Users/kahransingh/Dev/hermes-candidat...(cases)) {\n    out[name] = chooseSendFormat(format, text);\n  }\n  process.stdout.write(JSON.stringify(out));\n});\n']
+executable = b'node', preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = PosixPath('/Users/kahransingh/Dev/hermes-candidate-0.22.x'), env = None
+startupinfo = None, creationflags = 0, shell = False, p2cread = 12
+p2cwrite = 13, c2pread = 14, c2pwrite = 23, errread = 24, errwrite = 25
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+_ ERROR at setup of test_send_builder_selection[text_format_with_url_stays_text] _
+
+    @pytest.fixture(scope="module")
+    def verdicts() -> dict[str, str]:
+        """Run every case through the real send-format module in one node call."""
+        harness = (
+            f"import {{ chooseSendFormat }} from {json.dumps(_MODULE.as_uri())};\n"
+            "const chunks = [];\n"
+            "process.stdin.on('data', (c) => chunks.push(c));\n"
+            "process.stdin.on('end', () => {\n"
+            "  const cases = JSON.parse(Buffer.concat(chunks).toString('utf-8'));\n"
+            "  const out = {};\n"
+            "  for (const [name, [format, text]] of Object.entries(cases)) {\n"
+            "    out[name] = chooseSendFormat(format, text);\n"
+            "  }\n"
+            "  process.stdout.write(JSON.stringify(out));\n"
+            "});\n"
+        )
+        payload = {name: [fmt, text] for name, (fmt, text, _) in _CASES.items()}
+>       run = subprocess.run(
+            ["node", "--input-type=module", "-e", harness],
+            input=json.dumps(payload),
+            cwd=Path.cwd(),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+tests/plugins/platforms/photon/test_url_send_path.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', '--input-type=module', '-e', 'import ...>
+args = ['node', '--input-type=module', '-e', 'import { chooseSendFormat } from "file:///Users/kahransingh/Dev/hermes-candidat...(cases)) {\n    out[name] = chooseSendFormat(format, text);\n  }\n  process.stdout.write(JSON.stringify(out));\n});\n']
+executable = b'node', preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = PosixPath('/Users/kahransingh/Dev/hermes-candidate-0.22.x'), env = None
+startupinfo = None, creationflags = 0, shell = False, p2cread = 12
+p2cwrite = 13, c2pread = 14, c2pwrite = 23, errread = 24, errwrite = 25
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+=================================== FAILURES ===================================
+______________________ test_unset_of_inherited_key_warns _______________________
+
+plane = <tests.plugins.config_backends.stub_plane.StubPlane object at 0x1166716d0>
+caplog = <_pytest.logging.LogCaptureFixture object at 0x11634aba0>
+
+    def test_unset_of_inherited_key_warns(plane, caplog):
+        plane.upper = {"display": {"personality": "concise"}}
+        plane.profile("default")["values"] = {"display": {"personality": "pirate"}}
+        with caplog.at_level("WARNING"):
+            write_config_key(plane.home / "config.yaml", "display.personality", None)
+        assert plane.patches()[0]["body"]["unset"] == ["display.personality"]
+>       assert "still set by an upper level" in caplog.text
+E       assert 'still set by an upper level' in '{"category":"plugin","declared_message_size":"1-64","dynamic_fields_omitted":1,"event_id":"50bf38248d89cca9","failure...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:25:52.927+00:00"}\n'
+E        +  where '{"category":"plugin","declared_message_size":"1-64","dynamic_fields_omitted":1,"event_id":"50bf38248d89cca9","failure...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:25:52.927+00:00"}\n' = <_pytest.logging.LogCaptureFixture object at 0x11634aba0>.text
+
+tests/plugins/config_backends/test_remote_backend.py:279: AssertionError
+------------------------------ Captured log call -------------------------------
+{"category":"plugin","declared_message_size":"1-64","dynamic_fields_omitted":1,"event_id":"50bf38248d89cca9","failure_id":"50bf38248d89cca9","logger_component":"plugins","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:25:52.927+00:00"}
+____________________ test_unknown_top_level_key_warns_once _____________________
+
+plane = <tests.plugins.config_backends.stub_plane.StubPlane object at 0x11676a2d0>
+caplog = <_pytest.logging.LogCaptureFixture object at 0x115ed96d0>
+
+    def test_unknown_top_level_key_warns_once(plane, caplog):
+        from hermes_cli.config import load_config
+        plane.upper = {"from_the_future": {"x": 1}}
+        with caplog.at_level("WARNING"):
+            load_config()
+            load_config()
+>       assert caplog.text.count("unknown config key 'from_the_future'") == 1
+E       assert 0 == 1
+E        +  where 0 = <built-in method count of str object at 0x1163c79f0>("unknown config key 'from_the_future'")
+E        +    where <built-in method count of str object at 0x1163c79f0> = '{"category":"plugin","declared_message_size":"65-256","dynamic_fields_omitted":1,"event_id":"6c4a81450d0282b9","failu...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:25:53.783+00:00"}\n'.count
+E        +      where '{"category":"plugin","declared_message_size":"65-256","dynamic_fields_omitted":1,"event_id":"6c4a81450d0282b9","failu...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:25:53.783+00:00"}\n' = <_pytest.logging.LogCaptureFixture object at 0x115ed96d0>.text
+
+tests/plugins/config_backends/test_remote_backend.py:445: AssertionError
+------------------------------ Captured log call -------------------------------
+{"category":"plugin","declared_message_size":"65-256","dynamic_fields_omitted":1,"event_id":"6c4a81450d0282b9","failure_id":"6c4a81450d0282b9","logger_component":"plugins","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:25:53.783+00:00"}
+___________ test_sidecar_patch_failure_still_reaches_health_endpoint ___________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_sidecar_patch_failure_sti0')
+
+    def test_sidecar_patch_failure_still_reaches_health_endpoint(tmp_path: Path) -> None:
+        """The compatibility patch is optional when the SDK itself remains usable."""
+        sidecar = _write_sidecar_fixture(tmp_path, sdk_available=True)
+        port = _free_port()
+>       proc = subprocess.Popen(
+            ["node", "index.mjs"],
+            cwd=sidecar,
+            env=_sidecar_env(port),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+
+tests/plugins/platforms/photon/test_spectrum_patch.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/_fixtures/live_system_guard.py:460: in __init__
+    super().__init__(cmd, *args, **kwargs)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', 'index.mjs']>
+args = ['node', 'index.mjs'], executable = b'node', preexec_fn = None
+close_fds = True, pass_fds = ()
+cwd = PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_sidecar_patch_failure_sti0/sidecar')
+env = {'PATH': '/usr/bin:/bin:/sbin:/usr/sbin', 'HOME': '/tmp/hcand-home.4Xv2', 'HERMES_HOME': '/private/tmp/pytest-of-kahransingh/pytest-59/test_sidecar_patch_failure_sti0/hermes_test', '__CF_USER_TEXT_ENCODING': '0x1F5:0x0:0x0', ...}
+startupinfo = None, creationflags = 0, shell = False, p2cread = -1
+p2cwrite = -1, c2pread = 23, c2pwrite = 24, errread = 25, errwrite = 26
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+_______________ test_spectrum_patch_rewrites_the_imessage_mapper _______________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_spectrum_patch_rewrites_t0')
+
+    def test_spectrum_patch_rewrites_the_imessage_mapper(tmp_path: Path) -> None:
+        """The dependency patch must apply to the 8.x `@spectrum-ts/imessage` chunk
+        and rewrite both inbound mappers to thread text through attachment bubbles."""
+        chunk = _write_fixture(tmp_path)
+    
+>       result = subprocess.run(
+            ["node", str(_PATCHER), str(tmp_path)],
+            cwd=Path.cwd(),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+tests/plugins/platforms/photon/test_spectrum_patch.py:245: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/_fixtures/live_system_guard.py:442: in _guarded
+    return real(cmd, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/_fixtures/live_system_guard.py:460: in __init__
+    super().__init__(cmd, *args, **kwargs)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', 'plugins/platforms/photon/sidecar/pat...>
+args = ['node', 'plugins/platforms/photon/sidecar/patch-spectrum-mixed-attachments.mjs', '/private/tmp/pytest-of-kahransingh/pytest-59/test_spectrum_patch_rewrites_t0']
+executable = b'node', preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = PosixPath('/Users/kahransingh/Dev/hermes-candidate-0.22.x'), env = None
+startupinfo = None, creationflags = 0, shell = False, p2cread = -1
+p2cwrite = -1, c2pread = 23, c2pwrite = 24, errread = 25, errwrite = 26
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+_______________ test_probe_message_id_is_guid_shaped_and_unique ________________
+
+    def test_probe_message_id_is_guid_shaped_and_unique() -> None:
+>       out = _run_staleness_harness(
+            """
+            const first = createProbeMessageId();
+            const second = createProbeMessageId();
+            process.stdout.write(JSON.stringify({ first, second }));
+            """
+        )
+
+tests/plugins/platforms/photon/test_zombie_stream_watchdog.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/plugins/platforms/photon/test_zombie_stream_watchdog.py:54: in _run_staleness_harness
+    run = subprocess.run(
+tests/_fixtures/live_system_guard.py:442: in _guarded
+    return real(cmd, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/_fixtures/live_system_guard.py:460: in __init__
+    super().__init__(cmd, *args, **kwargs)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', '--input-type=module', '-e', 'import ...>
+args = ['node', '--input-type=module', '-e', 'import { classifyProbeRejection, shouldProbe, isZombieSuspect, createProbeMessa...   const second = createProbeMessageId();\n        process.stdout.write(JSON.stringify({ first, second }));\n        ']
+executable = b'node', preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = PosixPath('/Users/kahransingh/Dev/hermes-candidate-0.22.x'), env = None
+startupinfo = None, creationflags = 0, shell = False, p2cread = -1
+p2cwrite = -1, c2pread = 23, c2pwrite = 24, errread = 25, errwrite = 26
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+________________ test_probe_rejection_classification_is_strict _________________
+
+    def test_probe_rejection_classification_is_strict() -> None:
+        """Only not-found-shaped rejections prove liveness; everything else is
+        inconclusive — a rejected probe is NEVER treated as alive (#45580's
+        original /probe treated any rejection as alive, which was too loose)."""
+>       out = _run_staleness_harness(
+            """
+            const results = {
+              notFoundCode: classifyProbeRejection({ code: 5, message: "5 NOT_FOUND: nope" }),
+              notFoundText: classifyProbeRejection(new Error("message not found")),
+              sdkNotFound: classifyProbeRejection({ code: "notFound", message: "missing" }),
+              unavailable: classifyProbeRejection({ code: 14, message: "14 UNAVAILABLE: connect failed" }),
+              deadline: classifyProbeRejection({ code: 4, message: "4 DEADLINE_EXCEEDED" }),
+              generic: classifyProbeRejection(new Error("socket hang up")),
+              weird: classifyProbeRejection("string error"),
+            };
+            process.stdout.write(JSON.stringify(results));
+            """
+        )
+
+tests/plugins/platforms/photon/test_zombie_stream_watchdog.py:81: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/plugins/platforms/photon/test_zombie_stream_watchdog.py:54: in _run_staleness_harness
+    run = subprocess.run(
+tests/_fixtures/live_system_guard.py:442: in _guarded
+    return real(cmd, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/_fixtures/live_system_guard.py:460: in __init__
+    super().__init__(cmd, *args, **kwargs)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', '--input-type=module', '-e', 'import ...>
+args = ['node', '--input-type=module', '-e', 'import { classifyProbeRejection, shouldProbe, isZombieSuspect, createProbeMessa...classifyProbeRejection("string error"),\n        };\n        process.stdout.write(JSON.stringify(results));\n        ']
+executable = b'node', preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = PosixPath('/Users/kahransingh/Dev/hermes-candidate-0.22.x'), env = None
+startupinfo = None, creationflags = 0, shell = False, p2cread = -1
+p2cwrite = -1, c2pread = 23, c2pwrite = 24, errread = 25, errwrite = 26
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+________ test_should_probe_requires_silence_past_threshold_and_cooldown ________
+
+    def test_should_probe_requires_silence_past_threshold_and_cooldown() -> None:
+>       out = _run_staleness_harness(
+            """
+            const MIN10 = 10 * 60 * 1000;
+            const results = {
+              quietButUnderThreshold: shouldProbe(MIN10 - 1, MIN10, MIN10, 120000),
+              pastThreshold: shouldProbe(MIN10 + 1, MIN10, MIN10, 120000),
+              pastThresholdButCoolingDown: shouldProbe(MIN10 + 1, MIN10, 1000, 120000),
+              watchdogDisabled: shouldProbe(MIN10 * 100, 0, MIN10, 120000),
+              watchdogDisabledNegative: shouldProbe(MIN10 * 100, -1, MIN10, 120000),
+            };
+            process.stdout.write(JSON.stringify(results));
+            """
+        )
+
+tests/plugins/platforms/photon/test_zombie_stream_watchdog.py:105: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/plugins/platforms/photon/test_zombie_stream_watchdog.py:54: in _run_staleness_harness
+    run = subprocess.run(
+tests/_fixtures/live_system_guard.py:442: in _guarded
+    return real(cmd, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/_fixtures/live_system_guard.py:460: in __init__
+    super().__init__(cmd, *args, **kwargs)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', '--input-type=module', '-e', 'import ...>
+args = ['node', '--input-type=module', '-e', 'import { classifyProbeRejection, shouldProbe, isZombieSuspect, createProbeMessa...dProbe(MIN10 * 100, -1, MIN10, 120000),\n        };\n        process.stdout.write(JSON.stringify(results));\n        ']
+executable = b'node', preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = PosixPath('/Users/kahransingh/Dev/hermes-candidate-0.22.x'), env = None
+startupinfo = None, creationflags = 0, shell = False, p2cread = -1
+p2cwrite = -1, c2pread = 23, c2pwrite = 24, errread = 25, errwrite = 26
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+______ test_zombie_requires_probe_proven_connectivity_never_silence_alone ______
+
+    def test_zombie_requires_probe_proven_connectivity_never_silence_alone() -> None:
+        """The core conservatism rule: shared lines can be quiet for hours, so a
+        zombie is declared only when the stream is silent past threshold AND a
+        probe PROVED the wire works (stream dead, channel alive)."""
+>       out = _run_staleness_harness(
+            """
+            const MIN10 = 10 * 60 * 1000;
+            const alive = { alive: true };
+            const inconclusive = { alive: false };
+            const results = {
+              silentAndProbeAlive: isZombieSuspect(MIN10 * 2, MIN10, alive),
+              silentButProbeInconclusive: isZombieSuspect(MIN10 * 2, MIN10, inconclusive),
+              silentNoProbe: isZombieSuspect(MIN10 * 2, MIN10, null),
+              hoursOfSilenceInconclusive: isZombieSuspect(MIN10 * 36, MIN10, inconclusive),
+              notSilentEnough: isZombieSuspect(MIN10 - 1, MIN10, alive),
+              disabled: isZombieSuspect(MIN10 * 2, 0, alive),
+            };
+            process.stdout.write(JSON.stringify(results));
+            """
+        )
+
+tests/plugins/platforms/photon/test_zombie_stream_watchdog.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/plugins/platforms/photon/test_zombie_stream_watchdog.py:54: in _run_staleness_harness
+    run = subprocess.run(
+tests/_fixtures/live_system_guard.py:442: in _guarded
+    return real(cmd, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/_fixtures/live_system_guard.py:460: in __init__
+    super().__init__(cmd, *args, **kwargs)
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: 255 args: ['node', '--input-type=module', '-e', 'import ...>
+args = ['node', '--input-type=module', '-e', 'import { classifyProbeRejection, shouldProbe, isZombieSuspect, createProbeMessa...: isZombieSuspect(MIN10 * 2, 0, alive),\n        };\n        process.stdout.write(JSON.stringify(results));\n        ']
+executable = b'node', preexec_fn = None, close_fds = True, pass_fds = ()
+cwd = PosixPath('/Users/kahransingh/Dev/hermes-candidate-0.22.x'), env = None
+startupinfo = None, creationflags = 0, shell = False, p2cread = -1
+p2cwrite = -1, c2pread = 23, c2pwrite = 24, errread = 25, errwrite = 26
+restore_signals = True, gid = None, gids = None, uid = None, umask = -1
+start_new_session = False, process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       restore_signals,
+                       gid, gids, uid, umask,
+                       start_new_session, process_group):
+        """Execute program (POSIX version)"""
+    
+        if isinstance(args, (str, bytes)):
+            args = [args]
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = [args]
+        else:
+            args = list(args)
+    
+        if shell:
+            # On Android the default shell is at '/system/bin/sh'.
+            unix_shell = ('/system/bin/sh' if
+                      hasattr(sys, 'getandroidapilevel') else '/bin/sh')
+            args = [unix_shell, "-c"] + args
+            if executable:
+                args[0] = executable
+    
+        if executable is None:
+            executable = args[0]
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        if (_USE_POSIX_SPAWN
+                and os.path.dirname(executable)
+                and preexec_fn is None
+                and (not close_fds or _HAVE_POSIX_SPAWN_CLOSEFROM)
+                and not pass_fds
+                and cwd is None
+                and (p2cread == -1 or p2cread > 2)
+                and (c2pwrite == -1 or c2pwrite > 2)
+                and (errwrite == -1 or errwrite > 2)
+                and not start_new_session
+                and process_group == -1
+                and gid is None
+                and gids is None
+                and uid is None
+                and umask < 0):
+            self._posix_spawn(args, executable, env, restore_signals, close_fds,
+                              p2cread, p2cwrite,
+                              c2pread, c2pwrite,
+                              errread, errwrite)
+            return
+    
+        orig_executable = executable
+    
+        # For transferring possible exec failure from child to parent.
+        # Data format: "exception name:hex errno:description"
+        # Pickle is not used; it is complex and involves memory allocation.
+        errpipe_read, errpipe_write = os.pipe()
+        # errpipe_write must not be in the standard io 0, 1, or 2 fd range.
+        low_fds_to_close = []
+        while errpipe_write < 3:
+            low_fds_to_close.append(errpipe_write)
+            errpipe_write = os.dup(errpipe_write)
+        for low_fd in low_fds_to_close:
+            os.close(low_fd)
+        try:
+            try:
+                # We must avoid complex work that could involve
+                # malloc or free in the child process to avoid
+                # potential deadlocks, thus we do all this here.
+                # and pass it to fork_exec()
+    
+                if env is not None:
+                    env_list = []
+                    for k, v in env.items():
+                        k = os.fsencode(k)
+                        if b'=' in k:
+                            raise ValueError("illegal environment variable name")
+                        env_list.append(k + b'=' + os.fsencode(v))
+                else:
+                    env_list = None  # Use execv instead of execve.
+                executable = os.fsencode(executable)
+                if os.path.dirname(executable):
+                    executable_list = (executable,)
+                else:
+                    # This matches the behavior of os._execvpe().
+                    executable_list = tuple(
+                        os.path.join(os.fsencode(dir), executable)
+                        for dir in os.get_exec_path(env))
+                fds_to_keep = set(pass_fds)
+                fds_to_keep.add(errpipe_write)
+                self.pid = _fork_exec(
+                        args, executable_list,
+                        close_fds, tuple(sorted(map(int, fds_to_keep))),
+                        cwd, env_list,
+                        p2cread, p2cwrite, c2pread, c2pwrite,
+                        errread, errwrite,
+                        errpipe_read, errpipe_write,
+                        restore_signals, start_new_session,
+                        process_group, gid, gids, uid, umask,
+                        preexec_fn)
+                self._child_created = True
+            finally:
+                # be sure the FD is closed no matter what
+                os.close(errpipe_write)
+    
+            self._close_pipe_fds(p2cread, p2cwrite,
+                                 c2pread, c2pwrite,
+                                 errread, errwrite)
+    
+            # Wait for exec to fail or succeed; possibly raising an
+            # exception (limited in size)
+            errpipe_data = bytearray()
+            while True:
+                part = os.read(errpipe_read, 50000)
+                errpipe_data += part
+                if not part or len(errpipe_data) > 50000:
+                    break
+        finally:
+            # be sure the FD is closed no matter what
+            os.close(errpipe_read)
+    
+        if errpipe_data:
+            try:
+                pid, sts = os.waitpid(self.pid, 0)
+                if pid == self.pid:
+                    self._handle_exitstatus(sts)
+                else:
+                    self.returncode = sys.maxsize
+            except ChildProcessError:
+                pass
+    
+            try:
+                exception_name, hex_errno, err_msg = (
+                        errpipe_data.split(b':', 2))
+                # The encoding here should match the encoding
+                # written in by the subprocess implementations
+                # like _posixsubprocess
+                err_msg = err_msg.decode()
+            except ValueError:
+                exception_name = b'SubprocessError'
+                hex_errno = b'0'
+                err_msg = 'Bad exception data from child: {!r}'.format(
+                              bytes(errpipe_data))
+            child_exception_type = getattr(
+                    builtins, exception_name.decode('ascii'),
+                    SubprocessError)
+            if issubclass(child_exception_type, OSError) and hex_errno:
+                errno_num = int(hex_errno, 16)
+                if err_msg == "noexec:chdir":
+                    err_msg = ""
+                    # The error must be from chdir(cwd).
+                    err_filename = cwd
+                elif err_msg == "noexec":
+                    err_msg = ""
+                    err_filename = None
+                else:
+                    err_filename = orig_executable
+                if errno_num != 0:
+                    err_msg = os.strerror(errno_num)
+                if err_filename is not None:
+>                   raise child_exception_type(errno_num, err_msg, err_filename)
+E                   FileNotFoundError: [Errno 2] No such file or directory: 'node'
+
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:1990: FileNotFoundError
+_ TestMultiAgentRouting.test_path_routed_agent_card_uses_prefix_and_canonical_path _
+
+self = <tests.plugins.test_a2a_plugin.TestMultiAgentRouting object at 0x11408f890>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b564de0>
+
+    def test_path_routed_agent_card_uses_prefix_and_canonical_path(self, monkeypatch):
+        from plugins.platforms.a2a.adapter import A2AAdapter
+        from gateway.config import PlatformConfig
+    
+        adapter = A2AAdapter(PlatformConfig(enabled=True, extra={
+            "agents": {
+                "research": {
+                    "profile": "research",
+                    "name": "Research Agent",
+                    "description": "Research specialist",
+                    "capabilities": ["web", "research"],
+                }
+            }
+        }))
+    
+        route = adapter._route_for_path("/research/.well-known/agent-card.json")
+        assert route["agent"]["slug"] == "research"
+        assert route["subpath"] == "/.well-known/agent-card.json"
+    
+        card = adapter._build_card("http://agents.example.com/", agent=route["agent"])
+        assert card["name"] == "Research Agent"
+        assert card["supportedInterfaces"][0]["url"] == "http://agents.example.com/research/"
+        assert card["supportedInterfaces"][0]["tenant"] == "research"
+>       assert {s["name"] for s in card["skills"]} == {"research", "web"}
+E       AssertionError: assert {'web'} == {'research', 'web'}
+E         
+E         Extra items in the right set:
+E         'research'
+E         Use -v to get more diff
+
+tests/plugins/test_a2a_plugin.py:1493: AssertionError
+_________ test_plugin_cannot_shadow_builtin_and_bad_keys_are_rejected __________
+
+homes = {'default': PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_plugin_cannot_shadow_buil0/.hermes'), 'other': PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_plugin_cannot_shadow_buil0/.hermes/profiles/other')}
+caplog = <_pytest.logging.LogCaptureFixture object at 0x11ed10d60>
+
+    def test_plugin_cannot_shadow_builtin_and_bad_keys_are_rejected(homes, caplog):
+        from cron.blueprint_catalog import get_blueprint, list_blueprints
+    
+        body = textwrap.dedent(
+            """
+            def register(ctx):
+                common = dict(title="Mine", description="d", schedule_template="0 9 * * *",
+                              prompt_template="hi")
+                ctx.register_automation_blueprint("morning-brief", **common)
+                ctx.register_automation_blueprint("morning-brief", **common)   # duplicate
+                ctx.register_automation_blueprint("other:spoof", **common)      # namespace spoof
+            """
+        )
+        _write_plugin(homes["default"], "teamtools", body)
+    
+        with caplog.at_level(logging.WARNING, logger="hermes_cli.plugins"):
+            keys = [bp.key for bp in list_blueprints()]
+        assert keys.count("morning-brief") == 1
+        builtin, mine = get_blueprint("morning-brief"), get_blueprint("teamtools:morning-brief")
+        assert builtin is not None and builtin.plugin == ""          # still the built-in
+        assert mine is not None and mine.title == "Mine"
+        assert keys.count("teamtools:morning-brief") == 1
+        assert not any(k.endswith("spoof") for k in keys)
+>       assert "already registered" in caplog.text
+E       assert 'already registered' in '{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_i...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.072+00:00"}\n'
+E        +  where '{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_i...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.072+00:00"}\n' = <_pytest.logging.LogCaptureFixture object at 0x11ed10d60>.text
+
+tests/plugins/test_plugin_automation_blueprints.py:157: AssertionError
+------------------------------ Captured log call -------------------------------
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.059+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.059+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.059+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.059+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.059+00:00"}
+{"category":"plugin","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"92915d97c46f5160","failure_id":"92915d97c46f5160","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.072+00:00"}
+{"category":"plugin","declared_message_size":"1-64","dynamic_fields_omitted":3,"event_id":"6d49a1d05b946da5","failure_id":"6d49a1d05b946da5","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.072+00:00"}
+____ test_malformed_plugin_blueprint_is_warned_and_ignored[fields0-nobody] _____
+
+homes = {'default': PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_malformed_plugin_blueprin0/.hermes'), 'other': PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_malformed_plugin_blueprin0/.hermes/profiles/other')}
+caplog = <_pytest.logging.LogCaptureFixture object at 0x11ac04ff0>
+fields = {'prompt_template': 'hello {nobody}'}, reason = 'nobody'
+
+    @pytest.mark.parametrize(
+        "fields, reason",
+        [
+            ({"prompt_template": "hello {nobody}"}, "nobody"),
+            ({"slots": [{"name": "x", "type": "colour", "label": "X"}]}, "type"),
+            ({"schedule_template": "not a schedule"}, "schedule"),
+            ({"schedule_template": "{minute} {hour} * * *"}, "time"),
+            ({"title": ""}, "title"),
+        ],
+    )
+    def test_malformed_plugin_blueprint_is_warned_and_ignored(homes, caplog, fields, reason):
+        from cron.blueprint_catalog import list_blueprints
+    
+        base = dict(title="T", description="d", schedule_template="0 9 * * *", prompt_template="hi")
+        base.update(fields)
+        _write_plugin(homes["default"], "teamtools", f"def register(ctx):\n    ctx.register_automation_blueprint('bad', **{base!r})\n")
+    
+        with caplog.at_level(logging.WARNING, logger="hermes_cli.plugins"):
+            keys = [bp.key for bp in list_blueprints()]
+        assert "teamtools:bad" not in keys
+>       assert "teamtools" in caplog.text and reason in caplog.text
+E       assert ('teamtools' in '{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_i...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.175+00:00"}\n')
+E        +  where '{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_i...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.175+00:00"}\n' = <_pytest.logging.LogCaptureFixture object at 0x11ac04ff0>.text
+
+tests/plugins/test_plugin_automation_blueprints.py:181: AssertionError
+------------------------------ Captured log call -------------------------------
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.163+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.163+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.163+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.163+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.163+00:00"}
+{"category":"plugin","declared_message_size":"1-64","dynamic_fields_omitted":3,"event_id":"6d49a1d05b946da5","failure_id":"6d49a1d05b946da5","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.175+00:00"}
+_____ test_malformed_plugin_blueprint_is_warned_and_ignored[fields1-type] ______
+
+homes = {'default': PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_malformed_plugin_blueprin1/.hermes'), 'other': PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_malformed_plugin_blueprin1/.hermes/profiles/other')}
+caplog = <_pytest.logging.LogCaptureFixture object at 0x11d37f930>
+fields = {'slots': [{'name': 'x', 'type': 'colour', 'label': 'X'}]}
+reason = 'type'
+
+    @pytest.mark.parametrize(
+        "fields, reason",
+        [
+            ({"prompt_template": "hello {nobody}"}, "nobody"),
+            ({"slots": [{"name": "x", "type": "colour", "label": "X"}]}, "type"),
+            ({"schedule_template": "not a schedule"}, "schedule"),
+            ({"schedule_template": "{minute} {hour} * * *"}, "time"),
+            ({"title": ""}, "title"),
+        ],
+    )
+    def test_malformed_plugin_blueprint_is_warned_and_ignored(homes, caplog, fields, reason):
+        from cron.blueprint_catalog import list_blueprints
+    
+        base = dict(title="T", description="d", schedule_template="0 9 * * *", prompt_template="hi")
+        base.update(fields)
+        _write_plugin(homes["default"], "teamtools", f"def register(ctx):\n    ctx.register_automation_blueprint('bad', **{base!r})\n")
+    
+        with caplog.at_level(logging.WARNING, logger="hermes_cli.plugins"):
+            keys = [bp.key for bp in list_blueprints()]
+        assert "teamtools:bad" not in keys
+>       assert "teamtools" in caplog.text and reason in caplog.text
+E       assert ('teamtools' in '{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_i...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.278+00:00"}\n')
+E        +  where '{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_i...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.278+00:00"}\n' = <_pytest.logging.LogCaptureFixture object at 0x11d37f930>.text
+
+tests/plugins/test_plugin_automation_blueprints.py:181: AssertionError
+------------------------------ Captured log call -------------------------------
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.266+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.266+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.267+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.267+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.267+00:00"}
+{"category":"plugin","declared_message_size":"1-64","dynamic_fields_omitted":3,"event_id":"6d49a1d05b946da5","failure_id":"6d49a1d05b946da5","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.278+00:00"}
+___ test_malformed_plugin_blueprint_is_warned_and_ignored[fields2-schedule] ____
+
+homes = {'default': PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_malformed_plugin_blueprin2/.hermes'), 'other': PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_malformed_plugin_blueprin2/.hermes/profiles/other')}
+caplog = <_pytest.logging.LogCaptureFixture object at 0x11eff3da0>
+fields = {'schedule_template': 'not a schedule'}, reason = 'schedule'
+
+    @pytest.mark.parametrize(
+        "fields, reason",
+        [
+            ({"prompt_template": "hello {nobody}"}, "nobody"),
+            ({"slots": [{"name": "x", "type": "colour", "label": "X"}]}, "type"),
+            ({"schedule_template": "not a schedule"}, "schedule"),
+            ({"schedule_template": "{minute} {hour} * * *"}, "time"),
+            ({"title": ""}, "title"),
+        ],
+    )
+    def test_malformed_plugin_blueprint_is_warned_and_ignored(homes, caplog, fields, reason):
+        from cron.blueprint_catalog import list_blueprints
+    
+        base = dict(title="T", description="d", schedule_template="0 9 * * *", prompt_template="hi")
+        base.update(fields)
+        _write_plugin(homes["default"], "teamtools", f"def register(ctx):\n    ctx.register_automation_blueprint('bad', **{base!r})\n")
+    
+        with caplog.at_level(logging.WARNING, logger="hermes_cli.plugins"):
+            keys = [bp.key for bp in list_blueprints()]
+        assert "teamtools:bad" not in keys
+>       assert "teamtools" in caplog.text and reason in caplog.text
+E       assert ('teamtools' in '{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_i...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.380+00:00"}\n')
+E        +  where '{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_i...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.380+00:00"}\n' = <_pytest.logging.LogCaptureFixture object at 0x11eff3da0>.text
+
+tests/plugins/test_plugin_automation_blueprints.py:181: AssertionError
+------------------------------ Captured log call -------------------------------
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.368+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.368+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.368+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.368+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.368+00:00"}
+{"category":"plugin","declared_message_size":"1-64","dynamic_fields_omitted":3,"event_id":"6d49a1d05b946da5","failure_id":"6d49a1d05b946da5","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.380+00:00"}
+_____ test_malformed_plugin_blueprint_is_warned_and_ignored[fields3-time] ______
+
+homes = {'default': PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_malformed_plugin_blueprin3/.hermes'), 'other': PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_malformed_plugin_blueprin3/.hermes/profiles/other')}
+caplog = <_pytest.logging.LogCaptureFixture object at 0x11f6226d0>
+fields = {'schedule_template': '{minute} {hour} * * *'}, reason = 'time'
+
+    @pytest.mark.parametrize(
+        "fields, reason",
+        [
+            ({"prompt_template": "hello {nobody}"}, "nobody"),
+            ({"slots": [{"name": "x", "type": "colour", "label": "X"}]}, "type"),
+            ({"schedule_template": "not a schedule"}, "schedule"),
+            ({"schedule_template": "{minute} {hour} * * *"}, "time"),
+            ({"title": ""}, "title"),
+        ],
+    )
+    def test_malformed_plugin_blueprint_is_warned_and_ignored(homes, caplog, fields, reason):
+        from cron.blueprint_catalog import list_blueprints
+    
+        base = dict(title="T", description="d", schedule_template="0 9 * * *", prompt_template="hi")
+        base.update(fields)
+        _write_plugin(homes["default"], "teamtools", f"def register(ctx):\n    ctx.register_automation_blueprint('bad', **{base!r})\n")
+    
+        with caplog.at_level(logging.WARNING, logger="hermes_cli.plugins"):
+            keys = [bp.key for bp in list_blueprints()]
+        assert "teamtools:bad" not in keys
+>       assert "teamtools" in caplog.text and reason in caplog.text
+E       assert ('teamtools' in '{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_i...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.484+00:00"}\n')
+E        +  where '{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_i...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.484+00:00"}\n' = <_pytest.logging.LogCaptureFixture object at 0x11f6226d0>.text
+
+tests/plugins/test_plugin_automation_blueprints.py:181: AssertionError
+------------------------------ Captured log call -------------------------------
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.471+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.472+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.472+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.472+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.472+00:00"}
+{"category":"plugin","declared_message_size":"1-64","dynamic_fields_omitted":3,"event_id":"6d49a1d05b946da5","failure_id":"6d49a1d05b946da5","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.484+00:00"}
+_____ test_malformed_plugin_blueprint_is_warned_and_ignored[fields4-title] _____
+
+homes = {'default': PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_malformed_plugin_blueprin4/.hermes'), 'other': PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_malformed_plugin_blueprin4/.hermes/profiles/other')}
+caplog = <_pytest.logging.LogCaptureFixture object at 0x11ddbc550>
+fields = {'title': ''}, reason = 'title'
+
+    @pytest.mark.parametrize(
+        "fields, reason",
+        [
+            ({"prompt_template": "hello {nobody}"}, "nobody"),
+            ({"slots": [{"name": "x", "type": "colour", "label": "X"}]}, "type"),
+            ({"schedule_template": "not a schedule"}, "schedule"),
+            ({"schedule_template": "{minute} {hour} * * *"}, "time"),
+            ({"title": ""}, "title"),
+        ],
+    )
+    def test_malformed_plugin_blueprint_is_warned_and_ignored(homes, caplog, fields, reason):
+        from cron.blueprint_catalog import list_blueprints
+    
+        base = dict(title="T", description="d", schedule_template="0 9 * * *", prompt_template="hi")
+        base.update(fields)
+        _write_plugin(homes["default"], "teamtools", f"def register(ctx):\n    ctx.register_automation_blueprint('bad', **{base!r})\n")
+    
+        with caplog.at_level(logging.WARNING, logger="hermes_cli.plugins"):
+            keys = [bp.key for bp in list_blueprints()]
+        assert "teamtools:bad" not in keys
+>       assert "teamtools" in caplog.text and reason in caplog.text
+E       assert ('teamtools' in '{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_i...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.586+00:00"}\n')
+E        +  where '{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_i...urrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.586+00:00"}\n' = <_pytest.logging.LogCaptureFixture object at 0x11ddbc550>.text
+
+tests/plugins/test_plugin_automation_blueprints.py:181: AssertionError
+------------------------------ Captured log call -------------------------------
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.573+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.574+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.574+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.574+00:00"}
+{"category":"tool","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"af1bb4a58e1210a4","failure_id":"af1bb4a58e1210a4","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.574+00:00"}
+{"category":"plugin","declared_message_size":"1-64","dynamic_fields_omitted":3,"event_id":"6d49a1d05b946da5","failure_id":"6d49a1d05b946da5","logger_component":"hermes_cli","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:08.586+00:00"}
+__ test_only_pre_handoff_failure_reopens_admission[error_before_entry-cancel] __
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11f562190>
+tmp_path = PosixPath('/private/tmp/pytest-of-kahransingh/pytest-59/test_only_pre_handoff_failure_32')
+caplog = <_pytest.logging.LogCaptureFixture object at 0x11ece24a0>
+stage = 'error_before_entry', failure = 'cancel'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("stage,failure", [
+        *[(stage, failure) for stage in ("prepare", "batch_prepare", "observer", "enqueued", "pressure", "native", "dispatch", "callback", "inline", "media_warning")
+          for failure in ("error", "cancel")],
+        *[(stage, failure) for stage in ("native_error_block", "native_error_async", "native_error_default", "native_error_default_async")
+          for failure in ("error", "cancel", "success")],
+        ("error_before_entry", "cancel"), ("error_registration", "error"), ("error_context", "error"),
+        ("context", "error"), ("conversation", "error"), ("conversation_owner", "error"), ("ingress", "error"),
+        ("sticker_vision", "cancel"), ("sticker_prepare", "cancel"),
+        *[(stage, "error") for stage in ("observed_prepare", "inline_prepare", "normalize_prepare", "source_prepare")],
+        *[(stage, failure) for stage in ("core_default", "native_async", "native_default", "conversation_async", "conversation_default")
+          for failure in ("error", "cancel")],
+    ])
+    async def test_only_pre_handoff_failure_reopens_admission(monkeypatch, tmp_path, caplog, stage, failure):
+        import hermes_cli.lifecycle
+    
+        monkeypatch.setattr(hermes_cli.lifecycle, "has_hook", lambda name: True)
+        async with connected(monkeypatch) as (adapter, app, delivered):
+            if stage == "ingress":
+                monkeypatch.setattr(adapter, "_cache_replied_media", AsyncMock(side_effect=OSError("before enqueue")))
+                adapter._updates_received_total = 2
+                for _ in range(2):
+                    await app.process_update(update(app.bot))
+                assert not adapter._seen_update_ids and not adapter._inflight_update_ids
+                assert adapter._updates_dispatched_total == 2
+                for _ in range(tg_adapter._INGRESS_DISPATCH_STALL_HEARTBEATS):
+                    adapter._check_ingress_dispatch_stall()
+                assert not any("healthy but deaf" in record.message for record in caplog.records)
+                return
+            if stage.startswith("native_error_"):
+                await _check_native_error_callback(monkeypatch, adapter, app, stage, failure)
+                return
+            if stage == "error_before_entry":
+>               await _check_error_cancel_before_entry(monkeypatch, adapter, app, delivered)
+
+tests/plugins/test_telegram_update_admission.py:521: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11f562190>
+adapter = <plugins.platforms.telegram.adapter.TelegramAdapter object at 0x11f139400>
+app = TelegramApplication[bot=ExtBot[token=111:offline-test]], delivered = []
+
+    async def _check_error_cancel_before_entry(monkeypatch, adapter, app, delivered):
+        scheduled, effects = [], []
+        create = app._Application__create_task
+    
+        def cancel_on_schedule(coroutine, *args, **kwargs):
+            task = create(coroutine, *args, **kwargs)
+            if kwargs.get("is_error_handler"):
+                scheduled.append((task, coroutine))
+                task.cancel()
+            return task
+    
+        async def notify(incoming, context):
+            effects.append(incoming.update_id)
+    
+        app.add_error_handler(notify, block=False)
+        with monkeypatch.context() as broken:
+            broken.setattr(type(app), "_Application__create_task", lambda self, *a, **kw: cancel_on_schedule(*a, **kw))
+            broken.setattr(adapter, "_cache_replied_media", AsyncMock(side_effect=OSError("before enqueue")))
+            await app.process_update(update(app.bot))
+            assert "111:10" in adapter._inflight_update_ids
+            await app.process_update(update(app.bot))
+            await app.stop()
+        assert len(scheduled) == 1 and not effects
+>       assert not adapter._inflight_update_ids and not adapter._seen_update_ids
+E       AssertionError: assert (not {'111:10': _Claim(key='111:10', dispatch_task=<Task pending name='Task-2620' coro=<test_only_pre_handoff_failure_reope...ork/Versions/3.14/lib/python3.14/asyncio/base_events.py:181]>, accepted=False, completed=False, failed=True, owners=1)})
+E        +  where {'111:10': _Claim(key='111:10', dispatch_task=<Task pending name='Task-2620' coro=<test_only_pre_handoff_failure_reope...ork/Versions/3.14/lib/python3.14/asyncio/base_events.py:181]>, accepted=False, completed=False, failed=True, owners=1)} = <plugins.platforms.telegram.adapter.TelegramAdapter object at 0x11f139400>._inflight_update_ids
+
+tests/plugins/test_telegram_update_admission.py:420: AssertionError
+------------------------------ Captured log call -------------------------------
+{"category":"plugin","declared_message_size":"1-64","dynamic_fields_omitted":3,"event_id":"b21dcd6dc0a00e83","failure_id":"b21dcd6dc0a00e83","logger_component":"plugins","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:21.092+00:00"}
+{"category":"plugin","declared_message_size":"1-64","dynamic_fields_omitted":2,"event_id":"46d3dd44b0b381fc","failure_id":"46d3dd44b0b381fc","logger_component":"plugins","message_omitted":true,"occurrence_count":1,"schema":"hermes.metadata-log.v1","severity":"WARNING","timestamp":"2026-11-04T18:27:21.093+00:00"}
+=============================== warnings summary ===============================
+tests/plugins/platforms/slack/test_slash_command_channel_prompt.py::test_slash_turn_matches_message_turn_prompt_and_names[channel]
+tests/plugins/platforms/slack/test_slash_command_channel_prompt.py::test_slash_turn_matches_message_turn_prompt_and_names[dm]
+tests/plugins/platforms/slack/test_slash_command_channel_prompt.py::test_slash_turn_matches_message_turn_prompt_and_names[queue-command]
+tests/plugins/platforms/slack/test_slash_command_channel_prompt.py::test_slash_turn_matches_message_turn_prompt_and_names[goal-kickoff]
+tests/plugins/platforms/slack/test_slash_command_channel_prompt.py::test_thread_routed_sender_is_checked_against_the_routed_thread
+  /Users/kahransingh/Dev/hermes-candidate-0.22.x/venv/lib/python3.14/site-packages/_pytest/stash.py:108: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    del self._storage[key]
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/plugins/test_telegram_polling_progress_ptb.py::test_real_ptb_stop_cleanup_cannot_heal_recovery_generation
+tests/plugins/test_telegram_polling_progress_ptb.py::test_real_ptb_stop_cleanup_cannot_heal_recovery_generation
+  /Users/kahransingh/Dev/hermes-candidate-0.22.x/venv/lib/python3.14/site-packages/telegram/ext/_updater.py:278: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    if error_callback and asyncio.iscoroutinefunction(error_callback):
+
+tests/plugins/test_telegram_update_admission.py::test_connect_builds_concurrent_update_processor
+  /opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/asyncio/base_events.py:2058: RuntimeWarning: coroutine 'test_connect_builds_concurrent_update_processor.<locals>.handler' was never awaited
+    handle = None  # Needed to break cycles when an exception occurs.
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/plugins/config_backends/test_remote_backend.py::test_unset_of_inherited_key_warns
+FAILED tests/plugins/config_backends/test_remote_backend.py::test_unknown_top_level_key_warns_once
+FAILED tests/plugins/platforms/photon/test_spectrum_patch.py::test_sidecar_patch_failure_still_reaches_health_endpoint
+FAILED tests/plugins/platforms/photon/test_spectrum_patch.py::test_spectrum_patch_rewrites_the_imessage_mapper
+FAILED tests/plugins/platforms/photon/test_zombie_stream_watchdog.py::test_probe_message_id_is_guid_shaped_and_unique
+FAILED tests/plugins/platforms/photon/test_zombie_stream_watchdog.py::test_probe_rejection_classification_is_strict
+FAILED tests/plugins/platforms/photon/test_zombie_stream_watchdog.py::test_should_probe_requires_silence_past_threshold_and_cooldown
+FAILED tests/plugins/platforms/photon/test_zombie_stream_watchdog.py::test_zombie_requires_probe_proven_connectivity_never_silence_alone
+FAILED tests/plugins/test_a2a_plugin.py::TestMultiAgentRouting::test_path_routed_agent_card_uses_prefix_and_canonical_path
+FAILED tests/plugins/test_plugin_automation_blueprints.py::test_plugin_cannot_shadow_builtin_and_bad_keys_are_rejected
+FAILED tests/plugins/test_plugin_automation_blueprints.py::test_malformed_plugin_blueprint_is_warned_and_ignored[fields0-nobody]
+FAILED tests/plugins/test_plugin_automation_blueprints.py::test_malformed_plugin_blueprint_is_warned_and_ignored[fields1-type]
+FAILED tests/plugins/test_plugin_automation_blueprints.py::test_malformed_plugin_blueprint_is_warned_and_ignored[fields2-schedule]
+FAILED tests/plugins/test_plugin_automation_blueprints.py::test_malformed_plugin_blueprint_is_warned_and_ignored[fields3-time]
+FAILED tests/plugins/test_plugin_automation_blueprints.py::test_malformed_plugin_blueprint_is_warned_and_ignored[fields4-title]
+FAILED tests/plugins/test_telegram_update_admission.py::test_only_pre_handoff_failure_reopens_admission[error_before_entry-cancel]
+ERROR tests/plugins/platforms/photon/test_url_send_path.py::test_send_builder_selection[markdown_bare_domain_without_scheme_keeps_markdown]
+ERROR tests/plugins/platforms/photon/test_url_send_path.py::test_send_builder_selection[markdown_link_syntax_also_falls_back_to_text]
+ERROR tests/plugins/platforms/photon/test_url_send_path.py::test_send_builder_selection[markdown_with_http_url_falls_back_to_text]
+ERROR tests/plugins/platforms/photon/test_url_send_path.py::test_send_builder_selection[markdown_with_https_url_falls_back_to_text]
+ERROR tests/plugins/platforms/photon/test_url_send_path.py::test_send_builder_selection[markdown_with_uppercase_scheme_falls_back_to_text]
+ERROR tests/plugins/platforms/photon/test_url_send_path.py::test_send_builder_selection[markdown_without_url_keeps_markdown]
+ERROR tests/plugins/platforms/photon/test_url_send_path.py::test_send_builder_selection[text_format_stays_text]
+ERROR tests/plugins/platforms/photon/test_url_send_path.py::test_send_builder_selection[text_format_with_url_stays_text]
+16 failed, 1990 passed, 4 skipped, 17 deselected, 8 warnings, 8 errors in 101.35s (0:01:41)

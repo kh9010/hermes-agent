@@ -212,7 +212,7 @@ class GatewayTurnPersistenceMixin:
             _show_reasoning_effective = _resolve_gateway_display_bool(
                 _load_gateway_config(), _platform_config_key(source.platform), "show_reasoning",
                 default=bool(getattr(self, "_show_reasoning", False)), platform=source.platform,
-                chat_id=source.chat_id,
+                chat_id=getattr(source, "chat_id", None),
                 require_platform_override_for={Platform.MATTERMOST},
             )
         except Exception:
@@ -234,7 +234,7 @@ class GatewayTurnPersistenceMixin:
             from gateway.display_config import resolve_display_setting
             _reasoning_style = resolve_display_setting(
                 _load_gateway_config(), _platform_config_key(source.platform), "reasoning_style", "code",
-                chat_id=source.chat_id,
+                chat_id=getattr(source, "chat_id", None),
             )
         except Exception:
             _reasoning_style = "code"

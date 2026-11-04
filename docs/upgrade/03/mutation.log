@@ -1,0 +1,9 @@
+[M1 persistence show_reasoning chat_id] 1 failed, 34 passed in 1.20s
+[M2 progress status render chat_id] 1 failed, 34 passed in 1.22s
+[M3 run_turn display partial] 2 failed, 33 passed in 1.29s
+[M4 authz WhatsApp group grant] 3 failed, 32 passed in 1.23s
+[M5 LID device normalization] 3 failed, 32 passed in 1.24s
+[M6 chats lookup] 13 failed, 22 passed in 1.25s
+[M7 (unpinned, known) diagnostic_turn_muted chat_id] 35 passed in 1.19s
+[M8 (unpinned, proxy-only path) stream consumer chat_id] 35 passed in 1.18s
+[restored] 35 passed in 1.22s

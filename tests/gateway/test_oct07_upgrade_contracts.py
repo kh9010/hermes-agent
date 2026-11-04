@@ -136,5 +136,5 @@ def test_auth_uses_receiving_profile_not_default_group_grant(monkeypatch):
     runner.pairing_store.is_approved.return_value = False
     source = SessionSource(platform=Platform.WHATSAPP, chat_id='family@g.us', chat_type='group', user_id='888')
     for adapter, expected in ((primary, True), (secondary, False), (primary, True)):
-        setattr(source, '_transport_adapter_ref', weakref.ref(adapter))
+        source._transport_adapter_ref = weakref.ref(adapter)
         assert runner._is_user_authorized(source) is expected

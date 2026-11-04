@@ -1,0 +1,14 @@
+## ruff differential on modified files (pristine v0.22.7 vs candidate)
+agent/prompt_builder.py pristine=0 candidate=0
+gateway/authz_mixin.py pristine=0 candidate=0
+gateway/display_config.py pristine=0 candidate=0
+gateway/platforms/whatsapp_common.py pristine=0 candidate=0
+gateway/run.py pristine=0 candidate=0
+gateway/run_busy.py pristine=0 candidate=0
+gateway/run_turn.py pristine=0 candidate=0
+gateway/run_turn_persistence.py pristine=0 candidate=0
+gateway/run_turn_progress.py pristine=0 candidate=0
+gateway/run_turn_runner.py pristine=0 candidate=0
+gateway/warning_notifications.py pristine=0 candidate=0
+## ruff on added test files
+All checks passed (after B010 fix in test_oct07_upgrade_contracts.py)
