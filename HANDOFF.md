@@ -30,8 +30,8 @@ env -i PATH=/usr/bin:/bin HOME=$(mktemp -d) HERMES_HOME=/tmp/none venv/bin/pytho
   tests/gateway/test_oct07_compatibility.py tests/gateway/test_oct07_upgrade_contracts.py \
   tests/agent/test_oct07_prompt_contracts.py tests/gateway/test_oct07_chat_scope_propagation.py \
   tests/gateway/test_display_config.py tests/gateway/test_config_driven_access_policy.py \
-  tests/gateway/test_whatsapp_group_gating.py
-# 113 passed
+  tests/gateway/test_whatsapp_group_gating.py tests/gateway/test_nov04_inbound_dm_admission.py
+# 115 passed
 
 env -i PATH=/opt/homebrew/bin:/usr/bin:/bin HOME="$(mktemp -d)" /opt/homebrew/bin/node verify.mjs
 ```
@@ -45,4 +45,5 @@ Expected (`VERIFY.txt` holds the last real run): one PASS line per rail/integrit
 
 ## Deployment
 - **2026-10-07** (0.21.5, attended): `hermes-kmini/bin/oct07-cutover.sh`; model moved to Claude Opus 5.5 via `claude-subscription-directsdk-experimental` 0.3.2; crons on `claude-haiku-5-5`; fallbacks Codex `gpt-6-sol` → DeepSeek. Rollback artifacts retired after Kahran called it good.
-- **03**: pending, attended. Run `bin/nov04-cutover.sh preflight`, then `cutover`, then `probe-delivery`; `plugin-update` (DirectSDK 0.3.2 → 0.3.4) is a separate, optional step. Record the result here and set version 03's status in `versions.json`.
+- **03**: pending, attended. Run `bin/nov04-cutover.sh preflight`, then `cutover`, then `probe-delivery`, then `probe-inbound` (the cutover is done only when it reports inbound + reply on both platforms); `plugin-update` (DirectSDK 0.3.2 → 0.3.4) is a separate, optional step. Record the result here and set version 03's status in `versions.json`.
+- **2026-11-04 attempt** (rolled back): 0.22.7 ran 23:07:20-23:11:45Z; cron probes and outbound delivery passed. It was rolled back as "dropping inbound", but no inbound reached it: raw.db (Kahran's WhatsApp account) and a sweep of every guild channel/thread show his first messages at 23:12:23Z (WhatsApp) and 23:12:26Z (Discord), after 0.21.5 was back (23:11:56Z), and 0.21.5 answered both. The same 0.22.7 build with this config admitted a synthetic DM from his real sender id end-to-end in an isolated home (fake bridge, fake LLM). Not a code defect; the runbook simply never checked inbound. `tests/gateway/test_nov04_inbound_dm_admission.py` now pins the inbound half (kMini config shape, real adapter intake + runner handler to the turn entry; red under four mutations: DM intake reject, runner deny, batch flush no-dispatch, runner admit-all), and the runbook's `probe-inbound` gates the next cutover on real inbound.
