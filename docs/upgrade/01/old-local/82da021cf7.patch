@@ -1,0 +1,400 @@
+commit 82da021cf76d77f1a2aaa36ed204b6ea36ee90ee
+Author:     Kahran Singh <kahran_s@hotmail.com>
+AuthorDate: Mon Aug 31 14:13:51 2026 -0400
+Commit:     Kahran Singh <kahran_s@hotmail.com>
+CommitDate: Mon Aug 31 14:14:10 2026 -0400
+
+    feat(display): per-conversation display overrides via display.chats
+    
+    Adds `display.chats.<chat-id>.<key>`, resolved ahead of the per-platform and
+    global settings, so a single conversation can be quietened without changing the
+    rest of that platform. The motivating case is a shared family group that should
+    not see tool-progress bubbles, interim commentary or thinking output, while
+    direct messages keep them.
+    
+    Resolution order becomes: chat -> platform -> global -> platform default ->
+    global default.
+    
+    Tests cover the new precedence and the progress paths that consume it; docs
+    gain a worked example under the display section.
+
+diff --git a/gateway/display_config.py b/gateway/display_config.py
+index 656a30d69c..ab27c266b8 100644
+--- a/gateway/display_config.py
++++ b/gateway/display_config.py
+@@ -4,10 +4,11 @@ Provides ``resolve_display_setting()`` — the single entry-point for reading
+ display settings with platform-specific overrides and sensible defaults.
+ 
+ Resolution order (first non-None wins):
+-    1. ``display.platforms.<platform>.<key>``  — explicit per-platform user override
+-    2. ``display.<key>``                       — global user setting
+-    3. ``_PLATFORM_DEFAULTS[<platform>][<key>]``  — built-in sensible default
+-    4. ``_GLOBAL_DEFAULTS[<key>]``              — built-in global default
++    1. ``display.chats.<chat-id>.<key>``       — explicit per-conversation user override
++    2. ``display.platforms.<platform>.<key>``  — explicit per-platform user override
++    3. ``display.<key>``                       — global user setting
++    4. ``_PLATFORM_DEFAULTS[<platform>][<key>]``  — built-in sensible default
++    5. ``_GLOBAL_DEFAULTS[<key>]``              — built-in global default
+ 
+ Exception: ``display.streaming`` is CLI-only.  Gateway streaming follows the
+ top-level ``streaming`` config unless ``display.platforms.<platform>.streaming``
+@@ -194,8 +195,10 @@ def resolve_display_setting(
+     platform_key: str,
+     setting: str,
+     fallback: Any = None,
++    *,
++    chat_id: str | None = None,
+ ) -> Any:
+-    """Resolve a display setting with per-platform override support.
++    """Resolve a display setting with conversation and platform overrides.
+ 
+     Parameters
+     ----------
+@@ -208,6 +211,9 @@ def resolve_display_setting(
+         Display setting name (e.g. ``"tool_progress"``, ``"show_reasoning"``).
+     fallback : Any
+         Fallback value when the setting isn't found anywhere.
++    chat_id : str | None
++        Exact conversation identifier. When supplied, an explicit
++        ``display.chats.<chat-id>.<key>`` value takes highest priority.
+ 
+     Returns
+     -------
+@@ -215,7 +221,15 @@ def resolve_display_setting(
+     """
+     display_cfg = user_config.get("display") or {}
+ 
+-    # 1. Explicit per-platform override (display.platforms.<platform>.<key>)
++    # 1. Explicit per-conversation override (display.chats.<chat-id>.<key>)
++    chats = display_cfg.get("chats") or {}
++    chat_overrides = chats.get(str(chat_id)) if chat_id is not None else None
++    if isinstance(chat_overrides, dict):
++        val = chat_overrides.get(setting)
++        if val is not None:
++            return _normalise(setting, val)
++
++    # 2. Explicit per-platform override (display.platforms.<platform>.<key>)
+     platforms = display_cfg.get("platforms") or {}
+     plat_overrides = platforms.get(platform_key)
+     if isinstance(plat_overrides, dict):
+diff --git a/gateway/run.py b/gateway/run.py
+index 6c7838398b..79bd0eb0ad 100644
+--- a/gateway/run.py
++++ b/gateway/run.py
+@@ -28948,7 +28948,18 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
+         platform_key = _platform_config_key(source.platform)
+         user_config = _load_gateway_config()
+         from gateway.display_config import resolve_display_setting
+-        _plat_streaming = resolve_display_setting(
++
++        def resolve_turn_display_setting(config, platform, setting, fallback=None):
++            """Resolve display config for this exact conversation."""
++            return resolve_display_setting(
++                config,
++                platform,
++                setting,
++                fallback,
++                chat_id=source.chat_id,
++            )
++
++        _plat_streaming = resolve_turn_display_setting(
+             user_config, platform_key, "streaming"
+         )
+         _streaming_enabled = (
+@@ -29368,15 +29379,23 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
+         if not isinstance(display_config, dict):
+             display_config = {}
+ 
+-        # Per-platform display settings — resolve via display_config module
+-        # which checks display.platforms.<platform>.<key> first, then
+-        # display.<key> global, then built-in platform defaults.
++        # Per-conversation display settings resolve before platform/global defaults.
+         from gateway.display_config import resolve_display_setting
+ 
++        def resolve_turn_display_setting(config, platform, setting, fallback=None):
++            """Resolve display config for this exact conversation."""
++            return resolve_display_setting(
++                config,
++                platform,
++                setting,
++                fallback,
++                chat_id=source.chat_id,
++            )
++
+         # Apply tool preview length config (0 = no limit)
+         try:
+             from agent.display import set_tool_preview_max_len
+-            _tpl = resolve_display_setting(user_config, platform_key, "tool_preview_length", 0)
++            _tpl = resolve_turn_display_setting(user_config, platform_key, "tool_preview_length", 0)
+             set_tool_preview_max_len(int(_tpl) if _tpl else 0)
+         except Exception:
+             pass
+@@ -29384,20 +29403,26 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
+         # Apply friendly tool labels config (default on) — per-platform aware
+         try:
+             from agent.display import set_friendly_tool_labels
+-            _ftl = resolve_display_setting(user_config, platform_key, "friendly_tool_labels", True)
++            _ftl = resolve_turn_display_setting(user_config, platform_key, "friendly_tool_labels", True)
+             set_friendly_tool_labels(bool(_ftl))
+         except Exception:
+             pass
+ 
+         # Tool progress mode — resolved per-platform with env var fallback
+-        _resolved_tp = resolve_display_setting(user_config, platform_key, "tool_progress")
++        _resolved_tp = resolve_turn_display_setting(user_config, platform_key, "tool_progress")
+         _env_tp = os.getenv("HERMES_TOOL_PROGRESS_MODE")
+         _display_cfg = display_config if isinstance(display_config, dict) else {}
++        _chats_cfg = _display_cfg.get("chats") or {}
++        _chat_cfg = _chats_cfg.get(str(source.chat_id)) or {}
+         _platforms_cfg = _display_cfg.get("platforms") or {}
+         _platform_cfg = _platforms_cfg.get(platform_key) or {}
+         _legacy_tp_overrides = _display_cfg.get("tool_progress_overrides") or {}
+         _tool_progress_configured = (
+             "tool_progress" in _display_cfg
++            or (
++                isinstance(_chat_cfg, dict)
++                and "tool_progress" in _chat_cfg
++            )
+             or (
+                 isinstance(_platform_cfg, dict)
+                 and "tool_progress" in _platform_cfg
+@@ -29413,7 +29438,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
+             else (_resolved_tp or _env_tp or "all")
+         )
+         # Tool progress grouping: "accumulate" (edit one bubble) or "separate" (one msg per tool)
+-        progress_grouping = resolve_display_setting(user_config, platform_key, "tool_progress_grouping") or "accumulate"
++        progress_grouping = resolve_turn_display_setting(user_config, platform_key, "tool_progress_grouping") or "accumulate"
+         from gateway.status_phrases import choose_status_phrase, resolve_status_phrase_catalog
+         _generic_status_recent: List[str] = []
+         _generic_status_catalog = resolve_status_phrase_catalog(user_config, platform_key)
+@@ -29437,7 +29462,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
+                     and not _has_platform_display_override(user_config, platform_key, setting)
+                 ):
+                     return "off"
+-            value = resolve_display_setting(user_config, platform_key, setting, default)
++            value = resolve_turn_display_setting(user_config, platform_key, setting, default)
+             if isinstance(value, str) and value.strip().lower() == "generic":
+                 return "generic" if allow_generic else "off"
+             return "raw" if bool(value) else "off"
+@@ -29466,7 +29491,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
+         # there. Rendering rides the existing _keep_typing refresh: the
+         # callback only stores a phrase on the adapter, costing zero extra
+         # platform API calls.
+-        _live_status_mode = resolve_display_setting(
++        _live_status_mode = resolve_turn_display_setting(
+             user_config, platform_key, "live_status", "full"
+         )
+         _live_status_adapter = self._adapter_for_source(source)
+@@ -29564,7 +29589,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
+         # are collected here and deleted after the final response lands.
+         # Failed runs skip cleanup so the bubbles remain as breadcrumbs.
+         _cleanup_progress = bool(
+-            resolve_display_setting(user_config, platform_key, "cleanup_progress")
++            resolve_turn_display_setting(user_config, platform_key, "cleanup_progress")
+         )
+         _cleanup_adapter = self._adapter_for_source(source) if _cleanup_progress else None
+         # getattr, not attribute access — same duck-typed-adapter guard as the
+@@ -29605,7 +29630,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
+             _cleanup_msg_ids=_cleanup_msg_ids,
+             message=message,
+             AIAgent=AIAgent,
+-            resolve_display_setting=resolve_display_setting,
++            resolve_display_setting=resolve_turn_display_setting,
+             user_config=user_config,
+             enabled_toolsets=enabled_toolsets,
+             disabled_toolsets=disabled_toolsets,
+@@ -30091,7 +30116,7 @@ class GatewayRunner(GatewayAuthorizationMixin, GatewayKanbanWatchersMixin, Gatew
+                 _agent_ref = agent_holder[0]
+                 _status_detail = ""
+                 _want_iteration_detail = bool(
+-                    resolve_display_setting(
++                    resolve_turn_display_setting(
+                         user_config,
+                         platform_key,
+                         "busy_ack_detail",
+diff --git a/tests/gateway/test_display_config.py b/tests/gateway/test_display_config.py
+index 3a74058978..d0bfa99571 100644
+--- a/tests/gateway/test_display_config.py
++++ b/tests/gateway/test_display_config.py
+@@ -50,6 +50,38 @@ class TestResolveDisplaySetting:
+         assert resolve_display_setting(config, "slack", "tool_progress") == "off"
+         assert resolve_display_setting(config, "telegram", "tool_progress") == "all"
+ 
++    def test_explicit_chat_override_wins_over_platform_and_global(self):
++        """display.chats.<chat-id> overrides only that conversation."""
++        from gateway.display_config import resolve_display_setting
++
++        family_group = "1234567890-987654321@g.us"
++        config = {
++            "display": {
++                "tool_progress": "all",
++                "platforms": {"whatsapp": {"tool_progress": "new"}},
++                "chats": {family_group: {"tool_progress": "off"}},
++            }
++        }
++
++        assert (
++            resolve_display_setting(
++                config,
++                "whatsapp",
++                "tool_progress",
++                chat_id=family_group,
++            )
++            == "off"
++        )
++        assert (
++            resolve_display_setting(
++                config,
++                "whatsapp",
++                "tool_progress",
++                chat_id="112450984751212@lid",
++            )
++            == "new"
++        )
++
+ 
+ # ---------------------------------------------------------------------------
+ # Backward compatibility: tool_progress_overrides
+diff --git a/tests/gateway/test_run_progress_topics.py b/tests/gateway/test_run_progress_topics.py
+index da3dd2efc7..4cb14b5145 100644
+--- a/tests/gateway/test_run_progress_topics.py
++++ b/tests/gateway/test_run_progress_topics.py
+@@ -1057,6 +1057,112 @@ async def _run_with_agent(
+     return adapter, result
+ 
+ 
++@pytest.mark.asyncio
++async def test_chat_override_suppresses_interim_commentary_only_in_target_chat(
++    monkeypatch, tmp_path
++):
++    family_group = "1234567890-987654321@g.us"
++    config = {
++        "display": {
++            "interim_assistant_messages": True,
++            "chats": {family_group: {"interim_assistant_messages": False}},
++        }
++    }
++
++    family_adapter, family_result = await _run_with_agent(
++        monkeypatch,
++        tmp_path,
++        CommentaryAgent,
++        session_id="sess-family-quiet",
++        config_data=config,
++        platform=Platform.WHATSAPP,
++        chat_id=family_group,
++    )
++
++    assert family_result["final_response"] == "done"
++    assert family_adapter.sent == []
++
++
++@pytest.mark.asyncio
++async def test_chat_override_leaves_other_chat_interim_commentary_enabled(
++    monkeypatch, tmp_path
++):
++    family_group = "1234567890-987654321@g.us"
++    config = {
++        "display": {
++            "interim_assistant_messages": True,
++            "chats": {family_group: {"interim_assistant_messages": False}},
++        }
++    }
++
++    dm_adapter, dm_result = await _run_with_agent(
++        monkeypatch,
++        tmp_path,
++        CommentaryAgent,
++        session_id="sess-dm-still-chatty",
++        config_data=config,
++        platform=Platform.WHATSAPP,
++        chat_id="112450984751212@lid",
++        chat_type="direct",
++    )
++
++    assert dm_result["final_response"] == "done"
++    assert [call["content"] for call in dm_adapter.sent] == ["I'll inspect the repo first."]
++
++
++@pytest.mark.asyncio
++async def test_chat_override_suppresses_tool_progress_only_in_target_chat(
++    monkeypatch, tmp_path
++):
++    family_group = "1234567890-987654321@g.us"
++    config = {
++        "display": {
++            "tool_progress": "all",
++            "chats": {family_group: {"tool_progress": "off"}},
++        }
++    }
++
++    family_adapter, family_result = await _run_with_agent(
++        monkeypatch,
++        tmp_path,
++        FakeAgent,
++        session_id="sess-family-no-tools",
++        config_data=config,
++        platform=Platform.WHATSAPP,
++        chat_id=family_group,
++    )
++
++    assert family_result["final_response"] == "done"
++    assert family_adapter.sent == []
++
++
++@pytest.mark.asyncio
++async def test_chat_override_leaves_other_chat_tool_progress_enabled(
++    monkeypatch, tmp_path
++):
++    family_group = "1234567890-987654321@g.us"
++    config = {
++        "display": {
++            "tool_progress": "all",
++            "chats": {family_group: {"tool_progress": "off"}},
++        }
++    }
++
++    dm_adapter, dm_result = await _run_with_agent(
++        monkeypatch,
++        tmp_path,
++        FakeAgent,
++        session_id="sess-dm-tools-visible",
++        config_data=config,
++        platform=Platform.WHATSAPP,
++        chat_id="112450984751212@lid",
++        chat_type="direct",
++    )
++
++    assert dm_result["final_response"] == "done"
++    assert dm_adapter.sent or dm_adapter.edits
++
++
+ @pytest.mark.asyncio
+ async def test_slack_native_progress_correlates_concurrent_duplicate_tools_by_id(
+     monkeypatch, tmp_path
+diff --git a/website/docs/user-guide/configuration.md b/website/docs/user-guide/configuration.md
+index 9c3cdb3bd8..f813403dd1 100644
+--- a/website/docs/user-guide/configuration.md
++++ b/website/docs/user-guide/configuration.md
+@@ -2042,6 +2042,21 @@ display:
+ 
+ Platforms without an override fall back to the global `tool_progress` value. Valid platform keys: `telegram`, `discord`, `slack`, `signal`, `whatsapp`, `matrix`, `mattermost`, `email`, `sms`, `homeassistant`, `dingtalk`, `feishu`, `wecom`, `weixin`, `bluebubbles`, `qqbot`. The legacy `display.tool_progress_overrides` key still loads for backward compatibility but is deprecated and migrated into `display.platforms` on first load.
+ 
++For a single conversation, use its exact platform chat ID under `display.chats`. Conversation overrides take precedence over platform and global settings, so a shared group can stay quiet without changing direct messages:
++
++```yaml
++display:
++  tool_progress: all
++  interim_assistant_messages: true
++  chats:
++    "1234567890-987654321@g.us":
++      tool_progress: 'off'
++      interim_assistant_messages: false
++      thinking_progress: false
++      streaming: false
++      long_running_notifications: false
++```
++
+ Signal is listed as a valid platform key because the setting can be saved per platform, but the current Signal adapter cannot edit sent messages and does not render tool-progress bubbles. Keep Signal `tool_progress` set to `off`; use the CLI or an editing-capable messaging platform if you need to watch each tool call live.
+ 
+ `interim_assistant_messages` is gateway-only. When enabled, Hermes sends completed mid-turn assistant updates as separate chat messages. This is independent from `tool_progress` and does not require gateway streaming.

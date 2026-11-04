@@ -628,6 +628,18 @@ class GatewayAuthorizationMixin:
         # Chat-scoped group allowlists must work with ``user_id is None`` (anonymous admins,
         # sender_chat posts, channel broadcasts).
         if is_group and source.chat_id:
+            # WhatsApp's group JID grant is independent of the DM sender list.
+            # Re-check the actual receiving adapter: never trust a policy label
+            # alone, a different profile's config, or an unlisted group.
+            if source.platform == Platform.WHATSAPP and allow_adapter_delegation:
+                adapter = self._authorization_adapter(source.platform, adapter_profile)
+                if (
+                    self._adapter_flag(source.platform, "enforces_own_access_policy", adapter_profile)
+                    and self._adapter_policy(source.platform, "group", adapter_profile) == "allowlist"
+                    and callable(check := getattr(adapter, "_is_group_allowed", None))
+                    and check(source.chat_id, source.user_id or "") is True
+                ):
+                    return True
             chat_allowlist_env = _group_chat_env(source.platform)
             if chat_allowlist_env and _allows(_coerce_allow_set(_auth_env(chat_allowlist_env)), source.chat_id):
                 return True

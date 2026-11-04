@@ -1,0 +1,13 @@
+{
+  "model_default": "gpt-6-astra",
+  "model_provider": "openai-codex",
+  "group_policy": "allowlist",
+  "require_mention": true,
+  "family_group_allowlisted": true,
+  "group_allowlist_count": 1,
+  "free_response_chats_empty": true,
+  "mention_patterns_empty": true,
+  "display_chat_override_count": 1,
+  "local_address_classifier_present": false,
+  "local_address_classifier_enabled": false
+}

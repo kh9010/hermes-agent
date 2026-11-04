@@ -1,0 +1,33 @@
+{
+  "old_live": "130c0a8f7aa40fc407eea99656d7c3bce8ba4222",
+  "old_upstream_base": "d63f996a757f6255fc1454239616ab4b4435e0f5",
+  "candidate_release": "f97608f178d1ffeca59860195ab7da295f7c8e5f",
+  "old_local_files": [
+    "agent/prompt_builder.py",
+    "gateway/authz_mixin.py",
+    "gateway/config.py",
+    "gateway/display_config.py",
+    "gateway/platforms/whatsapp_common.py",
+    "gateway/platforms/whatsapp_local_address.py",
+    "gateway/run.py",
+    "plugins/platforms/whatsapp/adapter.py",
+    "scripts/whatsapp-bridge/bridge.js",
+    "tests/agent/test_prompt_guidance_contracts.py",
+    "tests/gateway/test_config_driven_access_policy.py",
+    "tests/gateway/test_display_config.py",
+    "tests/gateway/test_run_progress_topics.py",
+    "tests/gateway/test_whatsapp_local_address_classifier.py",
+    "website/docs/user-guide/configuration.md",
+    "website/docs/user-guide/messaging/whatsapp.md"
+  ],
+  "old_local_commits": [
+    "c7aef3e9e4",
+    "9d374d4bba",
+    "82da021cf7",
+    "7b2cd84bbd",
+    "b53933bc0f",
+    "27a221ce5f"
+  ],
+  "upstream_breadth": "11516 files changed, 1438244 insertions(+), 1088677 deletions(-)",
+  "upstream_commit_count": 15157
+}

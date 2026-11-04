@@ -1,0 +1,67 @@
+COMMAND: /Users/kahransingh/Dev/hermes-agent-oct07-upgrade/.venv/bin/python -m pytest -q --tb=short tests/gateway/test_oct07_upgrade_contracts.py
+ISOLATION: empty env; disposable HOME/HERMES_HOME; sandbox deny network and live Hermes reads/writes
+.F.FFFFFFFF                                                              [100%]
+=================================== FAILURES ===================================
+_____ test_reply_matches_device_identity_but_not_other_account[123@7@lid] ______
+tests/gateway/test_oct07_upgrade_contracts.py:16: in test_reply_matches_device_identity_but_not_other_account
+    assert adapter._should_process_message(_group_message(botIds=[bot_id], quotedParticipant='123@lid'))
+E   AssertionError: assert False
+E    +  where False = _should_process_message({'isGroup': True, 'body': 'hello', 'chatId': '120363001234567890@g.us', 'mentionedIds': [], ...})
+E    +    where _should_process_message = <plugins.platforms.whatsapp.adapter.WhatsAppAdapter object at 0x1097f4bd0>._should_process_message
+E    +    and   {'isGroup': True, 'body': 'hello', 'chatId': '120363001234567890@g.us', 'mentionedIds': [], ...} = _group_message(botIds=['123@7@lid'], quotedParticipant='123@lid')
+__________ test_allowlisted_group_independent_of_dm_sender_allowlist ___________
+tests/gateway/test_oct07_upgrade_contracts.py:35: in test_allowlisted_group_independent_of_dm_sender_allowlist
+    assert runner._is_user_authorized(source)
+E   AssertionError: assert False
+E    +  where False = _is_user_authorized(SessionSource(platform=<Platform.WHATSAPP: 'whatsapp'>, chat_id='120363001234567890@g.us', chat_name=None, chat_type='...to_thread_created=False, auto_thread_initial_name=None, prospective_thread_id=None, delivered_via_upstream_relay=False))
+E    +    where _is_user_authorized = <gateway.run.GatewayRunner object at 0x10b2cea90>._is_user_authorized
+_ test_chat_override_precedes_platform_without_affecting_dm[tool_progress-off] _
+tests/gateway/test_oct07_upgrade_contracts.py:49: in test_chat_override_precedes_platform_without_affecting_dm
+    assert resolve_display_setting(config, 'whatsapp', setting, chat_id='family@g.us') == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: resolve_display_setting() got an unexpected keyword argument 'chat_id'
+_ test_chat_override_precedes_platform_without_affecting_dm[thinking_progress-False] _
+tests/gateway/test_oct07_upgrade_contracts.py:49: in test_chat_override_precedes_platform_without_affecting_dm
+    assert resolve_display_setting(config, 'whatsapp', setting, chat_id='family@g.us') == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: resolve_display_setting() got an unexpected keyword argument 'chat_id'
+_ test_chat_override_precedes_platform_without_affecting_dm[interim_assistant_messages-False] _
+tests/gateway/test_oct07_upgrade_contracts.py:49: in test_chat_override_precedes_platform_without_affecting_dm
+    assert resolve_display_setting(config, 'whatsapp', setting, chat_id='family@g.us') == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: resolve_display_setting() got an unexpected keyword argument 'chat_id'
+_ test_chat_override_precedes_platform_without_affecting_dm[show_reasoning-False] _
+tests/gateway/test_oct07_upgrade_contracts.py:49: in test_chat_override_precedes_platform_without_affecting_dm
+    assert resolve_display_setting(config, 'whatsapp', setting, chat_id='family@g.us') == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: resolve_display_setting() got an unexpected keyword argument 'chat_id'
+__ test_chat_override_precedes_platform_without_affecting_dm[streaming-False] __
+tests/gateway/test_oct07_upgrade_contracts.py:49: in test_chat_override_precedes_platform_without_affecting_dm
+    assert resolve_display_setting(config, 'whatsapp', setting, chat_id='family@g.us') == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: resolve_display_setting() got an unexpected keyword argument 'chat_id'
+_________ test_chat_tool_progress_false_is_explicit_and_null_inherits __________
+tests/gateway/test_oct07_upgrade_contracts.py:55: in test_chat_tool_progress_false_is_explicit_and_null_inherits
+    assert resolve_tool_progress(config, 'whatsapp', 'all', chat_id='family') == ('off', True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: resolve_tool_progress() got an unexpected keyword argument 'chat_id'
+______________ test_actual_turn_display_consumers_use_chat_scope _______________
+tests/gateway/test_oct07_upgrade_contracts.py:72: in test_actual_turn_display_consumers_use_chat_scope
+    assert family.progress_mode == 'off'
+E   AssertionError: assert 'all' == 'off'
+E     
+E     - off
+E     + all
+=========================== short test summary info ============================
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_reply_matches_device_identity_but_not_other_account[123@7@lid]
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_allowlisted_group_independent_of_dm_sender_allowlist
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_chat_override_precedes_platform_without_affecting_dm[tool_progress-off]
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_chat_override_precedes_platform_without_affecting_dm[thinking_progress-False]
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_chat_override_precedes_platform_without_affecting_dm[interim_assistant_messages-False]
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_chat_override_precedes_platform_without_affecting_dm[show_reasoning-False]
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_chat_override_precedes_platform_without_affecting_dm[streaming-False]
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_chat_tool_progress_false_is_explicit_and_null_inherits
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_actual_turn_display_consumers_use_chat_scope
+9 failed, 2 passed in 0.45s
+
+EXIT_CODE: 1

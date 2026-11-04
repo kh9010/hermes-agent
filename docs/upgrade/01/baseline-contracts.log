@@ -1,0 +1,92 @@
+COMMAND: /Users/kahransingh/Dev/hermes-agent-oct07-upgrade/.venv/bin/python -m pytest -q --tb=short tests/gateway/test_oct07_upgrade_contracts.py tests/agent/test_oct07_prompt_contracts.py
+ISOLATION: empty env; disposable HOME/HERMES_HOME; sandbox deny network and live Hermes reads/writes
+.F.FFFFFFFF....FFFF                                                      [100%]
+=================================== FAILURES ===================================
+_____ test_reply_matches_device_identity_but_not_other_account[123@7@lid] ______
+tests/gateway/test_oct07_upgrade_contracts.py:16: in test_reply_matches_device_identity_but_not_other_account
+    assert adapter._should_process_message(_group_message(botIds=[bot_id], quotedParticipant='123@lid'))
+E   AssertionError: assert False
+E    +  where False = _should_process_message({'isGroup': True, 'body': 'hello', 'chatId': '120363001234567890@g.us', 'mentionedIds': [], ...})
+E    +    where _should_process_message = <plugins.platforms.whatsapp.adapter.WhatsAppAdapter object at 0x10a414310>._should_process_message
+E    +    and   {'isGroup': True, 'body': 'hello', 'chatId': '120363001234567890@g.us', 'mentionedIds': [], ...} = _group_message(botIds=['123@7@lid'], quotedParticipant='123@lid')
+__________ test_allowlisted_group_independent_of_dm_sender_allowlist ___________
+tests/gateway/test_oct07_upgrade_contracts.py:35: in test_allowlisted_group_independent_of_dm_sender_allowlist
+    assert runner._is_user_authorized(source)
+E   AssertionError: assert False
+E    +  where False = _is_user_authorized(SessionSource(platform=<Platform.WHATSAPP: 'whatsapp'>, chat_id='120363001234567890@g.us', chat_name=None, chat_type='...to_thread_created=False, auto_thread_initial_name=None, prospective_thread_id=None, delivered_via_upstream_relay=False))
+E    +    where _is_user_authorized = <gateway.run.GatewayRunner object at 0x10ad13c50>._is_user_authorized
+_ test_chat_override_precedes_platform_without_affecting_dm[tool_progress-off] _
+tests/gateway/test_oct07_upgrade_contracts.py:57: in test_chat_override_precedes_platform_without_affecting_dm
+    assert resolve_display_setting(config, 'whatsapp', setting, chat_id='family@g.us') == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: resolve_display_setting() got an unexpected keyword argument 'chat_id'
+_ test_chat_override_precedes_platform_without_affecting_dm[thinking_progress-False] _
+tests/gateway/test_oct07_upgrade_contracts.py:57: in test_chat_override_precedes_platform_without_affecting_dm
+    assert resolve_display_setting(config, 'whatsapp', setting, chat_id='family@g.us') == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: resolve_display_setting() got an unexpected keyword argument 'chat_id'
+_ test_chat_override_precedes_platform_without_affecting_dm[interim_assistant_messages-False] _
+tests/gateway/test_oct07_upgrade_contracts.py:57: in test_chat_override_precedes_platform_without_affecting_dm
+    assert resolve_display_setting(config, 'whatsapp', setting, chat_id='family@g.us') == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: resolve_display_setting() got an unexpected keyword argument 'chat_id'
+_ test_chat_override_precedes_platform_without_affecting_dm[show_reasoning-False] _
+tests/gateway/test_oct07_upgrade_contracts.py:57: in test_chat_override_precedes_platform_without_affecting_dm
+    assert resolve_display_setting(config, 'whatsapp', setting, chat_id='family@g.us') == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: resolve_display_setting() got an unexpected keyword argument 'chat_id'
+__ test_chat_override_precedes_platform_without_affecting_dm[streaming-False] __
+tests/gateway/test_oct07_upgrade_contracts.py:57: in test_chat_override_precedes_platform_without_affecting_dm
+    assert resolve_display_setting(config, 'whatsapp', setting, chat_id='family@g.us') == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: resolve_display_setting() got an unexpected keyword argument 'chat_id'
+_________ test_chat_tool_progress_false_is_explicit_and_null_inherits __________
+tests/gateway/test_oct07_upgrade_contracts.py:63: in test_chat_tool_progress_false_is_explicit_and_null_inherits
+    assert resolve_tool_progress(config, 'whatsapp', 'all', chat_id='family') == ('off', True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: resolve_tool_progress() got an unexpected keyword argument 'chat_id'
+______________ test_actual_turn_display_consumers_use_chat_scope _______________
+tests/gateway/test_oct07_upgrade_contracts.py:80: in test_actual_turn_display_consumers_use_chat_scope
+    assert family.progress_mode == 'off'
+E   AssertionError: assert 'all' == 'off'
+E     
+E     - off
+E     + all
+________ test_real_config_homes_a_b_a_preserve_astra_and_chat_settings _________
+tests/gateway/test_oct07_upgrade_contracts.py:111: in test_real_config_homes_a_b_a_preserve_astra_and_chat_settings
+    assert resolve_tool_progress(cfg, 'whatsapp', chat_id='family') == (expected, True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: resolve_tool_progress() got an unexpected keyword argument 'chat_id'
+___________ test_auth_uses_receiving_profile_not_default_group_grant ___________
+tests/gateway/test_oct07_upgrade_contracts.py:129: in test_auth_uses_receiving_profile_not_default_group_grant
+    assert runner._is_user_authorized(source) is expected
+E   AssertionError: assert False is True
+E    +  where False = _is_user_authorized(SessionSource(platform=<Platform.WHATSAPP: 'whatsapp'>, chat_id='family@g.us', chat_name=None, chat_type='group', user...to_thread_created=False, auto_thread_initial_name=None, prospective_thread_id=None, delivered_via_upstream_relay=False))
+E    +    where _is_user_authorized = <gateway.run.GatewayRunner object at 0x10c9ff5d0>._is_user_authorized
+______________ test_narrow_skills_keep_safety_and_rendered_index _______________
+tests/agent/test_oct07_prompt_contracts.py:19: in test_narrow_skills_keep_safety_and_rendered_index
+    assert obligation in rendered
+E   AssertionError: assert 'MUST load clearly applicable procedural skills' in '## Skills\nBefore replying, scan the skills below. If a skill matches or is even partially relevant to your task, you...list actions.\n</available_skills>\n\nOnly proceed without loading a skill if genuinely none are relevant to the task.'
+____ test_lean_guidance_keeps_execution_safety_and_is_shorter_than_release _____
+tests/agent/test_oct07_prompt_contracts.py:41: in test_lean_guidance_keeps_execution_safety_and_is_shorter_than_release
+    assert sum(len(getattr(pb, n)) for n in names) < sum(len(values[n]) for n in names)
+E   assert 6163 < 6163
+E    +  where 6163 = sum(<generator object test_lean_guidance_keeps_execution_safety_and_is_shorter_than_release.<locals>.<genexpr> at 0x10cc1bb50>)
+E    +  and   6163 = sum(<generator object test_lean_guidance_keeps_execution_safety_and_is_shorter_than_release.<locals>.<genexpr> at 0x10cc1bc40>)
+=========================== short test summary info ============================
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_reply_matches_device_identity_but_not_other_account[123@7@lid]
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_allowlisted_group_independent_of_dm_sender_allowlist
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_chat_override_precedes_platform_without_affecting_dm[tool_progress-off]
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_chat_override_precedes_platform_without_affecting_dm[thinking_progress-False]
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_chat_override_precedes_platform_without_affecting_dm[interim_assistant_messages-False]
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_chat_override_precedes_platform_without_affecting_dm[show_reasoning-False]
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_chat_override_precedes_platform_without_affecting_dm[streaming-False]
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_chat_tool_progress_false_is_explicit_and_null_inherits
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_actual_turn_display_consumers_use_chat_scope
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_real_config_homes_a_b_a_preserve_astra_and_chat_settings
+FAILED tests/gateway/test_oct07_upgrade_contracts.py::test_auth_uses_receiving_profile_not_default_group_grant
+FAILED tests/agent/test_oct07_prompt_contracts.py::test_narrow_skills_keep_safety_and_rendered_index
+FAILED tests/agent/test_oct07_prompt_contracts.py::test_lean_guidance_keeps_execution_safety_and_is_shorter_than_release
+13 failed, 6 passed in 0.49s
+
+EXIT_CODE: 1

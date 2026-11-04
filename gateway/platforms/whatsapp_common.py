@@ -146,8 +146,10 @@ class WhatsAppBehaviorMixin(OwnAccessPolicyMixin):
     def _normalize_whatsapp_id(value: Optional[str]) -> str:
         if not value:
             return ""
-        # Device-qualified ids (`<user>:<device>@lid`) must equal their bare form.
-        return re.sub(r":\d+(?=@)", "", str(value).strip())
+        # Baileys has supplied both <user>:<device>@lid and <user>@<device>@lid.
+        # Preserve the namespace; equal numeric phone/LID IDs are not identity proof.
+        value = re.sub(r"^(\d+)@\d+(@lid)$", r"\1\2", str(value).strip())
+        return re.sub(r":\d+(?=@)", "", value)
 
     @staticmethod
     def _is_broadcast_chat(chat_id: str) -> bool:

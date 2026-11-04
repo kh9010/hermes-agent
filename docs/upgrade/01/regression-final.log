@@ -1,0 +1,404 @@
+COMMAND: /Users/kahransingh/Dev/hermes-agent-oct07-upgrade/.venv/bin/python docs/upgrade/01/broad_runner.py tests/agent/test_anthropic_prompt_cache_policy.py tests/agent/test_bot_profile_prompt_isolation.py tests/agent/test_codex_runtime_prompt_handoff.py tests/agent/test_compaction_prompt_rebuild.py tests/agent/test_cron_inflight_prompt_reappend.py tests/agent/test_external_skills.py tests/agent/test_external_skills_dirs_cache.py tests/agent/test_learn_prompt.py tests/agent/test_oct07_prompt_contracts.py tests/agent/test_oneshot.py tests/agent/test_oneshot_footprint.py tests/agent/test_plan_prompt.py tests/agent/test_plugin_prompt_sections.py tests/agent/test_project_skills.py tests/agent/test_prompt_builder.py tests/agent/test_prompt_cache_boundary.py tests/agent/test_prompt_cache_scope.py tests/agent/test_prompt_cache_ttl_auto.py tests/agent/test_prompt_cache_ttl_propagation.py tests/agent/test_prompt_caching.py tests/agent/test_skills_auto_load.py tests/agent/test_skills_guidance_content_filter.py tests/agent/test_system_prompt.py tests/agent/test_system_prompt_restore.py tests/gateway/test_adapter_authz_secret_scope.py tests/gateway/test_allowlist_warning_platform_gate.py tests/gateway/test_api_server_reasoning_nonstream.py tests/gateway/test_api_server_reasoning_stream.py tests/gateway/test_api_server_status_stream.py tests/gateway/test_auth_fallback.py tests/gateway/test_base_warning_owner_scope.py tests/gateway/test_busy_command.py tests/gateway/test_busy_redirect_anchor.py tests/gateway/test_busy_session_ack.py tests/gateway/test_busy_session_auth_bypass.py tests/gateway/test_busy_session_profile_scope.py tests/gateway/test_busy_steer_origin.py tests/gateway/test_busy_steer_subagent_fanout.py tests/gateway/test_busy_wake_admission.py tests/gateway/test_buzz_authz.py tests/gateway/test_config_driven_access_policy.py tests/gateway/test_config_env_bridge_authority.py tests/gateway/test_discord_bot_auth_bypass.py tests/gateway/test_discord_component_auth.py tests/gateway/test_discord_slash_auth.py tests/gateway/test_display_config.py tests/gateway/test_display_null_turn_wiring.py tests/gateway/test_feishu_bot_auth_bypass.py tests/gateway/test_gateway_mcp_oauth_unattended.py tests/gateway/test_gateway_streaming_nested_config.py tests/gateway/test_google_chat_oauth_dependencies.py tests/gateway/test_hygiene_warning_lifecycle.py tests/gateway/test_interim_only_consumer_warning.py tests/gateway/test_internal_event_never_interrupts_busy_session.py tests/gateway/test_matrix_pending_invite_auth.py tests/gateway/test_multiplex_busy_input_mode.py tests/gateway/test_multiplex_interactive_auth.py tests/gateway/test_multiplex_profile_authz.py tests/gateway/test_multiplex_routing_authz.py tests/gateway/test_native_stream_warning_composition.py tests/gateway/test_native_warning_coverage.py tests/gateway/test_oct07_compatibility.py tests/gateway/test_oct07_upgrade_contracts.py tests/gateway/test_platform_authz_scope.py tests/gateway/test_post_stream_media_delivery.py tests/gateway/test_relay_upstream_authz.py tests/gateway/test_run_progress_topics.py tests/gateway/test_runtime_env_reload_config_authority.py tests/gateway/test_session_db_warning_recheck.py tests/gateway/test_slack_bot_auth_bypass.py tests/gateway/test_slack_native_streaming.py tests/gateway/test_stream_abandon_on_turn_death.py tests/gateway/test_stream_consumer.py tests/gateway/test_stream_consumer_continuation_cut.py tests/gateway/test_stream_consumer_draft.py tests/gateway/test_stream_consumer_fresh_final.py tests/gateway/test_stream_consumer_oversized_leftover.py tests/gateway/test_stream_consumer_silence.py tests/gateway/test_stream_consumer_thread_routing.py tests/gateway/test_stream_consumer_tool_progress.py tests/gateway/test_stream_consumer_wecom_native.py tests/gateway/test_stream_edit_flood_retry_after.py tests/gateway/test_stream_events.py tests/gateway/test_stream_final_contract.py tests/gateway/test_streaming_tts_consumer.py tests/gateway/test_streaming_tts_gateway_regression.py tests/gateway/test_telegram_auth_check.py tests/gateway/test_telegram_bot_auth_bypass.py tests/gateway/test_telegram_callback_auth_fail_closed.py tests/gateway/test_telegram_inbound_warning_owner.py tests/gateway/test_unauthorized_dm_behavior.py tests/gateway/test_unauthorized_sender_notices.py tests/gateway/test_update_streaming.py tests/gateway/test_warning_delivery_real_producers.py tests/gateway/test_warning_emission_boundary.py tests/gateway/test_warning_notification_contracts.py tests/gateway/test_warning_notifications.py tests/gateway/test_warning_notifications_transport.py tests/gateway/test_warning_render_boundary.py tests/gateway/test_warning_wiring_conservation.py tests/gateway/test_wecom_stream_dup_fix.py tests/gateway/test_weixin_voice_warning_policy.py tests/gateway/test_whatsapp_allowlist_lid_resolution.py tests/gateway/test_whatsapp_bridge_dir_resolution.py tests/gateway/test_whatsapp_bridge_pidfile.py tests/gateway/test_whatsapp_cloud.py tests/gateway/test_whatsapp_cloud_allowed_users.py tests/gateway/test_whatsapp_connect.py tests/gateway/test_whatsapp_formatting.py tests/gateway/test_whatsapp_from_owner.py tests/gateway/test_whatsapp_group_allowlist_env.py tests/gateway/test_whatsapp_group_gating.py tests/gateway/test_whatsapp_identity.py tests/gateway/test_whatsapp_media_path_profile.py tests/gateway/test_whatsapp_multiplex_secret_scope.py tests/gateway/test_whatsapp_native_delivery.py tests/gateway/test_whatsapp_reply_prefix.py tests/gateway/test_whatsapp_stale_bridge.py tests/gateway/test_whatsapp_text_batching.py tests/gateway/test_whatsapp_to_jid.py tests/gateway/test_ws_auth_retry.py tests/gateway/test_ws_auth_retry_verifier_probe.py -q -rs --tb=short
+ISOLATION: empty env; disposable HOME/HERMES_HOME; sandbox deny network and live Hermes reads/writes
+Discovered 122 test files (~984 tests) under ['tests/agent/test_anthropic_prompt_cache_policy.py', 'tests/agent/test_bot_profile_prompt_isolation.py', 'tests/agent/test_codex_runtime_prompt_handoff.py', 'tests/agent/test_compaction_prompt_rebuild.py', 'tests/agent/test_cron_inflight_prompt_reappend.py', 'tests/agent/test_external_skills.py', 'tests/agent/test_external_skills_dirs_cache.py', 'tests/agent/test_learn_prompt.py', 'tests/agent/test_oct07_prompt_contracts.py', 'tests/agent/test_oneshot.py', 'tests/agent/test_oneshot_footprint.py', 'tests/agent/test_plan_prompt.py', 'tests/agent/test_plugin_prompt_sections.py', 'tests/agent/test_project_skills.py', 'tests/agent/test_prompt_builder.py', 'tests/agent/test_prompt_cache_boundary.py', 'tests/agent/test_prompt_cache_scope.py', 'tests/agent/test_prompt_cache_ttl_auto.py', 'tests/agent/test_prompt_cache_ttl_propagation.py', 'tests/agent/test_prompt_caching.py', 'tests/agent/test_skills_auto_load.py', 'tests/agent/test_skills_guidance_content_filter.py', 'tests/agent/test_system_prompt.py', 'tests/agent/test_system_prompt_restore.py', 'tests/gateway/test_adapter_authz_secret_scope.py', 'tests/gateway/test_allowlist_warning_platform_gate.py', 'tests/gateway/test_api_server_reasoning_nonstream.py', 'tests/gateway/test_api_server_reasoning_stream.py', 'tests/gateway/test_api_server_status_stream.py', 'tests/gateway/test_auth_fallback.py', 'tests/gateway/test_base_warning_owner_scope.py', 'tests/gateway/test_busy_command.py', 'tests/gateway/test_busy_redirect_anchor.py', 'tests/gateway/test_busy_session_ack.py', 'tests/gateway/test_busy_session_auth_bypass.py', 'tests/gateway/test_busy_session_profile_scope.py', 'tests/gateway/test_busy_steer_origin.py', 'tests/gateway/test_busy_steer_subagent_fanout.py', 'tests/gateway/test_busy_wake_admission.py', 'tests/gateway/test_buzz_authz.py', 'tests/gateway/test_config_driven_access_policy.py', 'tests/gateway/test_config_env_bridge_authority.py', 'tests/gateway/test_discord_bot_auth_bypass.py', 'tests/gateway/test_discord_component_auth.py', 'tests/gateway/test_discord_slash_auth.py', 'tests/gateway/test_display_config.py', 'tests/gateway/test_display_null_turn_wiring.py', 'tests/gateway/test_feishu_bot_auth_bypass.py', 'tests/gateway/test_gateway_mcp_oauth_unattended.py', 'tests/gateway/test_gateway_streaming_nested_config.py', 'tests/gateway/test_google_chat_oauth_dependencies.py', 'tests/gateway/test_hygiene_warning_lifecycle.py', 'tests/gateway/test_interim_only_consumer_warning.py', 'tests/gateway/test_internal_event_never_interrupts_busy_session.py', 'tests/gateway/test_matrix_pending_invite_auth.py', 'tests/gateway/test_multiplex_busy_input_mode.py', 'tests/gateway/test_multiplex_interactive_auth.py', 'tests/gateway/test_multiplex_profile_authz.py', 'tests/gateway/test_multiplex_routing_authz.py', 'tests/gateway/test_native_stream_warning_composition.py', 'tests/gateway/test_native_warning_coverage.py', 'tests/gateway/test_oct07_compatibility.py', 'tests/gateway/test_oct07_upgrade_contracts.py', 'tests/gateway/test_platform_authz_scope.py', 'tests/gateway/test_post_stream_media_delivery.py', 'tests/gateway/test_relay_upstream_authz.py', 'tests/gateway/test_run_progress_topics.py', 'tests/gateway/test_runtime_env_reload_config_authority.py', 'tests/gateway/test_session_db_warning_recheck.py', 'tests/gateway/test_slack_bot_auth_bypass.py', 'tests/gateway/test_slack_native_streaming.py', 'tests/gateway/test_stream_abandon_on_turn_death.py', 'tests/gateway/test_stream_consumer.py', 'tests/gateway/test_stream_consumer_continuation_cut.py', 'tests/gateway/test_stream_consumer_draft.py', 'tests/gateway/test_stream_consumer_fresh_final.py', 'tests/gateway/test_stream_consumer_oversized_leftover.py', 'tests/gateway/test_stream_consumer_silence.py', 'tests/gateway/test_stream_consumer_thread_routing.py', 'tests/gateway/test_stream_consumer_tool_progress.py', 'tests/gateway/test_stream_consumer_wecom_native.py', 'tests/gateway/test_stream_edit_flood_retry_after.py', 'tests/gateway/test_stream_events.py', 'tests/gateway/test_stream_final_contract.py', 'tests/gateway/test_streaming_tts_consumer.py', 'tests/gateway/test_streaming_tts_gateway_regression.py', 'tests/gateway/test_telegram_auth_check.py', 'tests/gateway/test_telegram_bot_auth_bypass.py', 'tests/gateway/test_telegram_callback_auth_fail_closed.py', 'tests/gateway/test_telegram_inbound_warning_owner.py', 'tests/gateway/test_unauthorized_dm_behavior.py', 'tests/gateway/test_unauthorized_sender_notices.py', 'tests/gateway/test_update_streaming.py', 'tests/gateway/test_warning_delivery_real_producers.py', 'tests/gateway/test_warning_emission_boundary.py', 'tests/gateway/test_warning_notification_contracts.py', 'tests/gateway/test_warning_notifications.py', 'tests/gateway/test_warning_notifications_transport.py', 'tests/gateway/test_warning_render_boundary.py', 'tests/gateway/test_warning_wiring_conservation.py', 'tests/gateway/test_wecom_stream_dup_fix.py', 'tests/gateway/test_weixin_voice_warning_policy.py', 'tests/gateway/test_whatsapp_allowlist_lid_resolution.py', 'tests/gateway/test_whatsapp_bridge_dir_resolution.py', 'tests/gateway/test_whatsapp_bridge_pidfile.py', 'tests/gateway/test_whatsapp_cloud.py', 'tests/gateway/test_whatsapp_cloud_allowed_users.py', 'tests/gateway/test_whatsapp_connect.py', 'tests/gateway/test_whatsapp_formatting.py', 'tests/gateway/test_whatsapp_from_owner.py', 'tests/gateway/test_whatsapp_group_allowlist_env.py', 'tests/gateway/test_whatsapp_group_gating.py', 'tests/gateway/test_whatsapp_identity.py', 'tests/gateway/test_whatsapp_media_path_profile.py', 'tests/gateway/test_whatsapp_multiplex_secret_scope.py', 'tests/gateway/test_whatsapp_native_delivery.py', 'tests/gateway/test_whatsapp_reply_prefix.py', 'tests/gateway/test_whatsapp_stale_bridge.py', 'tests/gateway/test_whatsapp_text_batching.py', 'tests/gateway/test_whatsapp_to_jid.py', 'tests/gateway/test_ws_auth_retry.py', 'tests/gateway/test_ws_auth_retry_verifier_probe.py']; running with -j 4
+[  0.6% |     6/~984 | ✓6 | ✗0] ✓ tests/agent/test_bot_profile_prompt_isolation.py (6✓, 0.4s)
+[  0.9% |     9/~984 | ✓9 | ✗0] ✓ tests/agent/test_codex_runtime_prompt_handoff.py (3✓, 0.5s)
+[  1.5% |    15/~984 | ✓15 | ✗ 0] ✓ tests/agent/test_external_skills.py (6✓, 0.4s)
+[  1.7% |    17/~984 | ✓17 | ✗ 0] ✓ tests/agent/test_external_skills_dirs_cache.py (2✓, 0.3s)
+[  2.5% |    25/~984 | ✓25 | ✗ 0] ✓ tests/agent/test_cron_inflight_prompt_reappend.py (8✓, 0.8s)
+[  2.7% |    27/~984 | ✓27 | ✗ 0] ✓ tests/agent/test_learn_prompt.py (2✓, 0.3s)
+[  8.8% |    87/~984 | ✓105 | ✗  0] ✓ tests/agent/test_anthropic_prompt_cache_policy.py (78✓, 1.6s)
+[  9.0% |    89/~984 | ✓107 | ✗  0] ✓ tests/agent/test_oct07_prompt_contracts.py (2✓, 0.4s)
+[  9.6% |    94/~984 | ✓112 | ✗  0] ✓ tests/agent/test_oneshot.py (5✓, 0.3s)
+[  9.8% |    96/~984 | ✓114 | ✗  0] ✓ tests/agent/test_plan_prompt.py (2✓, 0.3s)
+[ 10.0% |    98/~984 | ✓116 | ✗  0] ✓ tests/agent/test_oneshot_footprint.py (2✓, 0.4s)
+[ 12.2% |   120/~984 | ✓137 | ✗  1] ✗ tests/agent/test_project_skills.py (21✓ 1✗, 0.6s)
+
+  ╔╍ Failed: tests/agent/test_project_skills.py ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+  ║ ..F...................                                                   [100%]
+  ║ =================================== FAILURES ===================================
+  ║ _________________ TestFindProjectRoot.test_no_git_returns_none _________________
+  ║ /Users/kahransingh/Dev/hermes-agent-oct07-upgrade/tests/agent/test_project_skills.py:62: in test_no_git_returns_none
+  ║     assert su.find_project_root(start=d) is None
+  ║ E   AssertionError: assert PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') is None
+  ║ E    +  where PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') = <function find_project_root at 0x1092f8720>(start=PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/upgrade-test-fz_fkwyi/per-file/r-___5do8e/pytest-of-kahransingh/pytest-0/test_no_git_returns_none0/plain'))
+  ║ E    +    where <function find_project_root at 0x1092f8720> = su.find_project_root
+  ║ 1 failed, 21 passed in 0.38s
+  ║
+  ║  Repro: python -m pytest tests/agent/test_project_skills.py -q -rs --tb=short
+  ╚╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+[ 13.1% |   129/~984 | ✓146 | ✗  1] ✓ tests/agent/test_compaction_prompt_rebuild.py (9✓, 2.9s)
+[ 18.6% |   183/~984 | ✓195 | ✗  5] ✗ tests/agent/test_prompt_builder.py (49✓ 4✗ 1s, 1.2s)
+
+  ╔╍ Failed: tests/agent/test_prompt_builder.py ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+  ║ WARNING  agent.prompt_builder:prompt_builder.py:1504 ⚠️  Context file ../../../../../../../AGENTS.md TRUNCATED: 33161 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+  ║ _________ TestBuildContextFilesPrompt.test_empty_soul_md_adds_nothing __________
+  ║ tests/agent/test_prompt_builder.py:474: in test_empty_soul_md_adds_nothing
+  ║     assert result == ""
+  ║ E   AssertionError: assert '# Project Co...ll, not here.' == ''
+  ║ E     
+  ║ E     + # Project Context
+  ║ E     + 
+  ║ E     + The following project context files have been loaded and should be followed:
+  ║ E     + 
+  ║ E     + ## ../../../../../../AGENTS.md
+  ║ E     + ...
+  ║ E     
+  ║ E     ...Full output truncated (260 lines hidden), use '-vv' to show
+  ║ ------------------------------ Captured log call -------------------------------
+  ║ WARNING  agent.prompt_builder:prompt_builder.py:1504 ⚠️  Context file ../../../../../../AGENTS.md TRUNCATED: 33158 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+  ║ _______________ TestBuildContextFilesPrompt.test_loads_claude_md _______________
+  ║ tests/agent/test_prompt_builder.py:494: in test_loads_claude_md
+  ║     assert "type hints" in result
+  ║ E   AssertionError: assert 'type hints' in '# Project Context\n\nThe following project context files have been loaded and should be followed:\n\n## ../../../../....er said it. Depth is earned — give it when the user asks for detail, teaches, or the stakes demand it, not by default.'
+  ║ ------------------------------ Captured log call -------------------------------
+  ║ WARNING  agent.prompt_builder:prompt_builder.py:1504 ⚠️  Context file ../../../../../../AGENTS.md TRUNCATED: 33158 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+  ║ ______ TestFindHermesMd.test_unreadable_parent_is_treated_as_no_git_root _______
+  ║ tests/agent/test_prompt_builder.py:542: in test_unreadable_parent_is_treated_as_no_git_root
+  ║     assert _find_git_root(project) is None
+  ║ E   AssertionError: assert PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') is None
+  ║ E    +  where PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') = _find_git_root(PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/upgrade-test-fz_fkwyi/per-file/r-28g7warl/pytest-of-kahransingh/pytest-0/test_unreadable_parent_is_trea0/locked/proj'))
+  ║ =========================== short test summary info ============================
+  ║ SKIPPED [1] tests/agent/test_prompt_builder.py:499: APFS default volume is case-insensitive; CLAUDE.md and claude.md alias the same path
+  ║ 4 failed, 49 passed, 1 skipped in 0.96s
+  ║
+  ║  Repro: python -m pytest tests/agent/test_prompt_builder.py -q -rs --tb=short
+  ╚╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+[ 20.7% |   204/~984 | ✓216 | ✗  5] ✓ tests/agent/test_prompt_cache_boundary.py (21✓, 1.2s)
+[ 21.6% |   213/~984 | ✓225 | ✗  5] ✓ tests/agent/test_prompt_cache_ttl_propagation.py (9✓, 0.5s)
+[ 21.8% |   215/~984 | ✓227 | ✗  5] ✓ tests/agent/test_prompt_cache_ttl_auto.py (2✓, 1.2s)
+[ 24.7% |   243/~984 | ✓256 | ✗  5] ✓ tests/agent/test_prompt_cache_scope.py (29✓, 1.6s)
+[ 24.9% |   245/~984 | ✓258 | ✗  5] ✓ tests/agent/test_skills_guidance_content_filter.py (2✓, 0.4s)
+[ 29.2% |   287/~984 | ✓300 | ✗  5] ✓ tests/agent/test_prompt_caching.py (42✓, 0.7s)
+[ 29.6% |   291/~984 | ✓304 | ✗  5] ✓ tests/agent/test_skills_auto_load.py (4✓, 1.4s)
+[ 32.0% |   315/~984 | ✓328 | ✗  5] ✓ tests/agent/test_system_prompt_restore.py (24✓, 1.4s)
+[ 32.2% |   317/~984 | ✓356 | ✗  5] ✓ tests/gateway/test_adapter_authz_secret_scope.py (28✓, 0.9s)
+[ 32.3% |   318/~984 | ✓359 | ✗  5] ✓ tests/gateway/test_allowlist_warning_platform_gate.py (3✓, 0.6s)
+[ 32.5% |   320/~984 | ✓359 | ✗  7] ✗ tests/gateway/test_api_server_reasoning_nonstream.py (2✗, 0.7s)
+
+  ╔╍ Failed: tests/gateway/test_api_server_reasoning_nonstream.py ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+  ║ .venv/lib/python3.11/site-packages/aiohttp/test_utils.py:141: in start_server
+  ║     _sock = self.socket_factory(self.host, self.port, family)
+  ║             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ║ .venv/lib/python3.11/site-packages/aiohttp/test_utils.py:85: in get_port_socket
+  ║     s.bind((host, port))
+  ║ E   PermissionError: [Errno 1] Operation not permitted
+  ║ _____________ test_responses_input_ignores_echoed_reasoning_items ______________
+  ║ tests/gateway/test_api_server_reasoning_nonstream.py:71: in test_responses_input_ignores_echoed_reasoning_items
+  ║     async with client:
+  ║ .venv/lib/python3.11/site-packages/aiohttp/test_utils.py:533: in __aenter__
+  ║     await self.start_server()
+  ║ .venv/lib/python3.11/site-packages/aiohttp/test_utils.py:312: in start_server
+  ║     await self._server.start_server(loop=self._loop)
+  ║ .venv/lib/python3.11/site-packages/aiohttp/test_utils.py:141: in start_server
+  ║     _sock = self.socket_factory(self.host, self.port, family)
+  ║             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ║ .venv/lib/python3.11/site-packages/aiohttp/test_utils.py:85: in get_port_socket
+  ║     s.bind((host, port))
+  ║ E   PermissionError: [Errno 1] Operation not permitted
+  ║ =============================== warnings summary ===============================
+  ║ tests/gateway/test_api_server_reasoning_nonstream.py::test_non_streaming_routes_carry_reasoning_once
+  ║ tests/gateway/test_api_server_reasoning_nonstream.py::test_responses_input_ignores_echoed_reasoning_items
+  ║   /Users/kahransingh/Dev/hermes-agent-oct07-upgrade/tests/gateway/test_api_server_reasoning_nonstream.py:31: NotAppKeyWarning: It is recommended to use web.AppKey instances for keys.
+  ║   https://docs.aiohttp.org/en/stable/web_advanced.html#application-s-config
+  ║     app["api_server_adapter"] = adapter
+  ║ 
+  ║ -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+  ║ 2 failed, 2 warnings in 0.38s
+  ║ Unclosed client session
+  ║ client_session: <aiohttp.client.ClientSession object at 0x10948c590>
+  ║
+  ║  Repro: python -m pytest tests/gateway/test_api_server_reasoning_nonstream.py -q -rs --tb=short
+  ╚╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+[ 32.7% |   322/~984 | ✓361 | ✗  7] ✓ tests/gateway/test_api_server_reasoning_stream.py (2✓, 1.2s)
+[ 32.9% |   324/~984 | ✓363 | ✗  7] ✓ tests/gateway/test_api_server_status_stream.py (2✓, 1.3s)
+[ 33.0% |   325/~984 | ✓364 | ✗  7] ✓ tests/gateway/test_auth_fallback.py (1✓, 0.5s)
+[ 33.3% |   328/~984 | ✓370 | ✗  7] ✓ tests/gateway/test_busy_command.py (6✓, 0.7s)
+[ 33.5% |   330/~984 | ✓372 | ✗  7] ✓ tests/agent/test_plugin_prompt_sections.py (2✓, 7.5s)
+[ 33.7% |   332/~984 | ✓375 | ✗  7] ✓ tests/gateway/test_busy_redirect_anchor.py (3✓, 0.8s)
+[ 35.0% |   344/~984 | ✓388 | ✗  7] ✓ tests/gateway/test_busy_session_ack.py (13✓, 0.9s)
+[ 35.3% |   347/~984 | ✓391 | ✗  7] ✓ tests/gateway/test_busy_session_auth_bypass.py (3✓, 0.6s)
+[ 35.4% |   348/~984 | ✓392 | ✗  7] ✓ tests/gateway/test_busy_session_profile_scope.py (1✓, 0.5s)
+[ 35.6% |   350/~984 | ✓402 | ✗  7] ✓ tests/gateway/test_base_warning_owner_scope.py (10✓, 2.3s)
+[ 35.7% |   351/~984 | ✓405 | ✗  7] ✓ tests/gateway/test_busy_steer_subagent_fanout.py (3✓, 0.8s)
+[ 35.9% |   353/~984 | ✓408 | ✗  7] ✓ tests/gateway/test_busy_wake_admission.py (3✓, 0.9s)
+[ 37.0% |   364/~984 | ✓419 | ✗  7] ✓ tests/gateway/test_buzz_authz.py (11✓, 0.7s)
+[ 37.2% |   366/~984 | ✓440 | ✗  7] ✓ tests/gateway/test_busy_steer_origin.py (21✓, 2.2s)
+[ 38.6% |   380/~984 | ✓493 | ✗  7] ✓ tests/gateway/test_config_driven_access_policy.py (53✓, 1.2s)
+[ 39.0% |   384/~984 | ✓497 | ✗  7] ✓ tests/gateway/test_discord_bot_auth_bypass.py (4✓, 0.6s)
+[ 40.3% |   397/~984 | ✓514 | ✗  7] ✓ tests/gateway/test_discord_component_auth.py (17✓, 0.6s)
+[ 41.8% |   411/~984 | ✓529 | ✗  7] ✓ tests/gateway/test_discord_slash_auth.py (15✓, 0.6s)
+[ 42.9% |   422/~984 | ✓540 | ✗  7] ✓ tests/gateway/test_display_config.py (11✓, 0.6s)
+[ 43.1% |   424/~984 | ✓543 | ✗  7] ✓ tests/gateway/test_display_null_turn_wiring.py (3✓, 0.4s)
+[ 43.8% |   431/~984 | ✓550 | ✗  7] ✓ tests/gateway/test_config_env_bridge_authority.py (7✓, 2.4s)
+[ 44.0% |   433/~984 | ✓552 | ✗  7] ✓ tests/gateway/test_feishu_bot_auth_bypass.py (2✓, 0.6s)
+[ 44.2% |   435/~984 | ✓554 | ✗  7] ✓ tests/gateway/test_gateway_mcp_oauth_unattended.py (2✓, 0.6s)
+[ 45.0% |   443/~984 | ✓562 | ✗  7] ✓ tests/gateway/test_gateway_streaming_nested_config.py (8✓, 0.5s)
+[ 45.3% |   446/~984 | ✓565 | ✗  7] ✓ tests/gateway/test_google_chat_oauth_dependencies.py (3✓, 0.5s)
+[ 50.4% |   496/~984 | ✓632 | ✗  8] ✗ tests/agent/test_system_prompt.py (67✓ 1✗, 10.4s)
+
+  ╔╍ Failed: tests/agent/test_system_prompt.py ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+  ║ ..............................F.....................................     [100%]
+  ║ =================================== FAILURES ===================================
+  ║ ________ test_stored_prompt_stamped_for_another_session_is_not_restored ________
+  ║ tests/agent/test_system_prompt.py:291: in test_stored_prompt_stamped_for_another_session_is_not_restored
+  ║     parent_prompt = build_system_prompt(_make_agent(session_id="parent-sid", **fields))
+  ║                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ║ agent/system_prompt.py:798: in build_system_prompt
+  ║     agent._emit_diagnostic_status(warning)
+  ║     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ║ E   AttributeError: 'types.SimpleNamespace' object has no attribute '_emit_diagnostic_status'
+  ║ ------------------------------ Captured log call -------------------------------
+  ║ WARNING  agent.prompt_builder:prompt_builder.py:1504 ⚠️  Context file ../../../../../../AGENTS.md TRUNCATED: 33158 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+  ║ 1 failed, 67 passed in 10.01s
+  ║
+  ║  Repro: python -m pytest tests/agent/test_system_prompt.py -q -rs --tb=short
+  ╚╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+[ 50.6% |   498/~984 | ✓634 | ✗  8] ✓ tests/gateway/test_interim_only_consumer_warning.py (2✓, 0.4s)
+[ 50.8% |   500/~984 | ✓640 | ✗  8] ✓ tests/gateway/test_matrix_pending_invite_auth.py (6✓, 0.5s)
+[ 50.9% |   501/~984 | ✓641 | ✗  8] ✓ tests/gateway/test_internal_event_never_interrupts_busy_session.py (1✓, 0.5s)
+[ 52.4% |   516/~984 | ✓656 | ✗  8] ✓ tests/gateway/test_multiplex_profile_authz.py (15✓, 0.7s)
+[ 52.9% |   521/~984 | ✓661 | ✗  8] ✓ tests/gateway/test_multiplex_interactive_auth.py (5✓, 0.8s)
+[ 53.0% |   522/~984 | ✓664 | ✗  8] ✓ tests/gateway/test_hygiene_warning_lifecycle.py (3✓, 1.6s)
+[ 53.2% |   523/~984 | ✓667 | ✗  8] ✓ tests/gateway/test_native_stream_warning_composition.py (3✓, 0.7s)
+[ 53.7% |   528/~984 | ✓672 | ✗  8] ✓ tests/gateway/test_multiplex_routing_authz.py (5✓, 0.8s)
+[ 54.3% |   534/~984 | ✓685 | ✗  8] ✓ tests/gateway/test_oct07_compatibility.py (13✓, 0.7s)
+[ 55.1% |   542/~984 | ✓702 | ✗  8] ✓ tests/gateway/test_oct07_upgrade_contracts.py (17✓, 0.7s)
+[ 56.2% |   553/~984 | ✓778 | ✗  8] ✓ tests/gateway/test_native_warning_coverage.py (76✓, 1.4s)
+[ 56.4% |   555/~984 | ✓780 | ✗  8] ✓ tests/gateway/test_post_stream_media_delivery.py (2✓, 0.6s)
+[ 56.8% |   559/~984 | ✓784 | ✗  8] ✓ tests/gateway/test_relay_upstream_authz.py (4✓, 0.6s)
+[ 57.6% |   567/~984 | ✓801 | ✗  8] ✓ tests/gateway/test_platform_authz_scope.py (17✓, 0.8s)
+[ 57.8% |   569/~984 | ✓803 | ✗  8] ✓ tests/gateway/test_runtime_env_reload_config_authority.py (2✓, 0.5s)
+[ 58.0% |   571/~984 | ✓806 | ✗  8] ✓ tests/gateway/test_session_db_warning_recheck.py (3✓, 0.6s)
+[ 58.2% |   573/~984 | ✓808 | ✗  8] ✓ tests/gateway/test_slack_bot_auth_bypass.py (2✓, 0.6s)
+[ 60.1% |   591/~984 | ✓829 | ✗  8] ✓ tests/gateway/test_slack_native_streaming.py (21✓, 0.7s)
+[ 60.5% |   595/~984 | ✓833 | ✗  8] ✓ tests/gateway/test_stream_abandon_on_turn_death.py (4✓, 0.7s)
+[ 60.7% |   597/~984 | ✓835 | ✗  8] ✓ tests/gateway/test_stream_consumer_continuation_cut.py (2✓, 0.4s)
+[ 62.3% |   613/~984 | ✓859 | ✗  8] ✓ tests/gateway/test_multiplex_busy_input_mode.py (24✓, 5.6s)
+[ 63.1% |   621/~984 | ✓867 | ✗  8] ✓ tests/gateway/test_stream_consumer_fresh_final.py (8✓, 0.8s)
+[ 64.2% |   632/~984 | ✓878 | ✗  8] ✓ tests/gateway/test_stream_consumer_draft.py (11✓, 1.1s)
+[ 64.5% |   635/~984 | ✓881 | ✗  8] ✓ tests/gateway/test_stream_consumer_silence.py (3✓, 0.3s)
+[ 64.9% |   639/~984 | ✓885 | ✗  8] ✓ tests/gateway/test_stream_consumer_thread_routing.py (4✓, 0.4s)
+[ 65.0% |   640/~984 | ✓889 | ✗  8] ✓ tests/gateway/test_stream_consumer_oversized_leftover.py (4✓, 1.2s)
+[ 65.3% |   643/~984 | ✓892 | ✗  8] ✓ tests/gateway/test_stream_consumer_tool_progress.py (3✓, 2.1s)
+[ 65.5% |   645/~984 | ✓894 | ✗  8] ✓ tests/gateway/test_stream_edit_flood_retry_after.py (2✓, 1.1s)
+[ 66.1% |   650/~984 | ✓899 | ✗  8] ✓ tests/gateway/test_stream_events.py (5✓, 0.3s)
+[ 71.2% |   701/~984 | ✓971 | ✗  8] ✓ tests/gateway/test_stream_consumer.py (72✓, 6.4s)
+[ 72.1% |   709/~984 | ✓979 | ✗  8] ✓ tests/gateway/test_stream_final_contract.py (8✓, 0.7s)
+[ 74.6% |   734/~984 | ✓1004 | ✗   8] ✓ tests/gateway/test_stream_consumer_wecom_native.py (25✓, 4.2s)
+[ 74.7% |   735/~984 | ✓1005 | ✗   8] ✓ tests/gateway/test_streaming_tts_gateway_regression.py (1✓, 0.5s)
+[ 76.0% |   748/~984 | ✓1018 | ✗   8] ✓ tests/gateway/test_telegram_auth_check.py (13✓, 0.4s)
+[ 76.2% |   750/~984 | ✓1020 | ✗   8] ✓ tests/gateway/test_telegram_bot_auth_bypass.py (2✓, 0.4s)
+[ 76.6% |   754/~984 | ✓1024 | ✗   8] ✓ tests/gateway/test_telegram_callback_auth_fail_closed.py (4✓, 0.4s)
+[ 76.7% |   755/~984 | ✓1036 | ✗   8] ✓ tests/gateway/test_telegram_inbound_warning_owner.py (12✓, 1.7s)
+[ 78.4% |   771/~984 | ✓1052 | ✗   8] ✓ tests/gateway/test_unauthorized_dm_behavior.py (16✓, 1.7s)
+[ 78.8% |   775/~984 | ✓1056 | ✗   8] ✓ tests/gateway/test_unauthorized_sender_notices.py (4✓, 0.5s)
+[ 79.1% |   778/~984 | ✓1071 | ✗   8] ✓ tests/gateway/test_warning_delivery_real_producers.py (15✓, 1.2s)
+[ 79.3% |   780/~984 | ✓1075 | ✗   8] ✓ tests/gateway/test_warning_emission_boundary.py (4✓, 0.3s)
+[ 79.5% |   782/~984 | ✓1081 | ✗   8] ✓ tests/gateway/test_warning_notification_contracts.py (6✓, 0.5s)
+[ 81.1% |   798/~984 | ✓1097 | ✗   8] ✓ tests/gateway/test_streaming_tts_consumer.py (16✓, 5.8s)
+[ 81.8% |   805/~984 | ✓1104 | ✗   8] ✓ tests/gateway/test_update_streaming.py (7✓, 2.5s)
+[ 82.0% |   807/~984 | ✓1111 | ✗   8] ✓ tests/gateway/test_warning_render_boundary.py (7✓, 0.4s)
+[ 82.2% |   809/~984 | ✓1120 | ✗   8] ✓ tests/gateway/test_warning_notifications_transport.py (9✓, 0.7s)
+[ 82.4% |   811/~984 | ✓1155 | ✗   8] ✓ tests/gateway/test_warning_notifications.py (35✓, 0.8s)
+[ 82.5% |   812/~984 | ✓1156 | ✗   8] ✓ tests/gateway/test_warning_wiring_conservation.py (1✓, 0.5s)
+[ 83.2% |   819/~984 | ✓1163 | ✗   8] ✓ tests/gateway/test_wecom_stream_dup_fix.py (7✓, 0.5s)
+[ 83.3% |   820/~984 | ✓1169 | ✗   8] ✓ tests/gateway/test_weixin_voice_warning_policy.py (6✓, 0.5s)
+[ 83.8% |   825/~984 | ✓1174 | ✗   8] ✓ tests/gateway/test_whatsapp_allowlist_lid_resolution.py (5✓, 0.4s)
+[ 83.9% |   826/~984 | ✓1175 | ✗   8] ✓ tests/gateway/test_whatsapp_bridge_dir_resolution.py (1✓, 0.3s)
+[ 84.6% |   832/~984 | ✓1181 | ✗   8] ✓ tests/gateway/test_whatsapp_cloud_allowed_users.py (6✓, 0.4s)
+[ 84.9% |   835/~984 | ✓1183 | ✗   9] ✗ tests/gateway/test_whatsapp_bridge_pidfile.py (2✓ 1✗, 0.9s)
+
+  ╔╍ Failed: tests/gateway/test_whatsapp_bridge_pidfile.py ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+  ║ ..F                                                                      [100%]
+  ║ =================================== FAILURES ===================================
+  ║ _______ TestKillPortProcess.test_listener_lookup_excludes_client_process _______
+  ║ tests/gateway/test_whatsapp_bridge_pidfile.py:100: in test_listener_lookup_excludes_client_process
+  ║     srv.bind(("127.0.0.1", 0))
+  ║ E   PermissionError: [Errno 1] Operation not permitted
+  ║ 1 failed, 2 passed in 0.73s
+  ║
+  ║  Repro: python -m pytest tests/gateway/test_whatsapp_bridge_pidfile.py -q -rs --tb=short
+  ╚╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+
+[ 89.4% |   880/~984 | ✓1233 | ✗   9] ✓ tests/gateway/test_whatsapp_cloud.py (50✓, 0.8s)
+[ 90.8% |   893/~984 | ✓1241 | ✗   9] ✓ tests/gateway/test_whatsapp_connect.py (8✓ 5s, 0.5s)
+[ 91.0% |   895/~984 | ✓1243 | ✗   9] ✓ tests/gateway/test_whatsapp_from_owner.py (2✓, 0.3s)
+[ 91.2% |   897/~984 | ✓1245 | ✗   9] ✓ tests/gateway/test_whatsapp_group_allowlist_env.py (2✓, 0.3s)
+[ 91.3% |   898/~984 | ✓1246 | ✗   9] ✓ tests/gateway/test_whatsapp_identity.py (1✓, 0.3s)
+[ 92.5% |   910/~984 | ✓1258 | ✗   9] ✓ tests/gateway/test_whatsapp_group_gating.py (12✓, 0.7s)
+[ 92.6% |   911/~984 | ✓1259 | ✗   9] ✓ tests/gateway/test_whatsapp_media_path_profile.py (1✓, 0.3s)
+[ 93.2% |   917/~984 | ✓1265 | ✗   9] ✓ tests/gateway/test_whatsapp_multiplex_secret_scope.py (6✓, 0.4s)
+[ 93.4% |   919/~984 | ✓1267 | ✗   9] ✓ tests/gateway/test_whatsapp_native_delivery.py (2✓, 0.4s)
+[ 94.7% |   932/~984 | ✓1281 | ✗   9] ✓ tests/gateway/test_whatsapp_formatting.py (14✓, 1.7s)
+[ 94.9% |   934/~984 | ✓1283 | ✗   9] ✓ tests/gateway/test_whatsapp_text_batching.py (2✓, 0.3s)
+[ 95.2% |   937/~984 | ✓1286 | ✗   9] ✓ tests/gateway/test_whatsapp_stale_bridge.py (3✓, 0.4s)
+[ 95.4% |   939/~984 | ✓1295 | ✗   9] ✓ tests/gateway/test_whatsapp_to_jid.py (9✓, 0.4s)
+[ 95.7% |   942/~984 | ✓1298 | ✗   9] ✓ tests/gateway/test_ws_auth_retry.py (3✓, 0.4s)
+[ 96.2% |   947/~984 | ✓1305 | ✗   9] ✓ tests/gateway/test_whatsapp_reply_prefix.py (7✓, 1.0s)
+[ 96.4% |   949/~984 | ✓1307 | ✗   9] ✓ tests/gateway/test_ws_auth_retry_verifier_probe.py (2✓, 0.4s)
+[100.0% |   984/~984 | ✓1351 | ✗   9] ✓ tests/gateway/test_run_progress_topics.py (44✓, 29.2s)
+
+=== Summary: 122 files, 1351 tests passed, 9 failed, 6 skipped (100% complete) in 47.9s (4 workers) ===
+
+  note: linux_only tests (in 1 file) were SKIPPED on this host (darwin); they run on the main Linux CI lane.
+  note: windows_only tests (in 1 file) were SKIPPED on this host (darwin); they run on the tests-os CI lane (windows-latest).
+  Durations cached to test_durations.json (117 files)
+
+=== Per-file subprocess time distribution ===
+  Files:   122
+  Total subprocess CPU-wall: 158.7s  (runner wall: 47.9s, parallelism: 4x)
+  P50: 0.62s  P90: 2.09s  P95: 4.22s  P99: 10.39s  Max: 29.16s
+  <1s: 89 files (73%)  <2s: 109 files (89%)
+  Top 10 slowest:
+     29.16s  tests/gateway/test_run_progress_topics.py
+     10.39s  tests/agent/test_system_prompt.py
+      7.50s  tests/agent/test_plugin_prompt_sections.py
+      6.39s  tests/gateway/test_stream_consumer.py
+      5.76s  tests/gateway/test_streaming_tts_consumer.py
+      5.57s  tests/gateway/test_multiplex_busy_input_mode.py
+      4.22s  tests/gateway/test_stream_consumer_wecom_native.py
+      2.88s  tests/agent/test_compaction_prompt_rebuild.py
+      2.47s  tests/gateway/test_update_streaming.py
+      2.44s  tests/gateway/test_config_env_bridge_authority.py
+
+=== Failure output ===
+
+--- tests/agent/test_project_skills.py ---
+..F...................                                                   [100%]
+=================================== FAILURES ===================================
+_________________ TestFindProjectRoot.test_no_git_returns_none _________________
+/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/tests/agent/test_project_skills.py:62: in test_no_git_returns_none
+    assert su.find_project_root(start=d) is None
+E   AssertionError: assert PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') is None
+E    +  where PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') = <function find_project_root at 0x1092f8720>(start=PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/upgrade-test-fz_fkwyi/per-file/r-___5do8e/pytest-of-kahransingh/pytest-0/test_no_git_returns_none0/plain'))
+E    +    where <function find_project_root at 0x1092f8720> = su.find_project_root
+1 failed, 21 passed in 0.38s
+
+--- tests/agent/test_prompt_builder.py ---
+....................F....FFs.F........................                   [100%]
+=================================== FAILURES ===================================
+____ TestBuildContextFilesPrompt.test_agents_md_no_git_root_stays_cwd_only _____
+tests/agent/test_prompt_builder.py:424: in test_agents_md_no_git_root_stays_cwd_only
+    assert _load_agents_md(sub) == ""
+E   AssertionError: assert '## ../../../...ed in parent.' == ''
+E     
+E     + ## ../../../../../../../AGENTS.md
+E     + 
+E     + # Hermes Agent - Development Guide
+E     + 
+E     + Instructions for AI coding assistants and developers working on the hermes-agent codebase.
+E     + This root file holds only what applies everywhere. Each area has its own `AGENTS.md` (aim for...
+E     
+E     ...Full output truncated (260 lines hidden), use '-vv' to show
+------------------------------ Captured log call -------------------------------
+WARNING  agent.prompt_builder:prompt_builder.py:1504 ⚠️  Context file ../../../../../../../AGENTS.md TRUNCATED: 33161 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+_________ TestBuildContextFilesPrompt.test_empty_soul_md_adds_nothing __________
+tests/agent/test_prompt_builder.py:474: in test_empty_soul_md_adds_nothing
+    assert result == ""
+E   AssertionError: assert '# Project Co...ll, not here.' == ''
+E     
+E     + # Project Context
+E     + 
+E     + The following project context files have been loaded and should be followed:
+E     + 
+E     + ## ../../../../../../AGENTS.md
+E     + ...
+E     
+E     ...Full output truncated (260 lines hidden), use '-vv' to show
+------------------------------ Captured log call -------------------------------
+WARNING  agent.prompt_builder:prompt_builder.py:1504 ⚠️  Context file ../../../../../../AGENTS.md TRUNCATED: 33158 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+_______________ TestBuildContextFilesPrompt.test_loads_claude_md _______________
+tests/agent/test_prompt_builder.py:494: in test_loads_claude_md
+    assert "type hints" in result
+E   AssertionError: assert 'type hints' in '# Project Context\n\nThe following project context files have been loaded and should be followed:\n\n## ../../../../....er said it. Depth is earned — give it when the user asks for detail, teaches, or the stakes demand it, not by default.'
+------------------------------ Captured log call -------------------------------
+WARNING  agent.prompt_builder:prompt_builder.py:1504 ⚠️  Context file ../../../../../../AGENTS.md TRUNCATED: 33158 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+______ TestFindHermesMd.test_unreadable_parent_is_treated_as_no_git_root _______
+tests/agent/test_prompt_builder.py:542: in test_unreadable_parent_is_treated_as_no_git_root
+    assert _find_git_root(project) is None
+E   AssertionError: assert PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') is None
+E    +  where PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade') = _find_git_root(PosixPath('/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/upgrade-test-fz_fkwyi/per-file/r-28g7warl/pytest-of-kahransingh/pytest-0/test_unreadable_parent_is_trea0/locked/proj'))
+=========================== short test summary info ============================
+SKIPPED [1] tests/agent/test_prompt_builder.py:499: APFS default volume is case-insensitive; CLAUDE.md and claude.md alias the same path
+4 failed, 49 passed, 1 skipped in 0.96s
+
+--- tests/gateway/test_api_server_reasoning_nonstream.py ---
+FF                                                                       [100%]Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x109440190>
+
+=================================== FAILURES ===================================
+________________ test_non_streaming_routes_carry_reasoning_once ________________
+tests/gateway/test_api_server_reasoning_nonstream.py:44: in test_non_streaming_routes_carry_reasoning_once
+    async with client:
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:533: in __aenter__
+    await self.start_server()
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:312: in start_server
+    await self._server.start_server(loop=self._loop)
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:141: in start_server
+    _sock = self.socket_factory(self.host, self.port, family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:85: in get_port_socket
+    s.bind((host, port))
+E   PermissionError: [Errno 1] Operation not permitted
+_____________ test_responses_input_ignores_echoed_reasoning_items ______________
+tests/gateway/test_api_server_reasoning_nonstream.py:71: in test_responses_input_ignores_echoed_reasoning_items
+    async with client:
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:533: in __aenter__
+    await self.start_server()
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:312: in start_server
+    await self._server.start_server(loop=self._loop)
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:141: in start_server
+    _sock = self.socket_factory(self.host, self.port, family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/aiohttp/test_utils.py:85: in get_port_socket
+    s.bind((host, port))
+E   PermissionError: [Errno 1] Operation not permitted
+=============================== warnings summary ===============================
+tests/gateway/test_api_server_reasoning_nonstream.py::test_non_streaming_routes_carry_reasoning_once
+tests/gateway/test_api_server_reasoning_nonstream.py::test_responses_input_ignores_echoed_reasoning_items
+  /Users/kahransingh/Dev/hermes-agent-oct07-upgrade/tests/gateway/test_api_server_reasoning_nonstream.py:31: NotAppKeyWarning: It is recommended to use web.AppKey instances for keys.
+  https://docs.aiohttp.org/en/stable/web_advanced.html#application-s-config
+    app["api_server_adapter"] = adapter
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2 failed, 2 warnings in 0.38s
+Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x10948c590>
+
+--- tests/agent/test_system_prompt.py ---
+..............................F.....................................     [100%]
+=================================== FAILURES ===================================
+________ test_stored_prompt_stamped_for_another_session_is_not_restored ________
+tests/agent/test_system_prompt.py:291: in test_stored_prompt_stamped_for_another_session_is_not_restored
+    parent_prompt = build_system_prompt(_make_agent(session_id="parent-sid", **fields))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent/system_prompt.py:798: in build_system_prompt
+    agent._emit_diagnostic_status(warning)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'types.SimpleNamespace' object has no attribute '_emit_diagnostic_status'
+------------------------------ Captured log call -------------------------------
+WARNING  agent.prompt_builder:prompt_builder.py:1504 ⚠️  Context file ../../../../../../AGENTS.md TRUNCATED: 33158 chars exceeds limit of 20000 — trim the file, pin a larger context_file_max_chars, or use a larger-context model!
+1 failed, 67 passed in 10.01s
+
+--- tests/gateway/test_whatsapp_bridge_pidfile.py ---
+..F                                                                      [100%]
+=================================== FAILURES ===================================
+_______ TestKillPortProcess.test_listener_lookup_excludes_client_process _______
+tests/gateway/test_whatsapp_bridge_pidfile.py:100: in test_listener_lookup_excludes_client_process
+    srv.bind(("127.0.0.1", 0))
+E   PermissionError: [Errno 1] Operation not permitted
+1 failed, 2 passed in 0.73s
+
+=== 5 files with test failures (9 tests failed) ===
+  tests/agent/test_project_skills.py  (1 test failed)
+  tests/agent/test_prompt_builder.py  (4 tests failed)
+  tests/gateway/test_api_server_reasoning_nonstream.py  (2 tests failed)
+  tests/agent/test_system_prompt.py  (1 test failed)
+  tests/gateway/test_whatsapp_bridge_pidfile.py  (1 test failed)
+
+EXIT_CODE: 1

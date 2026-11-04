@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/opt/homebrew/bin/node",
+    "--test",
+    "scripts/whatsapp-bridge/allowlist.test.mjs",
+    "scripts/whatsapp-bridge/owner_message_gate.test.mjs",
+    "scripts/whatsapp-bridge/outbound_ids.test.mjs"
+  ],
+  "exit_code": 0,
+  "log": "bridge.log"
+}

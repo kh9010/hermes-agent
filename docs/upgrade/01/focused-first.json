@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/Users/kahransingh/Dev/hermes-agent-oct07-upgrade/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "tests/gateway/test_oct07_upgrade_contracts.py",
+    "tests/agent/test_oct07_prompt_contracts.py",
+    "tests/gateway/test_config_driven_access_policy.py",
+    "tests/gateway/test_whatsapp_group_gating.py",
+    "tests/gateway/test_display_config.py"
+  ],
+  "exit_code": 0,
+  "log": "focused-first.log"
+}

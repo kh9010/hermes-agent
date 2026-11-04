@@ -1,0 +1,16 @@
+ M agent/prompt_builder.py
+ M gateway/authz_mixin.py
+ M gateway/display_config.py
+ M gateway/platforms/whatsapp_common.py
+ M gateway/run.py
+ M gateway/run_busy.py
+ M gateway/run_turn.py
+ M gateway/run_turn_runner.py
+ M gateway/warning_notifications.py
+?? HANDOFF.md
+?? docs/
+?? tests/agent/test_oct07_prompt_contracts.py
+?? tests/gateway/test_oct07_compatibility.py
+?? tests/gateway/test_oct07_upgrade_contracts.py
+?? verify.mjs
+?? versions.json

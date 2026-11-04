@@ -245,7 +245,7 @@ class TurnRunner(GatewayTurnProgressMixin, GatewaySessionAgentMixin):
         if scfg is None:
             from gateway.config import StreamingConfig
             scfg = StreamingConfig()
-        # display.platforms.<plat>.streaming may disable streaming per platform; None = follow global.
+        # The turn-bound resolver honors chat/platform streaming overrides; None = follow global.
         plat_streaming = ctx.resolve_display_setting(ctx.user_config, platform_key, "streaming")
         # A loaded ``hold_stream`` transform rewrites this session's reply before the user may see it:
         # no drafts, edits, native stream or commentary bubbles; the rewrite goes out as one plain
@@ -376,7 +376,8 @@ class TurnRunner(GatewayTurnProgressMixin, GatewaySessionAgentMixin):
             if line:
                 self._schedule(self._runner._deliver_platform_notice(self._ctx.source, line), "notice_callback delivery scheduling error")
         render_notification(present, platform=self._ctx.source.platform,
-                            user_config=self._ctx.user_config, diagnostic=diagnostic)
+                            user_config=self._ctx.user_config, diagnostic=diagnostic,
+                            chat_id=self._ctx.source.chat_id)
 
     def _make_bg_review_callbacks(self):
         """(send, release): background-review messages ("💾 Memory updated") are held until the

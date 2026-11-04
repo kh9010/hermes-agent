@@ -21,6 +21,7 @@ from agent.session_activity import format_iteration_progress
 from agent.turn_failure_copy import FAILED_TURN_DISPLAY_KIND, FAILED_TURN_NOTICE, PARTIAL_FAILED_TURN_NOTICE
 from contextlib import nullcontext, suppress
 from contextvars import copy_context
+from functools import partial
 from gateway.config import Platform
 from gateway.platforms.base import BasePlatformAdapter, ProcessingOutcome
 from gateway.platforms.event import MessageEvent
@@ -638,7 +639,9 @@ class GatewayTurnMixin(GatewayBackgroundMixin, GatewayTurnPrepareMixin, GatewayT
         if not _scfg.globally_enabled:
             return None
         from gateway.display_config import resolve_display_setting
-        _plat_streaming = resolve_display_setting(_load_gateway_config(), _platform_config_key(source.platform), "streaming")
+        _plat_streaming = resolve_display_setting(
+            _load_gateway_config(), _platform_config_key(source.platform), "streaming", chat_id=source.chat_id,
+        )
         if not _scfg.enabled_for(_plat_streaming):
             return None
         try:
@@ -841,7 +844,7 @@ class GatewayTurnMixin(GatewayBackgroundMixin, GatewayTurnPrepareMixin, GatewayT
             return await self._run_agent_inner(message, context_prompt, history, source, session_id, **turn_kwargs)
 
     def _run_agent_display_settings(self, source: SessionSource) -> GatewayRunner._RunAgentDisplay:
-        """Resolve per-platform display, progress, status and streaming-surface settings for a turn."""
+        """Resolve per-conversation display, progress, status and streaming-surface settings for a turn."""
         from gateway.run import (
             _gateway_platform_value, _has_platform_display_override, _load_gateway_config,
             _platform_config_key,
@@ -849,6 +852,8 @@ class GatewayTurnMixin(GatewayBackgroundMixin, GatewayTurnPrepareMixin, GatewayT
         from agent.secret_scope import get_secret
         from gateway.display_config import resolve_display_setting, resolve_tool_progress
         from gateway.status_phrases import choose_status_phrase, resolve_status_phrase_catalog
+        # Carry the conversation scope into the display namespace and TurnContext consumers.
+        resolve_display_setting = partial(resolve_display_setting, chat_id=source.chat_id)
         from gateway.session_policy import policy_for_source, policy_turn_toolsets
         policy = policy_for_source(self, source)
         from gateway.session_authorities import active_authority
@@ -873,6 +878,7 @@ class GatewayTurnMixin(GatewayBackgroundMixin, GatewayTurnPrepareMixin, GatewayT
         # (#116898); get_secret resolves through the active profile's scope instead.
         progress_mode, _tool_progress_explicit = resolve_tool_progress(
             user_config, platform_key, get_secret("HERMES_TOOL_PROGRESS_MODE"),
+            chat_id=source.chat_id,
         )
         # "accumulate" (edit one bubble) or "separate" (one msg per tool)
         progress_grouping = resolve_display_setting(user_config, platform_key, "tool_progress_grouping") or "accumulate"
@@ -889,7 +895,9 @@ class GatewayTurnMixin(GatewayBackgroundMixin, GatewayTurnPrepareMixin, GatewayT
                 platform_only = {_gateway_platform_value(item) for item in require_platform_override_for}
                 if (
                     current_platform in platform_only
-                    and not _has_platform_display_override(user_config, platform_key, setting)
+                    and not _has_platform_display_override(
+                        user_config, platform_key, setting, chat_id=source.chat_id,
+                    )
                 ):
                     return "off"
             value = resolve_display_setting(user_config, platform_key, setting, default)
@@ -1004,7 +1012,8 @@ class GatewayTurnMixin(GatewayBackgroundMixin, GatewayTurnPrepareMixin, GatewayT
         )
         turn_runner = TurnRunner(self, turn_ctx)
         turn_ctx.mute_notification_reply = diagnostic_turn_muted(
-            turn_ctx.persist_user_display_metadata, source.platform, turn_ctx.user_config)
+            turn_ctx.persist_user_display_metadata, source.platform, turn_ctx.user_config,
+            chat_id=source.chat_id)
         # Agent tool-lifecycle callbacks live on the runner (bound methods, same signatures).
         turn_ctx.progress_callback = turn_runner.progress_callback
         turn_ctx.voice_ack_callback = turn_runner.voice_ack_callback

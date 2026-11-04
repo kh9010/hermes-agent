@@ -201,8 +201,8 @@ class GatewayTurnPersistenceMixin:
     }
 
     def _hmwa_prepend_reasoning(self, agent_result, response, source, _intentional_silence):
-        """Prepend the last reasoning block when show_reasoning is on for this platform. Mattermost
-        requires an explicit per-platform opt-in (scratch text, not final-answer content)."""
+        """Prepend the last reasoning block when show_reasoning is on for this conversation. Mattermost
+        requires an explicit platform or chat opt-in (scratch text, not final-answer content)."""
         if source.platform == Platform.LOCAL and not _acp_launch(self, source):
             # Local viewers receive reasoning.delta through their event stream; projecting it into
             # the final response duplicates it and leaks messaging-platform formatting into Desktop.
@@ -212,6 +212,7 @@ class GatewayTurnPersistenceMixin:
             _show_reasoning_effective = _resolve_gateway_display_bool(
                 _load_gateway_config(), _platform_config_key(source.platform), "show_reasoning",
                 default=bool(getattr(self, "_show_reasoning", False)), platform=source.platform,
+                chat_id=source.chat_id,
                 require_platform_override_for={Platform.MATTERMOST},
             )
         except Exception:
@@ -233,6 +234,7 @@ class GatewayTurnPersistenceMixin:
             from gateway.display_config import resolve_display_setting
             _reasoning_style = resolve_display_setting(
                 _load_gateway_config(), _platform_config_key(source.platform), "reasoning_style", "code",
+                chat_id=source.chat_id,
             )
         except Exception:
             _reasoning_style = "code"

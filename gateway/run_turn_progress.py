@@ -221,7 +221,7 @@ class GatewayTurnProgressMixin:
                 )
                 render_notification(
                     lambda: self._schedule(self._runner._deliver_platform_notice(ctx.source, line), "subagent failure notice scheduling error"),
-                    platform=ctx.source.platform, user_config=ctx.user_config)
+                    platform=ctx.source.platform, user_config=ctx.user_config, chat_id=ctx.source.chat_id)
         except Exception:
             logger.debug("subagent failure notice failed", exc_info=True)
 
@@ -923,7 +923,8 @@ class GatewayTurnProgressMixin:
         render_notification(lambda: self._publish_execution("notification.show", {
             "text": str(notice.text).strip(), "level": notice.level, "kind": notice.kind,
             "ttl_ms": notice.ttl_ms, "key": notice.key, "id": notice.id}),
-            platform=ctx.source.platform, user_config=ctx.user_config, diagnostic=is_diagnostic_notice(notice))
+            platform=ctx.source.platform, user_config=ctx.user_config, diagnostic=is_diagnostic_notice(notice),
+            chat_id=ctx.source.chat_id)
 
     def _local_notice_clear_callback_sync(self, key) -> None:
         """Recovery -> ``notification.clear`` for local viewers (main's TUI payload)."""
@@ -1007,7 +1008,7 @@ class GatewayTurnProgressMixin:
             if fut is not None and ctx._cleanup_progress:
                 fut.add_done_callback(self._track_future_cleanup_id)
         render_notification(present, platform=ctx.source.platform, user_config=ctx.user_config,
-                            diagnostic=is_warning_status(event_type, message))
+                            diagnostic=is_warning_status(event_type, message), chat_id=ctx.source.chat_id)
 
 
 def local_viewer_turn(runner) -> bool:
