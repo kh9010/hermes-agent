@@ -1,0 +1,10 @@
+180c180
+< _config_version: 46
+---
+> _config_version: 52
+215c215
+<     model: qwen3.6:27b
+---
+>     model: gemma4:26b
+219d218
+<       - qwen3.6:27b

@@ -1,0 +1,39 @@
+........................................................................ [  4%]
+............s........................................................... [  8%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+............s........................................................... [ 22%]
+........................................................................ [ 26%]
+........................................................................ [ 31%]
+...................................s.................................... [ 35%]
+...................................s..s................................. [ 40%]
+........................................................................ [ 44%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+........................................................................ [ 58%]
+........................................................................ [ 62%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................ss.............s [ 76%]
+..[gateway-crash] thread cron-worker-reap-? raised TimeoutExpired: Command 'worker' timed out after None seconds
+................s..................................................... [ 80%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 94%]
+...ss................................................................... [ 98%]
+.....................                                                    [100%]
+=============================== warnings summary ===============================
+tests/cron/test_scheduler.py::TestMultiTargetDeliveryContinuesOnFailure::test_all_targets_fail_returns_combined_errors
+  /Users/kahransingh/Dev/hermes-candidate-0.22.x/hermes_cli/plugins_loader.py:390: RuntimeWarning: coroutine '_standalone_send.<locals>._send' was never awaited
+    @_serialized_replacement
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/cron/test_script_claim_heartbeat.py::test_self_removed_job_leaves_no_output_directory
+  /Users/kahransingh/Dev/hermes-candidate-0.22.x/hermes_cli/config_backend.py:336: RuntimeWarning: coroutine '_standalone_send.<locals>._send' was never awaited
+    return _backend_for(os.environ.get(BACKEND_ENV, "").strip().lower() or "file")
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1594 passed, 11 skipped, 2 warnings in 187.88s (0:03:07)

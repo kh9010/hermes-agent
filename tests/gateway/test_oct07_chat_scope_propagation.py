@@ -35,7 +35,9 @@ def test_status_warning_notification_honors_chat_level_suppression(monkeypatch):
             mute_notification_reply=False, source=SessionSource(platform=Platform.WHATSAPP, chat_id=chat_id),
             user_config=config, _status_adapter=object(), _run_still_current=lambda: True,
             _status_chat_id=chat_id, _status_thread_metadata=None, _cleanup_progress=False)
-        TurnRunner(MagicMock(), ctx)._status_callback_sync('warn', 'careful now')
+        # A bare runner (no session authority) — 0.22 TurnRunner consults it at construction.
+        runner = MagicMock(session_authorities=None, session_authority=None)
+        TurnRunner(runner, ctx)._status_callback_sync('warn', 'careful now')
         return sent.called
 
     assert deliver('family') is False

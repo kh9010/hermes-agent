@@ -100,16 +100,17 @@ def test_reply_normalization_does_not_merge_accounts_or_namespaces(quoted):
     assert not adapter._message_is_reply_to_bot({'botIds': ['123@7@lid'], 'quotedParticipant': quoted})
 
 
-def test_real_config_homes_a_b_a_preserve_astra_and_chat_settings(tmp_path, monkeypatch):
-    import yaml
+def test_real_config_homes_a_b_a_preserve_model_and_chat_settings(tmp_path, monkeypatch):
+    # 0.22 on Python 3.14 ships ruamel.yaml, not PyYAML: write the YAML text directly.
+    # The pinned model is the live one since 2026-10-07 (Astra retired with the Claude switch).
     from gateway.run import _load_gateway_config
     from hermes_constants import set_hermes_home_override, reset_hermes_home_override
     homes = [tmp_path / 'a', tmp_path / 'b']
     for home, value in zip(homes, ('off', 'all')):
         home.mkdir()
-        (home / 'config.yaml').write_text(yaml.safe_dump({
-            'model': {'default': 'gpt-6-astra', 'provider': 'openai-codex'},
-            'display': {'chats': {'family': {'tool_progress': value}}}}))
+        (home / 'config.yaml').write_text(
+            "model:\n  default: opus\n  provider: claude-subscription-directsdk-experimental\n"
+            f"display:\n  chats:\n    family:\n      tool_progress: {value}\n")
     for home, expected in ((homes[0], 'off'), (homes[1], 'all'), (homes[0], 'off')):
         monkeypatch.setenv('HERMES_HOME', str(home))
         token = set_hermes_home_override(home)
@@ -117,7 +118,7 @@ def test_real_config_homes_a_b_a_preserve_astra_and_chat_settings(tmp_path, monk
             cfg = _load_gateway_config()
         finally:
             reset_hermes_home_override(token)
-        assert cfg['model'] == {'default': 'gpt-6-astra', 'provider': 'openai-codex'}
+        assert cfg['model'] == {'default': 'opus', 'provider': 'claude-subscription-directsdk-experimental'}
         assert resolve_tool_progress(cfg, 'whatsapp', chat_id='family') == (expected, True)
 
 
@@ -135,5 +136,5 @@ def test_auth_uses_receiving_profile_not_default_group_grant(monkeypatch):
     runner.pairing_store.is_approved.return_value = False
     source = SessionSource(platform=Platform.WHATSAPP, chat_id='family@g.us', chat_type='group', user_id='888')
     for adapter, expected in ((primary, True), (secondary, False), (primary, True)):
-        setattr(source, '_transport_adapter_ref', weakref.ref(adapter))
+        source._transport_adapter_ref = weakref.ref(adapter)
         assert runner._is_user_authorized(source) is expected

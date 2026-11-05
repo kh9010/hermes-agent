@@ -1,7 +1,10 @@
-PASS rail: versions 01-02 on release f97608f178; latest "Reviewed candidate" (deployed-2026-10-07)
-PASS integrity: 01 and 02 evidence sealed read-only; 9 runtime + 4 test files match 02
+PASS rail: versions 01-02 on 0.21.5, 03 on v0.22.7 (ancestor of HEAD); latest "0.22.7 candidate" (landing-not-deployed)
+PASS integrity: 01-03 evidence matches its manifests; 11 runtime + 4 test files match 03
 PASS archive: 6 old local commits; 16 changed paths including tests
 PASS requirements: explicit family group + reply gate recorded; inferred addressing absent
-PASS differential (01): 122-file run; all 9 failures reproduced with release bytes; 19 bridge tests
-PASS focused evidence (02): 111 Python tests; kMini plugins compat clean; Ruff clean; git diff --check
-STATUS deployment: deployed-2026-10-07
+PASS history (01/02): 0.21.5 differential and focused evidence intact
+PASS requirements (03): 26/35 red on pristine v0.22.7, 35/35 green on 03; M1-M6 red when reverted, M7/M8 named unpinned
+PASS focused (03): 113 Python tests; hermes-kmini suite on the candidate venv; 18 bridge tests; ruff no new findings; config step = stamp + qwen3.6:27b retirement only
+PASS broad (03): tests/gateway, tests/cron, tests/plugins; every failure reproduces on pristine v0.22.7
+PASS hygiene: git diff --check clean on code paths
+STATUS deployment: landing-not-deployed

@@ -1,0 +1,314 @@
+tests/gateway/test_adapter_session_key_seam.py :: 2 passed in 0.92s
+tests/gateway/test_adapter_settings_profile_parity.py :: 20 passed in 0.98s
+tests/gateway/relay/test_relay_egress_declines.py :: 34 passed in 1.29s
+tests/gateway/test_admission_queue_cap_notice.py :: 1 passed in 0.39s
+tests/gateway/test_adapter_startup_secret_scope.py :: 56 passed in 0.90s
+tests/gateway/test_admission_queue_cap.py :: 1 passed in 0.40s
+tests/gateway/test_active_turn_recovery.py :: 25 passed in 2.74s
+tests/gateway/relay/test_relay_native_refusal_ack.py :: 1 failed in 2.84s
+tests/gateway/test_admission_results.py :: 6 passed in 1.00s
+tests/gateway/test_adversarial_responses_eviction.py :: 4 passed in 1.37s
+tests/gateway/test_adapter_settings_scoped_precedence.py :: 9 passed in 3.54s
+tests/gateway/test_admission_result_reply_once.py :: 13 passed in 3.10s
+tests/gateway/test_adversarial_mutation_lifecycle.py :: 2 passed in 2.94s
+tests/gateway/test_adversarial_settlement_review.py :: 5 passed in 1.29s
+tests/gateway/test_agent_cache_release_profile_scope.py :: 5 passed in 0.34s
+tests/gateway/test_agent_error_reply_401_hint.py :: 1 passed in 0.36s
+tests/gateway/test_adversarial_responses_pending.py :: 5 passed in 3.57s
+tests/gateway/test_agent_cache_pressure.py :: 37 passed, 2 skipped in 1.84s
+tests/gateway/test_agent_cache_memory_lifecycle.py :: 6 passed in 2.50s
+tests/gateway/test_agent_error_reply_local_detail.py :: 1 passed in 0.54s
+tests/gateway/test_agents_command_delegations.py :: 1 passed in 0.62s
+tests/gateway/test_allowed_channels_widening.py :: 9 passed in 0.65s
+tests/gateway/test_allowlist_qualified_ids.py :: 5 passed in 0.67s
+tests/gateway/test_agent_cache.py :: 32 passed in 2.46s
+tests/gateway/test_allowlist_warning_platform_gate.py :: 1 failed, 2 passed in 0.82s
+tests/gateway/test_api_authority_continuity.py :: 1 passed in 0.55s
+tests/gateway/test_api_admission_queued_on_drain.py :: 4 passed in 0.73s
+tests/gateway/test_api_authority_controls.py :: 1 passed in 4.02s
+tests/gateway/test_api_authority_execution.py :: 1 passed in 3.54s
+tests/gateway/test_api_authority_retry.py :: 1 passed in 3.65s
+tests/gateway/test_api_authority_daemon.py :: 1 passed in 4.46s
+tests/gateway/test_api_authority_store.py :: 2 passed in 0.62s
+tests/gateway/test_api_admission_off_loop.py :: 3 passed in 5.60s
+tests/gateway/test_api_binding_served_profile.py :: 1 passed in 0.70s
+tests/gateway/test_api_chat_run_owner.py :: 1 passed in 0.66s
+tests/gateway/test_api_compressed_receipt_history.py :: 1 passed in 0.79s
+tests/gateway/test_api_canonical_projection.py :: 12 passed in 3.04s
+tests/gateway/test_api_authority_runs.py :: 1 passed in 3.84s
+tests/gateway/test_api_cutover_contract.py :: 7 passed in 1.98s
+tests/gateway/test_api_cutover_results.py :: 6 passed in 1.75s
+tests/gateway/test_api_delegation_delivery_contract.py :: 2 passed in 0.75s
+tests/gateway/test_api_hosted_binding.py :: 1 passed in 0.62s
+tests/gateway/relay/test_relay_transient_recovery.py :: 7 failed, 15 passed in 19.07s
+tests/gateway/test_api_doors_logical_owner.py :: 3 passed in 1.01s
+tests/gateway/test_api_idempotency_namespace.py :: 1 passed in 0.77s
+tests/gateway/test_api_image_capture_lease.py :: 1 passed in 0.78s
+tests/gateway/test_api_idempotency_after_delete.py :: 3 passed in 1.34s
+tests/gateway/test_api_idle_retirement.py :: 5 passed in 1.42s
+tests/gateway/test_api_image_mislabelled_mime.py :: 1 passed in 0.54s
+tests/gateway/test_api_media_profile_scope.py :: 1 passed in 0.76s
+tests/gateway/test_api_media_admission_bounds.py :: 4 passed in 1.16s
+tests/gateway/test_api_implicit_session_after_delete.py :: 7 passed in 2.53s
+tests/gateway/test_api_crash_recovery.py :: 1 passed in 7.98s
+tests/gateway/test_api_model_lock_fallback.py :: 1 passed, 1 skipped in 0.59s
+tests/gateway/test_api_media_retention.py :: 4 passed in 1.32s
+tests/gateway/test_api_observer_gone_session.py :: 1 passed in 0.82s
+tests/gateway/test_api_image_delete_scale.py :: 2 failed, 5 passed in 3.99s
+tests/gateway/test_api_observe_settled.py :: 2 passed in 0.93s
+tests/gateway/test_api_hosted_daemon.py :: 1 passed in 7.03s
+tests/gateway/test_api_request_one_target.py :: 1 passed in 0.82s
+tests/gateway/test_api_relay_metadata_handoff.py :: 2 passed in 0.97s
+tests/gateway/test_api_responses_replay_frozen_tool_events.py :: 2 passed in 1.03s
+tests/gateway/test_api_notification_outcomes.py :: 9 failed, 14 passed in 2.53s
+tests/gateway/test_api_retired_media.py :: 1 passed in 0.96s
+tests/gateway/test_api_responses_stream_retry.py :: 4 passed in 1.21s
+tests/gateway/test_api_responses_store_off_loop.py :: 6 passed in 1.88s
+tests/gateway/test_api_room_policy_settings.py :: 3 passed in 1.39s
+tests/gateway/test_api_route_heal_minted.py :: 6 passed in 1.36s
+tests/gateway/test_api_run_steer_before_adopt.py :: 1 passed in 0.70s
+tests/gateway/test_api_pending_daemon.py :: 1 passed in 4.76s
+tests/gateway/test_api_runs_poll_shape.py :: 1 passed in 0.60s
+tests/gateway/test_api_runs_native_session_refusal.py :: 1 passed in 1.16s
+tests/gateway/test_api_runs_legacy_declared_key.py :: 1 passed in 1.38s
+tests/gateway/test_api_runs_admission_storage_error.py :: 1 passed in 1.83s
+tests/gateway/test_api_server_memory_sessions.py :: 2 passed in 0.22s
+tests/gateway/test_api_server_media_data_urls.py :: 5 passed in 0.42s
+tests/gateway/test_api_server_model_options_include_unconfigured.py :: 2 passed in 0.38s
+tests/gateway/test_api_server_normalize.py :: 6 passed in 0.38s
+tests/gateway/test_api_server_jobs.py :: 20 passed, 20 warnings in 1.18s
+tests/gateway/test_api_server_multimodal.py :: 7 passed, 2 warnings in 0.59s
+tests/gateway/test_api_server_multiplex_secret_scope.py :: 3 passed in 0.66s
+tests/gateway/test_api_server_profile_prefix_misdelivery.py :: 7 passed in 0.56s
+tests/gateway/test_api_server_reasoning_nonstream.py :: 2 passed, 2 warnings in 0.48s
+tests/gateway/test_api_server_responses_history_cap.py :: 2 passed in 0.39s
+tests/gateway/test_api_server_response_store_profile_scope.py :: 2 passed, 1 warning in 0.65s
+tests/gateway/test_api_server_responses_history_dedupe.py :: 2 passed in 0.30s
+tests/gateway/test_api_server_reasoning_stream.py :: 2 passed in 0.87s
+tests/gateway/test_api_server_room_grants.py :: 2 passed in 0.32s
+tests/gateway/test_api_server_runs_import_isolation.py :: 1 passed in 0.26s
+tests/gateway/test_api_server_status_stream.py :: 2 passed in 0.85s
+tests/gateway/test_api_server_runs_room_policy_grant.py :: 6 passed, 5 warnings in 1.44s
+tests/gateway/test_api_server_sse_keepalive.py :: 2 passed, 1 warning in 1.89s
+tests/gateway/test_api_server_toolset.py :: 1 passed in 0.66s
+tests/gateway/test_api_server_transform_llm_output.py :: 2 passed in 0.52s
+tests/gateway/test_api_server_turn_boundary.py :: 2 passed in 0.30s
+tests/gateway/test_api_server_runs_hosted_room.py :: 15 passed, 14 warnings in 2.99s
+tests/gateway/test_api_server_turn_executor.py :: 3 passed in 0.43s
+tests/gateway/test_api_session_preflight.py :: 1 passed, 1 warning in 0.37s
+tests/gateway/test_api_session_compression_exhaustion.py :: 3 passed in 1.05s
+tests/gateway/test_api_session_create_after_delete.py :: 2 passed in 1.13s
+tests/gateway/test_api_settled_history_release.py :: 1 passed in 0.60s
+tests/gateway/test_api_server_runs.py :: 64 passed, 51 warnings in 4.66s
+tests/gateway/test_api_settled_payload_compaction.py :: 1 passed in 1.10s
+tests/gateway/test_api_source_binding.py :: 3 passed in 0.86s
+tests/gateway/test_api_settled_row_retention.py :: 4 passed in 1.43s
+tests/gateway/test_api_stop_claim_race.py :: 1 passed in 0.65s
+tests/gateway/test_api_store_error_status.py :: 1 passed in 0.72s
+tests/gateway/test_api_synthetic_nudge_receipt.py :: 4 passed in 1.37s
+tests/gateway/test_approval_prompt_redaction.py :: 7 passed in 0.58s
+tests/gateway/test_api_terminal_http.py :: 11 passed in 1.24s
+tests/gateway/test_api_unknown_resolution.py :: 4 passed in 1.58s
+tests/gateway/test_async_session_db.py :: 2 passed in 0.34s
+tests/gateway/test_api_server.py :: 114 passed, 62 warnings in 6.71s
+tests/gateway/test_async_delivery_capability.py :: 6 passed in 0.98s
+tests/gateway/test_authority_active_list.py :: 3 passed in 1.01s
+tests/gateway/test_authenticated_session_identity.py :: 2 passed in 1.83s
+tests/gateway/test_authority_approval_projection.py :: 1 passed in 0.57s
+tests/gateway/test_authority_busy_plaintext_approval.py :: 2 passed in 0.87s
+tests/gateway/test_authority_busy_preempt_parity.py :: 2 passed in 0.97s
+tests/gateway/test_authority_complete_persisted_turn.py :: 3 passed in 1.03s
+tests/gateway/test_authority_complete_reused_final.py :: 2 passed in 0.56s
+tests/gateway/test_authority_events.py :: 1 passed, 1 skipped in 0.74s
+tests/gateway/test_authority_connection.py :: 1 failed, 6 passed in 1.64s
+tests/gateway/test_authority_cold_route_recovery.py :: 29 passed in 5.29s
+tests/gateway/test_authority_lane_moves_on.py :: 4 passed in 2.15s
+tests/gateway/test_authority_pause_recovery.py :: 3 passed in 0.99s
+tests/gateway/test_authority_principal.py :: 4 passed in 1.03s
+tests/gateway/test_authority_listing_loop_turns.py :: 7 passed in 3.27s
+tests/gateway/test_authority_resident_stop.py :: 1 passed in 0.43s
+tests/gateway/test_authority_reconnect_gap.py :: 1 passed in 0.68s
+tests/gateway/test_authority_turn_error_surface.py :: 8 passed in 1.71s
+tests/gateway/test_auto_continue.py :: 2 passed in 0.31s
+tests/gateway/test_auto_reset_clean_context.py :: 1 passed in 0.42s
+tests/gateway/test_authority_stream.py :: 1 passed, 1 skipped in 3.70s
+tests/gateway/test_auto_reset_evicts_cached_agent.py :: 1 passed in 0.33s
+tests/gateway/test_authority_unknown_resolution.py :: 4 passed in 3.37s
+tests/gateway/test_auto_voice_reply_format.py :: 10 passed in 0.41s
+tests/gateway/test_automation_compression_media.py :: 2 passed in 0.90s
+tests/gateway/test_async_delegation_session_binding.py :: 84 passed in 16.30s
+tests/gateway/test_auto_skill_title_input.py :: 4 passed in 2.89s
+tests/gateway/test_automation_retry.py :: 2 passed in 1.33s
+tests/gateway/test_background_command.py :: 3 passed, 1 warning in 0.96s
+tests/gateway/test_automation_notification_category.py :: 14 passed in 3.20s
+tests/gateway/test_background_process_served_apiserver_wake.py :: 2 passed in 0.72s
+tests/gateway/test_automation_wake_route.py :: 14 passed in 3.81s
+tests/gateway/test_api_server_active_work_drain.py :: 23 passed in 32.49s
+tests/gateway/test_background_process_notifications.py :: 33 passed in 3.05s
+tests/gateway/test_bare_custom_route_identity.py :: 6 passed in 1.16s
+tests/gateway/test_boot_reserve_lock_probe.py :: 7 passed in 0.98s
+tests/gateway/test_bot_receipt_corruption.py :: 1 failed, 2 passed in 0.44s
+tests/gateway/test_bare_custom_launch_keeps_profile_route.py :: 17 passed in 3.05s
+tests/gateway/test_base_warning_owner_scope.py :: 6 failed, 4 passed in 2.61s
+tests/gateway/test_canonical_resume_reasoning_snapshot.py :: 1 passed in 1.41s
+tests/gateway/test_cron_fire_webhook.py :: 10 passed, 21 warnings in 0.87s
+tests/gateway/test_discord_attachment_download.py :: 5 passed in 0.38s
+tests/gateway/test_canonical_session_inventory.py :: 3 passed in 2.25s
+tests/gateway/test_bot_receipt_tombstone_expiry.py :: 1 failed, 9 passed in 2.83s
+tests/gateway/test_discord_send.py :: 1 failed, 14 passed in 0.67s
+tests/gateway/test_feishu_card_action_gateway_authz.py :: 17 passed in 0.61s
+tests/gateway/test_feishu_ws_multiplex_isolation.py :: 1 failed, 6 passed in 0.99s
+tests/gateway/test_gateway_platform_event_hook.py :: 29 passed in 0.77s
+tests/gateway/test_host_gateway_lock_refusal.py :: 6 passed in 0.41s
+tests/gateway/test_discord_voice_stale_binding.py :: 11 passed in 2.43s
+tests/gateway/test_bot_chat_owner_adoption.py :: 14 passed in 5.98s
+tests/gateway/test_host_rendezvous.py :: 19 passed, 2 skipped in 0.74s
+tests/gateway/test_local_reasoning_projection.py :: 1 failed in 0.35s
+tests/gateway/test_ingress_admission_off_loop.py :: 1 passed in 1.29s
+tests/gateway/test_local_display_key.py :: 7 passed, 1 skipped in 1.00s
+tests/gateway/test_login_command.py :: 1 failed, 35 passed in 0.79s
+tests/gateway/test_managed_worker_drain.py :: 6 passed in 0.99s
+tests/gateway/test_managed_worker_profile_env.py :: 2 passed in 0.37s
+tests/gateway/test_local_viewer_reasoning.py :: 1 failed, 15 passed in 3.07s
+tests/gateway/test_media_resend_dedup.py :: 1 failed, 10 passed in 0.97s
+tests/gateway/test_hosted_group_members.py :: 1 failed, 6 passed in 5.35s
+tests/gateway/test_model_confirmation_clients.py :: 1 failed, 1 passed in 1.63s
+tests/gateway/test_matrix.py :: 6 failed, 99 passed in 3.17s
+tests/gateway/test_multiplex_log_routing.py :: 1 failed in 0.48s
+tests/gateway/test_multiplex_adapter_registry.py :: 1 failed, 38 passed in 3.22s
+tests/gateway/test_multiplex_residue_parity.py :: 5 passed in 0.47s
+tests/gateway/test_multiplex_hot_serve.py :: 2 failed, 8 passed, 1 skipped in 1.93s
+tests/gateway/test_multiplex_routing_authz.py :: 7 passed in 1.49s
+tests/gateway/test_multiplex_unbuilt_secondary_recovery.py :: 2 failed, 26 passed in 1.99s
+tests/gateway/test_multiplex_busy_input_mode.py :: 1 failed, 23 passed in 5.02s
+tests/gateway/test_native_http_auth.py :: 1 passed, 2 skipped in 2.45s
+tests/gateway/test_native_producer_owner_matrix.py :: 6 failed, 6 passed in 2.23s
+tests/gateway/test_normal_runtime_boot.py :: 1 passed, 1 skipped in 1.27s
+tests/gateway/test_onboarding_reset.py :: 1 passed in 1.29s
+tests/gateway/test_native_warning_coverage.py :: 40 failed, 36 passed in 3.39s
+tests/gateway/test_platform_base.py :: 5 failed, 100 passed, 17 skipped in 2.15s
+tests/gateway/test_profile_resolution.py :: 1 failed, 15 passed in 0.80s
+tests/gateway/test_pre_command_in_gateway.py :: 11 passed, 9 skipped in 1.10s
+tests/gateway/test_profile_routing.py :: 3 failed, 15 passed in 0.47s
+tests/gateway/test_onboarding_on_the_authority.py :: 13 passed in 4.50s
+tests/gateway/test_replace_child_reap.py :: 2 passed, 3 skipped in 1.35s
+tests/gateway/test_restart_wait_prompt_reach.py :: 10 passed, 2 skipped in 1.47s
+tests/gateway/test_runtime_bootstrap_lifecycle.py :: 2 passed in 2.65s
+tests/gateway/test_safe_adapter_disconnect.py :: 2 failed in 0.36s
+tests/gateway/test_runtime_token_identity.py :: 1 passed, 4 skipped in 2.58s
+tests/gateway/test_runtime_listener_supervision.py :: 3 passed in 3.35s
+tests/gateway/test_send_multiple_images.py :: 8 passed in 0.41s
+tests/gateway/test_server_request_resume_replay.py :: 2 passed in 1.32s
+tests/gateway/test_session_edit_policy.py :: 2 failed, 7 passed in 1.68s
+tests/gateway/test_session_client_env.py :: 3 failed, 10 passed in 3.52s
+tests/gateway/test_session_event_observer_isolation.py :: 2 failed in 0.22s
+tests/gateway/test_session_local_route.py :: 2 passed in 0.50s
+tests/gateway/test_session_policy_refusal_fields.py :: 2 failed, 47 passed in 2.30s
+tests/gateway/test_session_stall_watchdog.py :: 3 failed, 23 passed in 1.81s
+tests/gateway/test_session_store_prune.py :: 7 passed in 0.63s
+tests/gateway/test_shutdown_flush_recovery.py :: 1 failed, 14 passed in 0.79s
+tests/gateway/test_slack_mention.py :: 1 failed, 23 passed in 1.02s
+tests/gateway/test_slack_send_retry.py :: 1 failed, 2 passed in 0.31s
+tests/gateway/test_runner_startup_failures.py :: 20 passed in 18.87s
+tests/gateway/test_status.py :: 86 passed, 9 skipped in 1.31s
+tests/gateway/test_teams_pipeline_runtime_wiring.py :: 2 passed in 0.33s
+tests/gateway/test_telegram_approval_buttons.py :: 15 passed in 0.82s
+tests/gateway/test_telegram_conflict.py :: 10 passed in 1.12s
+tests/gateway/test_telegram_documents.py :: 20 passed in 1.45s
+tests/gateway/test_telegram_inbound_warning_owner.py :: 12 failed in 2.01s
+tests/gateway/test_session_resume_config_refresh.py :: 1 failed, 12 passed in 15.53s
+tests/gateway/test_session_authority_cancel_settlement.py :: 1 failed, 7 passed in 21.13s
+tests/gateway/test_telegram_rich_messages.py :: 2 failed, 35 passed in 3.87s
+tests/gateway/test_unmanaged_idle_exit.py :: 5 passed in 1.34s
+tests/gateway/test_telegram_network_reconnect.py :: 34 passed in 6.47s
+tests/gateway/test_managed_worker_lineage.py :: 1 failed, 9 passed in 43.66s
+tests/gateway/test_update_streaming.py :: 1 failed, 5 passed, 1 skipped in 2.99s
+tests/gateway/test_upstream_native_admission.py :: 5 passed in 1.88s
+tests/gateway/test_wake_delivery.py :: 5 passed in 0.49s
+tests/gateway/test_wake_admitted_before_drain_authority.py :: 2 passed in 1.03s
+tests/gateway/test_tui_session_reads.py :: 12 passed in 6.59s
+tests/gateway/test_wake_during_restart_drain_authority.py :: 3 passed in 1.21s
+tests/gateway/test_wake_during_restart_drain.py :: 4 passed in 0.75s
+tests/gateway/test_warning_emission_boundary.py :: 4 passed in 0.27s
+tests/gateway/test_authority_automation.py :: 2 passed in 76.27s (0:01:16)
+tests/gateway/test_warning_notification_contracts.py :: 2 failed, 4 passed in 0.68s
+tests/gateway/test_warning_notifications_transport.py :: 9 passed in 0.54s
+tests/gateway/test_warning_render_boundary.py :: 7 passed in 0.30s
+tests/gateway/test_warning_delivery_real_producers.py :: 8 failed, 7 passed in 1.95s
+tests/gateway/test_warning_wiring_conservation.py :: 1 passed in 0.32s
+tests/gateway/test_warning_notifications.py :: 35 passed in 0.95s
+tests/gateway/test_watch_automation_identity.py :: 1 passed in 0.54s
+tests/gateway/test_weak_credential_guard.py :: 1 failed, 4 passed in 0.46s
+tests/gateway/test_webapp_browser_credential.py :: 11 passed in 0.31s
+tests/gateway/test_viewer_close_lifecycle.py :: 19 passed in 7.59s
+tests/gateway/test_webapp_cookie_writes.py :: 1 passed in 0.76s
+tests/gateway/test_unviewed_completion_notes.py :: 35 passed in 10.14s
+tests/gateway/test_watchdog_review.py :: 6 passed in 3.01s
+tests/gateway/test_watch_notification_reset_pin.py :: 9 passed in 3.69s
+tests/gateway/test_webapp_listener.py :: 57 passed, 1 skipped in 1.52s
+tests/gateway/test_webapp_gated_sign_out.py :: 6 passed in 2.80s
+tests/gateway/test_webapp_owner_identity.py :: 14 passed in 1.01s
+tests/gateway/test_webapp_bundle.py :: 8 passed in 4.03s
+tests/gateway/test_webapp_settings.py :: 32 passed in 0.62s
+tests/gateway/test_webhook_coalescing.py :: 9 passed in 0.74s
+tests/gateway/test_webhook_cron_trigger.py :: 6 passed in 0.49s
+tests/gateway/test_webhook_deliver_only.py :: 3 passed in 0.35s
+tests/gateway/test_webhook_dynamic_routes.py :: 4 passed in 0.31s
+tests/gateway/test_webhook_authority.py :: 1 passed in 2.93s
+tests/gateway/test_webhook_durable_destination.py :: 7 passed in 1.83s
+tests/gateway/test_webhook_finalization_recovery.py :: 3 passed in 1.34s
+tests/gateway/test_webhook_integration.py :: 2 passed in 1.08s
+tests/gateway/test_webapp_public_url.py :: 24 passed in 6.41s
+tests/gateway/test_webhook_adapter.py :: 61 passed in 5.59s
+tests/gateway/test_webhook_profile_egress.py :: 6 passed in 0.96s
+tests/gateway/test_webhook_offloop_delivery.py :: 2 passed in 1.42s
+tests/gateway/test_webhook_mcp_events.py :: 7 passed in 2.35s
+tests/gateway/test_webhook_replay_scope.py :: 2 passed in 0.41s
+tests/gateway/test_wecom_callback.py :: 5 passed, 2 skipped in 0.35s
+tests/gateway/test_webhook_session_close.py :: 1 passed in 0.69s
+tests/gateway/test_webhook_signature_rate_limit.py :: 1 passed in 0.74s
+tests/gateway/test_webhook_startup_restore_admission.py :: 1 passed in 0.77s
+tests/gateway/test_weixin_secret_scope.py :: 10 passed in 0.37s
+tests/gateway/test_weixin_typing.py :: 3 passed in 0.29s
+tests/gateway/test_webhook_route_toolsets.py :: 12 passed in 1.86s
+tests/gateway/test_weixin_voice_warning_policy.py :: 6 passed in 0.46s
+tests/gateway/test_whatsapp_allowlist_lid_resolution.py :: 5 passed in 0.27s
+tests/gateway/test_whatsapp_bridge_dir_resolution.py :: 1 passed in 0.22s
+tests/gateway/test_weixin_plugin.py :: 35 passed in 1.23s
+tests/gateway/test_whatsapp_cloud_allowed_users.py :: 6 passed in 0.38s
+tests/gateway/test_whatsapp_connect.py :: 15 passed, 5 skipped in 0.52s
+tests/gateway/test_wecom.py :: 52 passed in 2.41s
+tests/gateway/test_whatsapp_bridge_pidfile.py :: 2 passed, 1 skipped in 0.95s
+tests/gateway/test_whatsapp_cloud.py :: 57 passed in 1.14s
+tests/gateway/test_whatsapp_from_owner.py :: 2 passed in 0.26s
+tests/gateway/test_whatsapp_group_allowlist_env.py :: 2 passed in 0.22s
+tests/gateway/test_whatsapp_identity.py :: 1 passed in 0.19s
+tests/gateway/test_whatsapp_delivery_status_log.py :: 1 passed in 1.22s
+tests/gateway/test_whatsapp_media_path_profile.py :: 1 passed in 0.22s
+tests/gateway/test_whatsapp_group_gating.py :: 12 passed in 0.49s
+tests/gateway/test_whatsapp_formatting.py :: 14 passed in 1.62s
+tests/gateway/test_whatsapp_multiplex_secret_scope.py :: 6 passed in 0.35s
+tests/gateway/test_whatsapp_native_delivery.py :: 2 passed in 0.28s
+tests/gateway/test_whatsapp_multiplex.py :: 8 passed in 0.42s
+tests/gateway/test_whatsapp_reply_prefix.py :: 7 passed in 0.68s
+tests/gateway/test_whatsapp_text_batching.py :: 2 passed in 0.25s
+tests/gateway/test_whatsapp_to_jid.py :: 9 passed in 0.28s
+tests/gateway/test_whatsapp_stale_bridge.py :: 9 passed in 0.43s
+tests/gateway/test_worker_delegation_bridge.py :: 1 passed in 0.38s
+tests/gateway/test_worker_delegation_receipts.py :: 2 passed in 0.52s
+tests/gateway/test_worker_register_restriction.py :: 1 passed in 0.42s
+tests/gateway/test_worker_admission_reservation.py :: 8 passed, 1 skipped in 1.15s
+tests/gateway/test_ws_auth_retry_verifier_probe.py :: 2 passed in 0.31s
+tests/gateway/test_worker_reservation_automation_principal.py :: 2 passed in 0.49s
+tests/gateway/test_ws_auth_retry.py :: 3 passed in 0.30s
+tests/gateway/test_yolo_command.py :: 4 passed in 0.63s
+tests/gateway/test_yuanbao_integration.py :: 3 passed in 0.70s
+tests/gateway/test_yolo_restart_revocation.py :: 2 passed in 0.80s
+tests/gateway/test_yuanbao_markdown.py :: 13 passed in 0.38s
+tests/gateway/test_yolo_launch_tristate.py :: 2 passed in 1.38s
+tests/gateway/test_yuanbao_plugin_registration.py :: 1 passed in 0.35s
+tests/gateway/test_yuanbao_proto.py :: 20 passed in 0.48s
+tests/gateway/test_yuanbao_secret_scope.py :: 4 passed in 0.27s
+tests/gateway/test_yuanbao_pipeline.py :: 52 passed in 0.93s
+tests/gateway/test_webapp_listener_fallback.py :: 13 passed, 2 skipped in 18.65s
+tests/gateway/test_worker_compression_admission.py :: 2 passed in 30.13s
