@@ -3032,7 +3032,9 @@ class BasePlatformAdapter(ABC):
     def warning_notifications_enabled(self, logical_platform=None, *, chat_id=None, metadata=None) -> bool:
         """Presentation policy under the caller's owning profile; old plugins inherit it."""
         from gateway.warning_notifications import warning_notifications_enabled
-        return warning_notifications_enabled(logical_platform or self.platform)
+        # Pass chat_id through: without it, a per-chat ``display.chats.<id>`` override is
+        # never consulted and a chat that opted out still gets the platform default.
+        return warning_notifications_enabled(logical_platform or self.platform, chat_id=chat_id)
 
     def prepare_tts_text(self, text: str) -> str:
         """Chat Markdown -> transcript-like spoken script (reasoning blocks removed,
@@ -4322,6 +4324,35 @@ class BasePlatformAdapter(ABC):
         if ephemeral_ttl and ephemeral_ttl > 0 and result.success and result.message_id:
             delivery_adapter._schedule_ephemeral_delete(event.source.chat_id, result.message_id, ephemeral_ttl)
 
+    async def _divert_group_turn_error(self, event: MessageEvent, e: BaseException, error_detail: str) -> bool:
+        """A group/channel chat that suppresses warnings gets no error text at all.
+
+        Shared rooms are not the operator: even the plain "Sorry, I encountered an error"
+        lands in front of people who cannot act on it. When the chat opted out, the error
+        goes to this platform's home channel instead (if one is set and it is a different
+        chat), and nothing is posted to the room. DMs keep the existing behaviour.
+        Returns True when the room must stay silent.
+        """
+        source = event.source
+        if getattr(source, "chat_type", "dm") not in {"group", "channel"}:
+            return False
+        if self.warning_notifications_enabled(source.platform, chat_id=source.chat_id):
+            return False
+        home = getattr(getattr(self, "config", None), "home_channel", None)
+        home_chat = getattr(home, "chat_id", None)
+        if home_chat and str(home_chat) != str(source.chat_id):
+            room = getattr(source, "chat_name", None) or source.chat_id
+            try:
+                await self.send(chat_id=home_chat, content=(
+                    f"Turn failed in {room} (nothing was posted there): "
+                    f"{type(e).__name__}: {error_detail}"))
+            except Exception as divert_err:
+                logger.error("[%s] Failed to divert group error to home channel: %s",
+                             self.name, divert_err, exc_info=True)
+        logger.warning("[%s] Suppressed turn-error notice in %s chat %s",
+                       self.name, source.chat_type, source.chat_id)
+        return True
+
     async def _notify_turn_error(self, event: MessageEvent, e: BaseException) -> Optional[dict]:
         """Tell the user a turn failed rather than leaving radio silence (last resort:
         a failing notice is logged, never raised). Returns the thread metadata used."""
@@ -4332,6 +4363,8 @@ class BasePlatformAdapter(ABC):
             # Only the policy reads bind the routed profile; the send stays in the launch scope
             # as before, so delivery bookkeeping keeps landing where boot-time recovery reads it.
             with self._media_delivery_scope(event.source):
+                if await self._divert_group_turn_error(event, e, error_detail):
+                    return _thread_metadata
                 content = None if diagnostic_wake_muted(event) else self.warning_text(
                     t("gateway.notify.turn_error_detailed", error_type=type(e).__name__, error_detail=error_detail),
                     t("gateway.notify.turn_error"),
