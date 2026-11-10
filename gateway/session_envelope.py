@@ -162,6 +162,14 @@ def _validate_native(runner, event, provenance=None, fresh_roles=False):
         # re-check denied what the inbound filter had just accepted (#139199).
         delegated = runner._adapter_flag(
             source.platform, "authorization_is_upstream", runner._adapter_profile_for_source(source))
+    if not delegated and source.chat_type in ('group', 'forum', 'channel') and runner._adapter_flag(
+            source.platform, "enforces_own_access_policy", runner._adapter_profile_for_source(source)):
+        # A group member admitted at intake by the adapter's own group allowlist (WhatsApp
+        # ``group_policy: allowlist`` + ``group_allow_from``) has no relay seal or roles either.
+        # Without delegation the re-check skipped the chat-scoped grant and fell to the DM
+        # sender allowlist, refusing every member but the owner. Delegation here is not trust
+        # in a label: the chat-scoped grant re-asks the LIVE adapter (``_is_group_allowed``).
+        delegated = True
     if not runner._is_user_authorized_for_source(source, allow_adapter_delegation=delegated):
         _refuse(event, 'permission_denied', 'user_not_authorized')
     for name in ('channel_prompt', 'channel_context', 'reply_anchor_override'):
