@@ -99,3 +99,13 @@ def test_dm_behaviour_is_unchanged(policy):
     _fail(adapter, _event(DM, "dm"))
     assert [c for c, _ in adapter.sent] == [DM]
     assert "permission_denied" in adapter.sent[0][1]
+
+
+def test_bare_group_id_is_not_presented_as_a_name(policy):
+    adapter = _Adapter()
+    event = _event(GROUP, "group")
+    event.source.chat_name = "111-222"
+    _fail(adapter, event)
+    assert [c for c, _ in adapter.sent] == [HOME]
+    text = adapter.sent[0][1]
+    assert "a group chat" in text and "111-222" not in text.split("Technical detail")[0]

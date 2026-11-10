@@ -4341,11 +4341,14 @@ class BasePlatformAdapter(ABC):
         home = getattr(getattr(self, "config", None), "home_channel", None)
         home_chat = getattr(home, "chat_id", None)
         if home_chat and str(home_chat) != str(source.chat_id):
-            room = getattr(source, "chat_name", None) or source.chat_id
+            room = getattr(source, "chat_name", None)
+            # WhatsApp often hands over the bare JID as the "name"; that is not a name.
+            named = isinstance(room, str) and re.search(r"[A-Za-z]", room) and "@" not in room
+            where = f'the group "{room}"' if named else "a group chat"
             try:
                 await self.send(chat_id=home_chat, content=(
-                    f"Turn failed in {room} (nothing was posted there): "
-                    f"{type(e).__name__}: {error_detail}"))
+                    f"A message in {where} couldn't be answered, so nothing was posted there. "
+                    f"Technical detail: {type(e).__name__}: {error_detail}"))
             except Exception as divert_err:
                 logger.error("[%s] Failed to divert group error to home channel: %s",
                              self.name, divert_err, exc_info=True)
