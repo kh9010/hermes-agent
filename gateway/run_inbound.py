@@ -53,6 +53,16 @@ _RELAY_MEDIA_PREFIX = "relay_media_"
 _UNKNOWN_ATTACHMENT_NAME = "(original filename unknown)"
 
 
+def _owner_notice_enabled(config: Any, platform: Any) -> bool:
+    """``<platform>: unauthorized_owner_notice: false`` (promoted into ``extra``) keeps the home-channel
+    "Dropped a message from unrecognized ..." ping off; default on, matching upstream."""
+    platform_cfg = (getattr(config, "platforms", None) or {}).get(platform)
+    value = (getattr(platform_cfg, "extra", None) or {}).get("unauthorized_owner_notice", True)
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() not in {"false", "0", "no", "off"}
+
+
 def discord_triggering_note(message_id: Any) -> str:
     """Model-facing routing note for a Discord turn (rides the API-bound user message only)."""
     return (
@@ -140,6 +150,8 @@ class GatewayInboundMixin(GatewayInboundHooksMixin, GatewayInboundTranscriptionM
             platform_name, source.user_id, source.user_name or "", hermes_home=display_hermes_home(),
         )
         logger.warning("Unauthorized user (ignored): %s", hint)
+        if not _owner_notice_enabled(getattr(self, "config", None), source.platform):
+            return  # kMini: the WARNING line is the record; the home-channel ping was noise (0 of 11 acted on)
         notifier = getattr(self, "_unauthorized_owner_notifier", None)
         if notifier is None:
             notifier = self._unauthorized_owner_notifier = UnauthorizedOwnerNotifier()

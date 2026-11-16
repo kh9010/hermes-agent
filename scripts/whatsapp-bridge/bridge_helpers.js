@@ -608,6 +608,16 @@ export function inboundReadReceiptKeys({ key, enabled }) {
   return [key];
 }
 
+// Baileys reaction payload on an inbound message. ``emoji`` '' removes our reaction. Only inbound
+// (not fromMe) keys; a DM key drops ``participant`` (the read-receipt key fills it with the sender).
+export function buildReactionPayload({ chatId, key, emoji }) {
+  if (!chatId || !key || key.fromMe || !key.id) return null;
+  const remoteJid = key.remoteJid || chatId;
+  const target = { remoteJid, id: key.id, fromMe: false };
+  if (remoteJid.endsWith('@g.us') && key.participant) target.participant = key.participant;
+  return { react: { text: typeof emoji === 'string' ? emoji : '', key: target } };
+}
+
 // proto.WebMessageInfo.Status values (Baileys). PENDING is our own local state, never a receipt.
 const DELIVERY_STATUS_NAMES = { 0: 'error', 2: 'server_ack', 3: 'delivered', 4: 'read', 5: 'played' };
 const RECEIPT_TIMESTAMP_STATUS = [
