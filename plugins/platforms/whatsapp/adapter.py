@@ -288,7 +288,7 @@ from gateway.platforms.base import (
     BasePlatformAdapter, SendResult, SUPPORTED_DOCUMENT_TYPES, cache_image_from_url, cache_audio_from_url,
 )
 from gateway.platforms.helpers import cancel_task
-from gateway.platforms.event import MessageEvent, MessageType
+from gateway.platforms.event import MessageEvent, MessageType, ProcessingOutcome
 from utils import env_int
 
 
@@ -456,6 +456,10 @@ class WhatsAppAdapter(WhatsAppBehaviorMixin, BasePlatformAdapter):
         self._group_allow_from = self._coerce_allow_list(raw_groups)
         rr = extra.get("send_read_receipts", False)
         self._send_read_receipts = rr if isinstance(rr, bool) else str(rr or "").strip().lower() in {"1", "true", "yes", "on"}
+        # Receipt ack: 👀 on an accepted DM before the turn, swapped for ✅/❌ when it ends. Off by default.
+        # ``whatsapp: reactions: true`` (root block → extra) or WHATSAPP_REACTIONS. Groups are never reacted to.
+        rx = _extra_or_secret(extra, "reactions", "WHATSAPP_REACTIONS", False)
+        self._reactions = rx if isinstance(rx, bool) else str(rx or "").strip().lower() in {"1", "true", "yes", "on"}
         self._mention_patterns = self._compile_mention_patterns()
         self._message_queue: asyncio.Queue = asyncio.Queue()
         self._bridge_log_fh = self._bridge_log = self._poll_task = self._http_session = None
@@ -1063,6 +1067,39 @@ class WhatsAppAdapter(WhatsAppBehaviorMixin, BasePlatformAdapter):
             f" recipient={data['recipientId']}" if data.get("recipientId") else "", data.get("timestamp"),
             f" error={data['error']}" if data.get("error") else "",
         )
+
+    _ACK_EMOJI, _OK_EMOJI, _FAIL_EMOJI = "👀", "✅", "❌"
+
+    def _reaction_key(self, event: MessageEvent) -> Optional[dict]:
+        """The inbound Baileys key for a DM event when reactions are on; None skips (groups included)."""
+        if not self._reactions or getattr(event.source, "chat_type", None) != "dm":
+            return None
+        raw = event.raw_message if isinstance(event.raw_message, dict) else {}
+        key = raw.get("readReceiptKey")
+        return key if isinstance(key, dict) and key.get("id") and not key.get("fromMe") else None
+
+    async def _react(self, chat_id: str, key: dict, emoji: str) -> None:
+        if not self._http_session or await self._bridge_unavailable():
+            return
+        try:
+            async with self._bridge_req("post", "react", 5, json={"chatId": to_whatsapp_jid(chat_id), "key": key, "emoji": emoji}) as resp:
+                if resp.status != 200:
+                    logger.debug("[%s] WhatsApp reaction %r failed with HTTP %s", self.name, emoji, resp.status)
+        except Exception as exc:
+            logger.debug("[%s] WhatsApp reaction %r failed: %s", self.name, emoji, exc)
+
+    async def on_processing_start(self, event: MessageEvent) -> None:
+        key = self._reaction_key(event)
+        if key is not None:
+            await self._react(event.source.chat_id, key, self._ACK_EMOJI)
+
+    async def on_processing_complete(self, event: MessageEvent, outcome: ProcessingOutcome) -> None:
+        key = self._reaction_key(event)
+        if key is None:
+            return
+        # One reaction per sender per message on WhatsApp: sending the outcome replaces 👀; CANCELLED clears it.
+        emoji = {ProcessingOutcome.SUCCESS: self._OK_EMOJI, ProcessingOutcome.FAILURE: self._FAIL_EMOJI}.get(outcome, "")
+        await self._react(event.source.chat_id, key, emoji)
 
     async def _send_read_receipt(self, data: dict[str, Any]) -> None:
         key = data.get("readReceiptKey")

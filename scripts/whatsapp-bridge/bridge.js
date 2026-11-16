@@ -40,6 +40,7 @@ import {
   createVersionResolver,
   installConsoleStamps,
   buildLocationPayload,
+  buildReactionPayload,
   buildTextSendPayload,
   createBoundedMessageStore,
   createQuotedMediaCache,
@@ -1091,6 +1092,23 @@ app.post('/typing', async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     res.json({ success: false });
+  }
+});
+
+// React to an inbound message (receipt ack). The Python adapter calls this only for messages it
+// accepted; ``emoji`` '' removes the reaction.
+app.post('/react', async (req, res) => {
+  if (!sock || connectionState !== 'connected') {
+    return res.status(503).json({ error: 'Not connected' });
+  }
+  const { chatId, key, emoji } = req.body || {};
+  const payload = buildReactionPayload({ chatId, key, emoji });
+  if (!payload) return res.status(400).json({ error: 'chatId and an inbound key are required' });
+  try {
+    await sendWithTimeout(chatId, payload);
+    return res.json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 });
 
