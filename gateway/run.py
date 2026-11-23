@@ -1049,7 +1049,8 @@ def build_resume_recovery_note(
     reason: Optional[str], message: str = "", *, interactive: bool = True) -> str:
     """Build the resume-pending recovery system note for an interrupted turn (empty ``message`` = auto-resume).
 
-    Interactive platforms report the restore and ask what next; non-interactive ones finish the work.
+    Interactive platforms say what was interrupted, finish read-only steps and ask before side effects;
+    non-interactive ones finish the work.
 
     On non-interactive event platforms (webhook, API server — adapters with ``interactive_resume = False``)
     nobody can answer; the resumed turn must instead complete the interrupted work, or the task is silently
@@ -1060,17 +1061,29 @@ def build_resume_recovery_note(
         else "a gateway shutdown" if reason == "shutdown_timeout" else "a gateway interruption")
     if message:
         resume_guidance = (
-            "Address the user's NEW message below FIRST and focus on what the user is asking now.")
+            "Address the user's NEW message below FIRST and focus on what the user is asking now. "
+            "If the interrupted work is still relevant and the new message does not replace it, "
+            "end with one short line naming what was left unfinished and offer to continue it.")
         tail_guidance = (
-            "Do NOT re-execute old tool calls — skip any unfinished work from the conversation history."
+            "Do NOT re-execute old tool calls, and do not resume the unfinished work unless the user says so."
         )
     elif interactive:
+        # kh9010 fork (2026-11-23): report WHAT was interrupted, continue read-only steps, ask before
+        # anything with side effects. Upstream said "report restored, ask what next, skip unfinished
+        # work", which silently dropped the task behind a generic acknowledgement.
         resume_guidance = (
-            "Report to the user that the session was restored "
-            "successfully and ask what they would like to do next.")
+            "Do not just report that the session was restored. Using the conversation history, "
+            "tell the user in one or two short lines what was in progress and how far it got "
+            "(if nothing was in progress, say you are back and stop). "
+            "If the remaining steps only read or check things (reading files, searching, "
+            "read-only commands), continue them now and finish the answer. "
+            "Before any step with side effects — sending or posting a message through a tool, "
+            "writing or editing files, committing, pushing, merging, deploying, changing config, "
+            "restarting anything — stop and ask the user whether to continue.")
         tail_guidance = (
-            "Do NOT re-execute old tool calls — skip any unfinished work from the conversation history."
-        )
+            "Do NOT re-run tool calls whose results already appear in the history. If a tool call "
+            "with side effects has no recorded result, do not repeat it: say it may or may not have "
+            "happened and ask.")
     else:
         resume_guidance = (
             "No user is present on this non-interactive platform, "
